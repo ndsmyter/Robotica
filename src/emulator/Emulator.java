@@ -2,6 +2,7 @@ package emulator;
 
 import roomba.Roomba;
 import emulator.interfaces.EmulatorInterface;
+import emulator.interfaces.ModelInterface;
 
 /**
  * This class will be used as an interface for the brains and the Roomba robot
@@ -9,7 +10,7 @@ import emulator.interfaces.EmulatorInterface;
  * @author Nicolas
  * 
  */
-public class Emulator implements EmulatorInterface {
+public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	private Roomba roomba;
 

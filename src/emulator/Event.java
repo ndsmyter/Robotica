@@ -4,14 +4,7 @@ public class Event {
 
 	private EventType eventType;
 	private Object data;
-
-	public Event() {
-		this(null);
-	}
-
-	public Event(EventType eventType) {
-		this(eventType, null);
-	}
+	private int time;
 
 	/**
 	 * Make an event with given eventType and data
@@ -22,7 +15,21 @@ public class Event {
 	 *            The data of the event
 	 */
 	public Event(EventType eventType, Object data) {
+		this(eventType);
+		this.data = data;
+	}
+
+	public Event(EventType eventType, int time) {
+		this(eventType);
+		this.time = time;
+	}
+
+	public Event(EventType eventType) {
 		this.eventType = eventType;
+	}
+
+	public Event(EventType eventType, int time, Object data) {
+		this(eventType, time);
 		this.data = data;
 	}
 
@@ -31,7 +38,7 @@ public class Event {
 	 * 
 	 * @return The type of event
 	 */
-	public EventType getEventType() {
+	public EventType getType() {
 		return eventType;
 	}
 
@@ -63,4 +70,20 @@ public class Event {
 	public void setData(Object data) {
 		this.data = data;
 	}
+
+	/**
+	 * @return the time
+	 */
+	public int getTime() {
+		return time;
+	}
+
+	/**
+	 * @param time
+	 *            the time to set
+	 */
+	public void setTime(int time) {
+		this.time = time;
+	}
+
 }

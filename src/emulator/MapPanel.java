@@ -15,6 +15,7 @@ public class MapPanel extends JPanel implements ListenerInterface {
 
 	private final static int PIXEL_SIZE = 20;
 	private final static int ROBOT_SIZE = 10;
+	private final static int LINE_LENGTH = 50;
 
 	private int xPosition = 0;
 	private int yPosition = 0;
@@ -56,19 +57,58 @@ public class MapPanel extends JPanel implements ListenerInterface {
 
 	/**
 	 * Draw robot on the panel
-	 * @param g The Graphics used to draw the robot on
-	 * @param x The x position of the robot
-	 * @param y The y position of the robot
-	 * @param direction The direction of the robot
+	 * 
+	 * @param g
+	 *            The Graphics used to draw the robot on
+	 * @param xPos
+	 *            The x position of the robot
+	 * @param yPos
+	 *            The y position of the robot
+	 * @param direction
+	 *            The direction of the robot
 	 */
-	private void drawRobot(Graphics g, double x, double y, int direction) {
+	private void drawRobot(Graphics g, double xPos, double yPos, int direction) {
 		g.setColor(Color.BLUE);
-		g.fillArc((int) ((x + 0.25) * PIXEL_SIZE + 0.5), (int) ((y + 0.25)
-				* PIXEL_SIZE + 0.5), ROBOT_SIZE, ROBOT_SIZE, 0, 360);
+		g.fillArc((int) ((xPos + 0.25) * PIXEL_SIZE + 0.5),
+				(int) ((yPos + 0.25) * PIXEL_SIZE + 0.5), ROBOT_SIZE,
+				ROBOT_SIZE, 0, 360);
+
+		int x = (int) (xPos + PIXEL_SIZE / 2 + 0.5);
+		int y = (int) (yPos + PIXEL_SIZE / 2 + 0.5);
+		g.drawLine(
+				x,
+				y,
+				(int) (x + LINE_LENGTH * Math.cos(180.0 * direction / Math.PI) + 0.5),
+				(int) (y + LINE_LENGTH * Math.sin(180.0 * direction / Math.PI) + 0.5));
 	}
 
 	@Override
 	public void stateChanged(Event event) {
-		repaint();
+		switch (event.getType()) {
+		case DRIVE:
+			if (direction <= 45 || direction > 315)
+				xPosition++;
+			else if (direction <= 135)
+				yPosition++;
+			else if (direction <= 225)
+				xPosition--;
+			else
+				yPosition--;
+			repaint();
+			break;
+		case TURN:
+			repaint();
+			break;
+		case TURN_LEFT:
+			direction = (direction - 90) % 360;
+			repaint();
+			break;
+		case TURN_RIGHT:
+			direction = (direction + 90) % 360;
+			repaint();
+			break;
+		default:
+			break;
+		}
 	}
 }

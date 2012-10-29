@@ -1,9 +1,7 @@
 package emulator;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.TextArea;
 
 import javax.swing.JFrame;
@@ -39,7 +37,7 @@ public class EmulatorWindow extends JFrame implements ListenerInterface {
 
 	@Override
 	public void stateChanged(Event event) {
-		if (event.getEventType() == EventType.LOG)
+		if (event.getType() == EventType.LOG)
 			logArea.append((String) event.getData() + "\r\n");
 	}
 

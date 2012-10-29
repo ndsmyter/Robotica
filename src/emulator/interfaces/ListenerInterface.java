@@ -1,5 +1,7 @@
 package emulator.interfaces;
 
+import emulator.Event;
+
 public interface ListenerInterface {
 	/**
 	 * Message that will receive the notifications if a state has changed

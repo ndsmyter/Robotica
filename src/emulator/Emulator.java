@@ -16,7 +16,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	public Emulator() {
 		roomba = new Roomba(this);
-		new EmulatorWindow();
+		new EmulatorWindow(this);
 	}
 
 	@Override
@@ -48,6 +48,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	@Override
 	public void log(String message) {
 		// TODO Add logic to draw this action on screen
+		fireStateChanged(new Event(EventType.LOG, message));
 		System.out.println(message);
 	}
 }

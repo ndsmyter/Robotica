@@ -2,6 +2,8 @@ package emulator.interfaces;
 
 import java.util.ArrayList;
 
+import emulator.Event;
+
 /**
  * A class that implements the methods to register, remove and notify listeners
  * 

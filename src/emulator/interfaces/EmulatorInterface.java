@@ -20,6 +20,16 @@ public interface EmulatorInterface {
 	public void turn(int milliseconds, boolean right);
 
 	/**
+	 * Turn the robot 90 degrees to the right
+	 */
+	public void turnRight();
+
+	/**
+	 * Turn the robot 90 degrees to the left
+	 */
+	public void turnLeft();
+
+	/**
 	 * This method will accept all log messages, which will be shown on the
 	 * window
 	 * 

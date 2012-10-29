@@ -15,19 +15,34 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Roomba roomba;
 
 	public Emulator() {
-		roomba = new Roomba();
+		roomba = new Roomba(this);
+		new EmulatorWindow();
 	}
 
 	@Override
 	public void drive(int milliseconds) {
 		// TODO Add logic to draw this action on screen
+		log("E: DRIVE (" + milliseconds + ")");
 		roomba.drive(milliseconds);
 	}
 
 	@Override
 	public void turn(int milliseconds, boolean right) {
 		// TODO Add logic to draw this action on screen
+		log("E: " + (right ? "RIGHT" : "LEFT") + " (" + milliseconds + ")");
 		roomba.turn(milliseconds, right);
+	}
+
+	@Override
+	public void turnRight() {
+		// TODO Add logic to draw this action on screen
+		log("E: RIGHT");
+	}
+
+	@Override
+	public void turnLeft() {
+		// TODO Auto-generated method stub
+		log("E: LEFT");
 	}
 
 	@Override
@@ -35,5 +50,4 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		// TODO Add logic to draw this action on screen
 		System.out.println(message);
 	}
-
 }

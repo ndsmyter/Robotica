@@ -148,6 +148,8 @@ public class Roomba implements RoombaInterface {
 			// TODO use internal distance sensor to track distance traveled
 			// stop roomba
 			serial.sendCommand((byte) 137, new byte[] { 0, 0, 0, 0 });
+		} catch (NullPointerException e) {
+			// Roomba doesn exist yet
 		} catch (InterruptedException e) {
 			this.emulator.log("InterruptedException: "
 					+ e.getLocalizedMessage());

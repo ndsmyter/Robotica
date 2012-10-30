@@ -7,10 +7,10 @@ import java.awt.TextArea;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import emulator.interfaces.ListenerInterface;
+import emulator.interfaces.ViewListenerInterface;
 
 @SuppressWarnings("serial")
-public class EmulatorWindow extends JFrame implements ListenerInterface {
+public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 	private MapPanel mapPanel;
 	private TextArea logArea;
@@ -36,7 +36,7 @@ public class EmulatorWindow extends JFrame implements ListenerInterface {
 	}
 
 	@Override
-	public void stateChanged(Event event) {
+	public void viewStateChanged(Event event) {
 		if (event.getType() == EventType.LOG)
 			logArea.append((String) event.getData() + "\r\n");
 	}

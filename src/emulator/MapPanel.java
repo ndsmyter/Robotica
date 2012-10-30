@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import emulator.interfaces.ListenerInterface;
+import emulator.interfaces.ViewListenerInterface;
 
 @SuppressWarnings("serial")
-public class MapPanel extends JPanel implements ListenerInterface {
+public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private final static int PIXEL_SIZE = 20;
 	private final static int ROBOT_SIZE = 10;
@@ -67,10 +67,9 @@ public class MapPanel extends JPanel implements ListenerInterface {
 
 	private void drawPreviousPoints(Graphics g) {
 		g.setColor(Color.LIGHT_GRAY);
-		for (RobotState state : historyOfPoints) {
+		for (RobotState state : historyOfPoints)
 			g.fillRect(state.x * PIXEL_SIZE, state.y * PIXEL_SIZE, PIXEL_SIZE,
 					PIXEL_SIZE);
-		}
 	}
 
 	/**
@@ -101,7 +100,7 @@ public class MapPanel extends JPanel implements ListenerInterface {
 	}
 
 	@Override
-	public void stateChanged(Event event) {
+	public void viewStateChanged(Event event) {
 		switch (event.getType()) {
 		case DRIVE:
 			if (position.dir <= 45 || position.dir > 315)

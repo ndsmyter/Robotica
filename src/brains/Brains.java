@@ -8,7 +8,7 @@ import emulator.Emulator;
  * @author Nicolas
  * 
  */
-public class Main {
+public class Brains {
 
 	private final Emulator emulator;
 
@@ -20,11 +20,12 @@ public class Main {
 	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, LEFT,
 			DRIVE, DRIVE, DRIVE, LEFT, RIGHT, LEFT, DRIVE, DRIVE };
 
-	public Main() {
+	public Brains() {
 		emulator = new Emulator();
 
 		emulator.log("Initiating application");
 
+		// Just drive around to test the emulator and Roomba
 		try {
 			Thread.sleep(1000);
 
@@ -52,6 +53,6 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new Main();
+		new Brains();
 	}
 }

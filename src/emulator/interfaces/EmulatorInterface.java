@@ -4,10 +4,12 @@ public interface EmulatorInterface {
 	/**
 	 * Drive forward for the amount of time
 	 * 
-	 * @param milliseconds
-	 *            The amount of milliseconds the robot should drive forward
+	 * @param millimeters
+	 *            The amount of millimeters the robot should drive forward
+	 * @param driveMode
+	 *            The drive mode that should be used to drive forward
 	 */
-	public void drive(int milliseconds);
+	public void drive(int millimeters, int driveMode);
 
 	/**
 	 * Turn the robot
@@ -19,8 +21,7 @@ public interface EmulatorInterface {
 	 * @param turnMode
 	 *            turning modi (spot, sharp, wide, verywide)
 	 */
-	public void turn(int degrees, boolean turnRight, int turnMode,
-			int driveMode);
+	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode);
 
 	/**
 	 * Turn the robot 90 degrees to the right

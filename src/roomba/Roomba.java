@@ -9,14 +9,6 @@ import emulator.Emulator;
 import roomba.interfaces.RoombaInterface;
 
 public class Roomba implements RoombaInterface {
-	public static final int DRIVE_MODE_SLOW = 0;
-	public static final int DRIVE_MODE_MED = 1;
-	public static final int DRIVE_MODE_FAST = 2;
-
-	public static final int TURN_MODE_SPOT = 0;
-	public static final int TURN_MODE_SHARP = 1;
-	public static final int TURN_MODE_WIDE = 2;
-	public static final int TURN_MODE_VERYWIDE = 3;
 
 	private final Emulator emulator;
 	private SerialIO serial = null;
@@ -48,13 +40,13 @@ public class Roomba implements RoombaInterface {
 			velocity = 1;
 
 		switch (drive_mode) {
-		case DRIVE_MODE_SLOW:
+		case RoombaConfig.DRIVE_MODE_SLOW:
 			velocity *= 100;
 			break;
-		case DRIVE_MODE_MED:
+		case RoombaConfig.DRIVE_MODE_MED:
 			velocity *= 300;
 			break;
-		case DRIVE_MODE_FAST:
+		case RoombaConfig.DRIVE_MODE_FAST:
 			velocity *= 500;
 			break;
 		default:
@@ -85,7 +77,7 @@ public class Roomba implements RoombaInterface {
 
 	@Override
 	public void drive(int millimeters) {
-		drive(millimeters, DRIVE_MODE_MED);
+		drive(millimeters, RoombaConfig.DRIVE_MODE_MED);
 
 	}
 
@@ -101,14 +93,14 @@ public class Roomba implements RoombaInterface {
 			velocity = 1;
 
 		switch (drive_mode) {
-		case DRIVE_MODE_SLOW:
-			velocity *= 100;
+		case RoombaConfig.DRIVE_MODE_SLOW:
+			velocity *= RoombaConfig.DRIVE_DISTANCE_SLOW;
 			break;
-		case DRIVE_MODE_MED:
-			velocity *= 300;
+		case RoombaConfig.DRIVE_MODE_MED:
+			velocity *= RoombaConfig.DRIVE_DISTANCE_MED;
 			break;
-		case DRIVE_MODE_FAST:
-			velocity *= 500;
+		case RoombaConfig.DRIVE_MODE_FAST:
+			velocity *= RoombaConfig.DRIVE_DISTANCE_FAST;
 			break;
 		default:
 			this.emulator.log("Unknow drive mode");
@@ -120,16 +112,16 @@ public class Roomba implements RoombaInterface {
 			radius = 1;
 
 		switch (turn_mode) {
-		case TURN_MODE_SPOT:
+		case RoombaConfig.TURN_MODE_SPOT:
 			break;
-		case TURN_MODE_SHARP:
-			radius *= 500;
+		case RoombaConfig.TURN_MODE_SHARP:
+			radius *= RoombaConfig.TURN_RADIUS_SHARP;
 			break;
-		case TURN_MODE_WIDE:
-			radius *= 1000;
+		case RoombaConfig.TURN_MODE_WIDE:
+			radius *= RoombaConfig.TURN_RADIUS_WIDE;
 			break;
-		case TURN_MODE_VERYWIDE:
-			radius *= 2000;
+		case RoombaConfig.TURN_MODE_VERYWIDE:
+			radius *= RoombaConfig.TURN_RADIUS_VERYWIDE;
 			break;
 		default:
 			this.emulator.log("Unknow turning mode");
@@ -161,7 +153,8 @@ public class Roomba implements RoombaInterface {
 
 	@Override
 	public void turnAtSpot(int degrees, boolean turnRight) {
-		turn(degrees, turnRight, TURN_MODE_SPOT, DRIVE_MODE_MED);
+		turn(degrees, turnRight, RoombaConfig.TURN_MODE_SPOT,
+				RoombaConfig.DRIVE_MODE_MED);
 
 	}
 

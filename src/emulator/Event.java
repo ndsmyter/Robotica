@@ -3,34 +3,41 @@ package emulator;
 public class Event {
 
 	private EventType eventType;
-	private Object data;
-	private int time;
+
+	private String message;
+	private int distance;
+	private int degrees;
+	private boolean turnRight;
+	private int driveMode;
 
 	/**
 	 * Make an event with given eventType and data
 	 * 
 	 * @param eventType
 	 *            The type of event
-	 * @param data
-	 *            The data of the event
+	 * @param msg
+	 *            The message of the event
 	 */
-	public Event(EventType eventType, Object data) {
+	public Event(EventType eventType, String msg) {
 		this(eventType);
-		this.data = data;
+		this.message = msg;
 	}
 
-	public Event(EventType eventType, int time) {
+	public Event(EventType eventType, int distance, int degrees,
+			boolean turnRight, int driveMode) {
 		this(eventType);
-		this.time = time;
+		this.distance = distance;
+		this.degrees = degrees;
+		this.turnRight = turnRight;
+		this.driveMode = driveMode;
+	}
+
+	public Event(EventType eventType, int distance, int driveMode) {
+		this(eventType, distance, 0, false, driveMode);
 	}
 
 	public Event(EventType eventType) {
 		this.eventType = eventType;
-	}
-
-	public Event(EventType eventType, int time, Object data) {
-		this(eventType, time);
-		this.data = data;
 	}
 
 	/**
@@ -53,37 +60,82 @@ public class Event {
 	}
 
 	/**
-	 * Return the data of the event
+	 * Return the message of the event
 	 * 
-	 * @return The data of the event
+	 * @return The message of the event
 	 */
-	public Object getData() {
-		return data;
+	public String getMessage() {
+		return message;
 	}
 
 	/**
-	 * Set the data of the event
+	 * Set the message of the event
 	 * 
-	 * @param data
-	 *            The data of the event
+	 * @param message
+	 *            The message of the event
 	 */
-	public void setData(Object data) {
-		this.data = data;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	/**
-	 * @return the time
+	 * @return the distance
 	 */
-	public int getTime() {
-		return time;
+	public int getDistance() {
+		return distance;
 	}
 
 	/**
-	 * @param time
-	 *            the time to set
+	 * @param distance
+	 *            the distance to set
 	 */
-	public void setTime(int time) {
-		this.time = time;
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+
+	/**
+	 * @return the degrees
+	 */
+	public int getDegrees() {
+		return degrees;
+	}
+
+	/**
+	 * @param degrees
+	 *            the degrees to set
+	 */
+	public void setDegrees(int degrees) {
+		this.degrees = degrees;
+	}
+
+	/**
+	 * @return the turnRight
+	 */
+	public boolean isTurnRight() {
+		return turnRight;
+	}
+
+	/**
+	 * @param turnRight
+	 *            the turnRight to set
+	 */
+	public void setTurnRight(boolean turnRight) {
+		this.turnRight = turnRight;
+	}
+
+	/**
+	 * @return the driveMode
+	 */
+	public int getDriveMode() {
+		return driveMode;
+	}
+
+	/**
+	 * @param driveMode
+	 *            the driveMode to set
+	 */
+	public void setDriveMode(int driveMode) {
+		this.driveMode = driveMode;
 	}
 
 }

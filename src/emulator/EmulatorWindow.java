@@ -38,7 +38,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 	@Override
 	public void viewStateChanged(Event event) {
 		if (event.getType() == EventType.LOG)
-			logArea.append((String) event.getData() + "\r\n");
+			logArea.append((String) event.getMessage() + "\r\n");
 	}
 
 }

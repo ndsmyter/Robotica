@@ -1,6 +1,7 @@
 package emulator;
 
 import roomba.Roomba;
+import roomba.RoombaConfig;
 import emulator.interfaces.EmulatorInterface;
 import emulator.interfaces.ModelInterface;
 
@@ -20,32 +21,38 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	@Override
-	public void drive(int milliseconds) {
-		log("E: DRIVE (" + milliseconds + ")");
-		fireStateChanged(true, new Event(EventType.DRIVE, milliseconds));
-		roomba.drive(milliseconds);
+	public void drive(int millimeters, int driveMode) {
+		log("E: DRIVE (" + millimeters + ")");
+		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
+				driveMode));
+		roomba.drive(millimeters, driveMode);
 	}
 
 	@Override
 	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode) {
 		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "°)");
-		fireStateChanged(true, new Event(EventType.TURN, degrees, turnRight));
+		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
+				turnRight, driveMode));
 		roomba.turn(degrees, turnRight, turnMode, driveMode);
 	}
 
 	@Override
 	public void turnRight() {
 		log("E: RIGHT");
-		fireStateChanged(true, new Event(EventType.TURN_RIGHT));
-		roomba.turn(90, true, Roomba.TURN_MODE_SPOT, Roomba.DRIVE_MODE_MED);
+		fireStateChanged(true, new Event(EventType.TURN_RIGHT, 0, 90, true,
+				RoombaConfig.DRIVE_MODE_MED));
+		roomba.turn(90, true, RoombaConfig.TURN_MODE_SPOT,
+				RoombaConfig.DRIVE_MODE_MED);
 
 	}
 
 	@Override
 	public void turnLeft() {
 		log("E: LEFT");
-		fireStateChanged(true, new Event(EventType.TURN_LEFT));
-		roomba.turn(90, false, Roomba.TURN_MODE_SPOT, Roomba.DRIVE_MODE_MED);
+		fireStateChanged(true, new Event(EventType.TURN_LEFT, 0, 90, false,
+				RoombaConfig.DRIVE_MODE_MED));
+		roomba.turn(90, false, RoombaConfig.TURN_MODE_SPOT,
+				RoombaConfig.DRIVE_MODE_MED);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package brains;
 
+import roomba.RoombaConfig;
 import emulator.Emulator;
 import emulator.Event;
 import emulator.interfaces.ListenerInterface;
@@ -19,8 +20,11 @@ public class Brains implements ListenerInterface {
 	private static final byte LEFT = 2;
 
 	// Change this if you want to debug the application
-	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, LEFT,
-			DRIVE, DRIVE, DRIVE, LEFT, RIGHT, LEFT, DRIVE, DRIVE };
+	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
+			DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
+			LEFT, DRIVE, DRIVE, DRIVE, LEFT, RIGHT, LEFT, DRIVE, DRIVE };
+
+	private final static int SLEEP_TIME = 100;
 
 	public Brains() {
 		emulator = new Emulator();
@@ -29,12 +33,12 @@ public class Brains implements ListenerInterface {
 
 		// Just drive around to test the emulator and Roomba
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(SLEEP_TIME);
 
 			for (byte movement : movements) {
 				switch (movement) {
 				case DRIVE:
-					emulator.drive(1000);
+					emulator.drive(1000, RoombaConfig.DRIVE_MODE_MED);
 					break;
 				case RIGHT:
 					emulator.turnRight();
@@ -43,7 +47,7 @@ public class Brains implements ListenerInterface {
 					emulator.turnLeft();
 					break;
 				}
-				Thread.sleep(1000);
+				Thread.sleep(SLEEP_TIME);
 			}
 
 		} catch (InterruptedException e) {

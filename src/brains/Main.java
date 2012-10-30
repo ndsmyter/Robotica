@@ -16,6 +16,7 @@ public class Main {
 	private static final byte RIGHT = 1;
 	private static final byte LEFT = 2;
 
+	// Change this if you want to debug the application
 	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, LEFT,
 			DRIVE, DRIVE, DRIVE, LEFT, RIGHT, LEFT, DRIVE, DRIVE };
 

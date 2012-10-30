@@ -18,4 +18,7 @@ public final class RoombaConfig {
 	public static final int TURN_MODE_SHARP = 1;
 	public static final int TURN_MODE_WIDE = 2;
 	public static final int TURN_MODE_VERYWIDE = 3;
+	
+	public static final int ROOMBA_MODE_SAFE = 0;
+	public static final int ROOMBA_MODE_FULL = 1;
 }

@@ -12,6 +12,13 @@ public class Main {
 
 	private final Emulator emulator;
 
+	private static final byte DRIVE = 0;
+	private static final byte RIGHT = 1;
+	private static final byte LEFT = 2;
+
+	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, LEFT,
+			DRIVE, DRIVE, DRIVE, LEFT, RIGHT, LEFT, DRIVE, DRIVE };
+
 	public Main() {
 		emulator = new Emulator();
 
@@ -19,23 +26,22 @@ public class Main {
 
 		try {
 			Thread.sleep(1000);
-			emulator.drive(1000);
-			Thread.sleep(1000);
-			emulator.drive(1000);
-			Thread.sleep(1000);
-			emulator.drive(1000);
-			Thread.sleep(1000);
-			emulator.drive(1000);
-			Thread.sleep(1000);
-			emulator.turnRight();
-			Thread.sleep(1000);
-			emulator.turnRight();
-			Thread.sleep(1000);
-			emulator.turnRight();
-			Thread.sleep(1000);
-			emulator.turnLeft();
-			Thread.sleep(1000);
-			emulator.drive(1000);
+
+			for (byte movement : movements) {
+				switch (movement) {
+				case DRIVE:
+					emulator.drive(1000);
+					break;
+				case RIGHT:
+					emulator.turnRight();
+					break;
+				case LEFT:
+					emulator.turnLeft();
+					break;
+				}
+				Thread.sleep(1000);
+			}
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

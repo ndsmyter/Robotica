@@ -1,6 +1,8 @@
 package brains;
 
 import emulator.Emulator;
+import emulator.Event;
+import emulator.interfaces.ListenerInterface;
 
 /**
  * This class will start everything up
@@ -8,7 +10,7 @@ import emulator.Emulator;
  * @author Nicolas
  * 
  */
-public class Brains {
+public class Brains implements ListenerInterface {
 
 	private final Emulator emulator;
 
@@ -47,6 +49,11 @@ public class Brains {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void stateChanged(Event event) {
+		// An event happened to the robot which has to be parsed
 	}
 
 	/**

@@ -21,6 +21,12 @@ public class Main {
 			Thread.sleep(1000);
 			emulator.drive(1000);
 			Thread.sleep(1000);
+			emulator.drive(1000);
+			Thread.sleep(1000);
+			emulator.drive(1000);
+			Thread.sleep(1000);
+			emulator.drive(1000);
+			Thread.sleep(1000);
 			emulator.turnRight();
 			Thread.sleep(1000);
 			emulator.turnRight();

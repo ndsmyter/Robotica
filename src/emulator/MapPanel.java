@@ -15,7 +15,7 @@ public class MapPanel extends JPanel implements ListenerInterface {
 
 	private final static int PIXEL_SIZE = 20;
 	private final static int ROBOT_SIZE = 10;
-	private final static int LINE_LENGTH = 50;
+	private final static int LINE_LENGTH = 10;
 
 	private int xPosition = 0;
 	private int yPosition = 0;
@@ -34,18 +34,21 @@ public class MapPanel extends JPanel implements ListenerInterface {
 		int width = getWidth(), height = getHeight();
 		Graphics2D g2 = (Graphics2D) g;
 
+		// Move the (0,0) point to middle of screen
 		g.translate(width / 2, height / 2);
 		g2.scale(1, -1);
 
-		Rectangle clip = g.getClipBounds();
-		int xMax = clip.height + clip.x;
-		int yMax = clip.width + clip.y;
-
+		// Draw the (0,0) point
 		g.setColor(Color.BLACK);
 		g.fillArc(-2, -2, 4, 4, 0, 360);
+		
+		// Draw robot
 		drawRobot(g2, xPosition, yPosition, direction);
 
 		// Draw grid
+		Rectangle clip = g.getClipBounds();
+		int xMax = clip.height + clip.x;
+		int yMax = clip.width + clip.y;
 		g.setColor(Color.GRAY);
 		for (int i = clip.x; i < xMax; i++)
 			if (i % PIXEL_SIZE == 0)
@@ -69,17 +72,21 @@ public class MapPanel extends JPanel implements ListenerInterface {
 	 */
 	private void drawRobot(Graphics g, double xPos, double yPos, int direction) {
 		g.setColor(Color.BLUE);
+		// Draw a dot to represent the robot
 		g.fillArc((int) ((xPos + 0.25) * PIXEL_SIZE + 0.5),
 				(int) ((yPos + 0.25) * PIXEL_SIZE + 0.5), ROBOT_SIZE,
 				ROBOT_SIZE, 0, 360);
 
-		int x = (int) (xPos + PIXEL_SIZE / 2 + 0.5);
-		int y = (int) (yPos + PIXEL_SIZE / 2 + 0.5);
+		// Draw a line to show the direction of the robot
+		int x = (int) (xPos * PIXEL_SIZE + PIXEL_SIZE / 2 + 0.5);
+		int y = (int) (yPos * PIXEL_SIZE + PIXEL_SIZE / 2 + 0.5);
 		g.drawLine(
 				x,
 				y,
-				(int) (x + LINE_LENGTH * Math.cos(180.0 * direction / Math.PI) + 0.5),
-				(int) (y + LINE_LENGTH * Math.sin(180.0 * direction / Math.PI) + 0.5));
+				(int) (x + LINE_LENGTH
+						* Math.cos(1.0 * direction * Math.PI / 180) + 0.5),
+				(int) (y + LINE_LENGTH
+						* Math.sin(1.0 * direction * Math.PI / 180) + 0.5));
 	}
 
 	@Override
@@ -100,11 +107,11 @@ public class MapPanel extends JPanel implements ListenerInterface {
 			repaint();
 			break;
 		case TURN_LEFT:
-			direction = (direction - 90) % 360;
+			direction = (direction + 90 + 360) % 360;
 			repaint();
 			break;
 		case TURN_RIGHT:
-			direction = (direction + 90) % 360;
+			direction = (direction - 90 + 360) % 360;
 			repaint();
 			break;
 		default:

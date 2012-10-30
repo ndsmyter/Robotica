@@ -6,7 +6,9 @@ import emulator.Event;
 import emulator.interfaces.ListenerInterface;
 
 /**
- * This class will start everything up
+ * This class will start everything up, and will eventually control everything
+ * that happens to the robot. So that is the reason why this class is called
+ * Brains
  * 
  * @author Nicolas
  * 

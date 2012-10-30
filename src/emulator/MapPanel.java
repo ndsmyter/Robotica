@@ -11,19 +11,36 @@ import javax.swing.JPanel;
 
 import emulator.interfaces.ViewListenerInterface;
 
+/**
+ * The panel will draw a grid where the robot can move on
+ * 
+ * @author Nicolas
+ * 
+ */
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements ViewListenerInterface {
+
+	// TODO Solve following issues
+	// - The grid isn't redrawn correctly if the size of the panel changes
+	// - The DRIVE case for viewStateChanged method should be fixed
+	// - Make a method to draw walls, objects etcetera
 
 	private final static int PIXEL_SIZE = 20;
 	private final static int ROBOT_SIZE = 10;
 	private final static int LINE_LENGTH = 10;
+
+	private final static Color BACKGROUND_COLOR = Color.WHITE;
+	private final static Color ZERO_COLOR = Color.BLACK;
+	private final static Color ROBOT_COLOR = Color.BLUE;
+	private final static Color GRID_COLOR = Color.LIGHT_GRAY;
+	private final static Color PATH_COLOR = Color.GRAY;
 
 	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
 
 	public MapPanel(Emulator emulator) {
 		super();
-		this.setBackground(Color.WHITE);
+		this.setBackground(BACKGROUND_COLOR);
 		this.setPreferredSize(new Dimension(500, 500));
 
 		move(0, 0, 0);
@@ -41,30 +58,46 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		g2.scale(1, -1);
 
 		// Draw grid
-		Rectangle clip = g.getClipBounds();
-		int xMax = clip.height + clip.x;
-		int yMax = clip.width + clip.y;
-		g.setColor(Color.LIGHT_GRAY);
-		for (int i = clip.x; i < xMax; i++)
-			if (i % PIXEL_SIZE == 0)
-				g.drawLine(i, clip.y, i, yMax);
-		for (int i = clip.y; i < yMax; i++)
-			if (i % PIXEL_SIZE == 0)
-				g.drawLine(clip.x, i, xMax, i);
+		drawGrid(g);
 
 		// Draw the (0,0) point
-		g.setColor(Color.BLACK);
+		g.setColor(ZERO_COLOR);
 		g.fillArc(-2, -2, 4, 4, 0, 360);
 
 		// Draw previous points
 		drawPreviousPoints(g);
 
 		// Draw robot
-		drawRobot(g2, position);
+		drawRobot(g2);
 	}
 
+	/**
+	 * Draw a grid on the screen
+	 * 
+	 * @param g
+	 *            The Graphics to be used for painting
+	 */
+	private void drawGrid(Graphics g) {
+		Rectangle clip = g.getClipBounds();
+		int xMax = clip.height + clip.x;
+		int yMax = clip.width + clip.y;
+		g.setColor(GRID_COLOR);
+		for (int i = clip.x; i < xMax; i++)
+			if (i % PIXEL_SIZE == 0)
+				g.drawLine(i, clip.y, i, yMax);
+		for (int i = clip.y; i < yMax; i++)
+			if (i % PIXEL_SIZE == 0)
+				g.drawLine(clip.x, i, xMax, i);
+	}
+
+	/**
+	 * Draw a path of previous positions
+	 * 
+	 * @param g
+	 *            The Graphics to be used for painting
+	 */
 	private void drawPreviousPoints(Graphics g) {
-		g.setColor(Color.GRAY);
+		g.setColor(PATH_COLOR);
 		for (RobotState state : historyOfPoints)
 			g.drawRect(state.x, state.y, 1, 1);
 	}
@@ -74,24 +107,20 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 * 
 	 * @param g
 	 *            The Graphics used to draw the robot on
-	 * @param state
-	 *            The current position and direction of the robot
 	 */
-	private void drawRobot(Graphics g, RobotState state) {
-		g.setColor(Color.BLUE);
+	private void drawRobot(Graphics g) {
+		g.setColor(ROBOT_COLOR);
 		// Draw a dot to represent the robot
-		g.fillArc((int) (state.x + 0.5 - ROBOT_SIZE / 2),
-				(int) (state.y + 0.5 - ROBOT_SIZE / 2), ROBOT_SIZE, ROBOT_SIZE,
-				0, 360);
+		g.fillArc((int) (position.x + 0.5 - ROBOT_SIZE / 2),
+				(int) (position.y + 0.5 - ROBOT_SIZE / 2), ROBOT_SIZE,
+				ROBOT_SIZE, 0, 360);
 
 		// Draw a line to show the direction of the robot
-		int x = (int) (state.x + 0.5);
-		int y = (int) (state.y + 0.5);
-		g.drawLine(
-				x,
-				y,
-				(int) (x + LINE_LENGTH * Math.cos(Math.PI * state.dir / 180) + 0.5),
-				(int) (y + LINE_LENGTH * Math.sin(Math.PI * state.dir / 180) + 0.5));
+		int x = (int) (position.x + 0.5);
+		int y = (int) (position.y + 0.5);
+		double theta = Math.PI * position.dir / 180;
+		g.drawLine(x, y, (int) (x + LINE_LENGTH * Math.cos(theta) + 0.5),
+				(int) (y + LINE_LENGTH * Math.sin(theta) + 0.5));
 	}
 
 	@Override

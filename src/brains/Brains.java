@@ -22,9 +22,12 @@ public class Brains implements ListenerInterface {
 	private static final byte LEFT = 2;
 
 	// Change this if you want to debug the application
-	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
-			DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
-			LEFT, DRIVE, DRIVE, DRIVE, LEFT, DRIVE, RIGHT, DRIVE, LEFT, DRIVE, DRIVE };
+	private byte[] movements = { LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
+                        LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, 
+                        LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE,
+			RIGHT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE,  
+                        LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE,
+                        DRIVE, DRIVE, DRIVE, DRIVE, DRIVE};
 
 	private final static int SLEEP_TIME = 100;
 
@@ -40,14 +43,14 @@ public class Brains implements ListenerInterface {
 			for (byte movement : movements) {
 				switch (movement) {
 				case DRIVE:
-					emulator.drive(100, RoombaConfig.DRIVE_MODE_MED);
+					emulator.drive(200, RoombaConfig.DRIVE_MODE_MED);
 					break;
 				case RIGHT:
-                                        emulator.turn(20, true, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
+                                        emulator.turn(140, true, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
 					//emulator.turnRight();
 					break;
 				case LEFT:
-                                        emulator.turn(45, false, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
+                                        emulator.turn(25, false, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
 					//emulator.turnLeft();
 					break;
 				}

@@ -22,7 +22,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	// TODO Solve following issues
 	// - The grid isn't redrawn correctly if the size of the panel changes
-	// - The DRIVE case for viewStateChanged method should be fixed
 	// - Make a method to draw walls, objects etcetera
 
 	private final static int PIXEL_SIZE = 20;
@@ -126,33 +125,15 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		g.drawLine(x, y, (int) (x + LINE_LENGTH * Math.cos(theta) + 0.5),
 				(int) (y + LINE_LENGTH * Math.sin(theta) + 0.5));
 	}
-
+        
 	@Override
 	public void viewStateChanged(Event event) {
 		switch (event.getType()) {
-		case DRIVE:
-                    
-                    double theta = Math.PI * position.dir / 180;
-                    int newx = (int) (position.x + event.getDistance()/10 * Math.cos(theta) + 0.5);
-                    int newy = (int) (position.y + event.getDistance()/10 * Math.sin(theta) + 0.5);
-                    move(newx,newy,position.dir);
-			// TODO Make this better with a continuous flow
-			// eg if it is 45 degrees then both x+1 and y+1
-                /*
-			if (position.dir <= 45 || position.dir > 315)
-				move(position.x + event.getDistance() / 10, position.y,
-						position.dir);
-			else if (position.dir <= 135)
-				move(position.x, position.y + event.getDistance() / 10,
-						position.dir);
-			else if (position.dir <= 225)
-				move(position.x - event.getDistance() / 10, position.y,
-						position.dir);
-			else
-				move(position.x, position.y - event.getDistance() / 10,
-						position.dir);
-                                                * 
-                                                */
+		case DRIVE:                    
+                        double theta = Math.PI * position.dir / 180;
+                        int newx = (int) (position.x + event.getDistance()/10 * Math.cos(theta) + 0.5);
+                        int newy = (int) (position.y + event.getDistance()/10 * Math.sin(theta) + 0.5);
+                        move(newx,newy,position.dir);
 			break;
 		case TURN:
                         int angle = (event.isTurnRight() ? -event.getDegrees() : event.getDegrees());
@@ -172,46 +153,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private void move(int x, int y, int dir) {
 		RobotState point = new RobotState(x, y, dir);
-		/*if (position != null && !point.equals(position)) {
-			// Add all points in between those two points
-			// w = az + b
-			if (point.x == position.x) {
-				RobotState down, up;
-				if (point.y < position.y) {
-					down = point;
-					up = position;
-				} else {
-					down = position;
-					up = point;
-				}
-				for (int i = down.y; i < up.y; i++) {
-					RobotState p = new RobotState(point.x, i, 0);
-					if (!historyOfPoints.contains(p))
-						historyOfPoints.add(p);
-				}
-			} else {
-				RobotState left, right;
-				if (point.x < position.x) {
-					left = point;
-					right = position;
-				} else {
-					left = position;
-					right = point;
-				}
-				double a = 1.0 * (left.y - right.y) / (left.x - right.x);
-				// +0.5 For the rounding to an int later
-				double b = 0.5 + left.y - a * left.x;
-
-				for (int i = (int) (left.x + 0.5); i < right.x; i++) {
-					RobotState p = new RobotState(i, (int) (a * i + b), 0);
-					if (!historyOfPoints.contains(p))
-						historyOfPoints.add(p);
-				}
-			}
-		}
-		if (!historyOfPoints.contains(point))
-			historyOfPoints.add(point);
-                */
                 historyOfPoints.add(point);
 		position = point;
 		repaint();

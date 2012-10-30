@@ -1,6 +1,20 @@
 package roomba.interfaces;
 
 public interface RoombaInterface {
+	
+	/**
+	 * Sends start command to roomba
+	 */
+	public void start();
+	
+	/**
+	 * Sends the mode to the roomba
+	 * 
+	 * @param roomba_mode
+	 * 					The mode to select.
+	 */
+	public void selectMode(int roomba_mode);
+	
 	/**
 	 * Drive for a certain distance
 	 * 
@@ -40,9 +54,9 @@ public interface RoombaInterface {
 	 * Turn the robot at the spot.
 	 * 
 	 * @param degrees
-	 *            - number of degrees to turn
+	 *            number of degrees to turn
 	 * @param turnRight
-	 *            - true to turn right (clockwise), false to turn left
+	 *            true to turn right (clockwise), false to turn left
 	 */
 	public void turnAtSpot(int degrees, boolean turnRight);
 

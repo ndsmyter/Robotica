@@ -38,7 +38,7 @@ public class Brains implements ListenerInterface {
 			for (byte movement : movements) {
 				switch (movement) {
 				case DRIVE:
-					emulator.drive(1000, RoombaConfig.DRIVE_MODE_MED);
+					emulator.drive(100, RoombaConfig.DRIVE_MODE_MED);
 					break;
 				case RIGHT:
 					emulator.turnRight();

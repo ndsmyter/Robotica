@@ -18,7 +18,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static int ROBOT_SIZE = 10;
 	private final static int LINE_LENGTH = 10;
 
-	private RobotState position;
+	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
 
 	public MapPanel(Emulator emulator) {
@@ -99,25 +99,25 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		switch (event.getType()) {
 		case DRIVE:
 			if (position.dir <= 45 || position.dir > 315)
-				move(position.x + 1, position.y, position.dir);
+				move(position.x + event.getDistance() / 10, position.y,
+						position.dir);
 			else if (position.dir <= 135)
-				move(position.x, position.y + 1, position.dir);
+				move(position.x, position.y + event.getDistance() / 10,
+						position.dir);
 			else if (position.dir <= 225)
-				move(position.x - 1, position.y, position.dir);
+				move(position.x - event.getDistance() / 10, position.y,
+						position.dir);
 			else
-				move(position.x, position.y - 1, position.dir);
-			repaint();
+				move(position.x, position.y - event.getDistance() / 10,
+						position.dir);
 			break;
 		case TURN:
-			repaint();
 			break;
 		case TURN_LEFT:
 			move(position.x, position.y, (position.dir + 90 + 360) % 360);
-			repaint();
 			break;
 		case TURN_RIGHT:
 			move(position.x, position.y, (position.dir - 90 + 360) % 360);
-			repaint();
 			break;
 		default:
 			break;
@@ -126,9 +126,47 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private void move(int x, int y, int dir) {
 		RobotState point = new RobotState(x, y, dir);
+		if (position != null && !point.equals(position)) {
+			// Add all points in between those two points
+			// w = az + b
+			if (point.x == position.x) {
+				RobotState down, up;
+				if (point.y < position.y) {
+					down = point;
+					up = position;
+				} else {
+					down = position;
+					up = point;
+				}
+				for (int i = down.y; i < up.y; i++) {
+					RobotState p = new RobotState(point.x, i, 0);
+					if (!historyOfPoints.contains(p))
+						historyOfPoints.add(p);
+				}
+			} else {
+				RobotState left, right;
+				if (point.x < position.x) {
+					left = point;
+					right = position;
+				} else {
+					left = position;
+					right = point;
+				}
+				double a = 1.0 * (left.y - right.y) / (left.x - right.x);
+				double b = 1.0 * left.y - a * left.x;
+
+				for (double i = left.x; i < right.x; i++) {
+					RobotState p = new RobotState((int) i,
+							(int) (a * i + b + 0.5), 0);
+					if (!historyOfPoints.contains(p))
+						historyOfPoints.add(p);
+				}
+			}
+		}
 		if (!historyOfPoints.contains(point))
 			historyOfPoints.add(point);
 		position = point;
+		repaint();
 	}
 
 	private class RobotState {

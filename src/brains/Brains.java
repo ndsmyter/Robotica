@@ -23,8 +23,8 @@ public class Brains implements ListenerInterface {
 
 	// Change this if you want to debug the application
 	private byte[] movements = { DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
-			DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
-			LEFT, DRIVE, DRIVE, DRIVE, LEFT, RIGHT, LEFT, DRIVE, DRIVE };
+			DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
+			LEFT, DRIVE, DRIVE, DRIVE, LEFT, DRIVE, RIGHT, DRIVE, LEFT, DRIVE, DRIVE };
 
 	private final static int SLEEP_TIME = 100;
 
@@ -43,10 +43,12 @@ public class Brains implements ListenerInterface {
 					emulator.drive(100, RoombaConfig.DRIVE_MODE_MED);
 					break;
 				case RIGHT:
-					emulator.turnRight();
+                                        emulator.turn(20, true, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
+					//emulator.turnRight();
 					break;
 				case LEFT:
-					emulator.turnLeft();
+                                        emulator.turn(45, false, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
+					//emulator.turnLeft();
 					break;
 				}
 				Thread.sleep(SLEEP_TIME);

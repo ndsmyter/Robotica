@@ -100,6 +100,10 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		g.setColor(PATH_COLOR);
 		for (RobotState state : historyOfPoints)
 			g.drawRect(state.x, state.y, 1, 1);
+                for (int i = 0; i < historyOfPoints.size()-1; i++){
+                    g.drawLine(historyOfPoints.get(i).x, historyOfPoints.get(i).y, historyOfPoints.get(i+1).x,
+				historyOfPoints.get(i+1).y);
+                }
 	}
 
 	/**
@@ -127,8 +131,14 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	public void viewStateChanged(Event event) {
 		switch (event.getType()) {
 		case DRIVE:
+                    
+                    double theta = Math.PI * position.dir / 180;
+                    int newx = (int) (position.x + event.getDistance()/10 * Math.cos(theta) + 0.5);
+                    int newy = (int) (position.y + event.getDistance()/10 * Math.sin(theta) + 0.5);
+                    move(newx,newy,position.dir);
 			// TODO Make this better with a continuous flow
 			// eg if it is 45 degrees then both x+1 and y+1
+                /*
 			if (position.dir <= 45 || position.dir > 315)
 				move(position.x + event.getDistance() / 10, position.y,
 						position.dir);
@@ -141,10 +151,13 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 			else
 				move(position.x, position.y - event.getDistance() / 10,
 						position.dir);
+                                                * 
+                                                */
 			break;
 		case TURN:
+                        int angle = (event.isTurnRight() ? -event.getDegrees() : event.getDegrees());
 			move(position.x, position.y,
-					(position.dir + event.getDegrees() + 360) % 360);
+					(position.dir + angle + 360) % 360);
 			break;
 		case TURN_LEFT:
 			move(position.x, position.y, (position.dir + 90 + 360) % 360);
@@ -159,7 +172,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private void move(int x, int y, int dir) {
 		RobotState point = new RobotState(x, y, dir);
-		if (position != null && !point.equals(position)) {
+		/*if (position != null && !point.equals(position)) {
 			// Add all points in between those two points
 			// w = az + b
 			if (point.x == position.x) {
@@ -198,6 +211,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		}
 		if (!historyOfPoints.contains(point))
 			historyOfPoints.add(point);
+                */
+                historyOfPoints.add(point);
 		position = point;
 		repaint();
 	}

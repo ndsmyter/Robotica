@@ -98,6 +98,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	public void viewStateChanged(Event event) {
 		switch (event.getType()) {
 		case DRIVE:
+			// TODO Make this better with a continuous flow
+			// eg if it is 45 degrees then both x+1 and y+1
 			if (position.dir <= 45 || position.dir > 315)
 				move(position.x + event.getDistance() / 10, position.y,
 						position.dir);
@@ -112,6 +114,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 						position.dir);
 			break;
 		case TURN:
+			move(position.x, position.y,
+					(position.dir + event.getDegrees() + 360) % 360);
 			break;
 		case TURN_LEFT:
 			move(position.x, position.y, (position.dir + 90 + 360) % 360);
@@ -153,11 +157,11 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 					right = point;
 				}
 				double a = 1.0 * (left.y - right.y) / (left.x - right.x);
-				double b = 1.0 * left.y - a * left.x;
+				// +0.5 For the rounding to an int later
+				double b = 0.5 + left.y - a * left.x;
 
-				for (double i = left.x; i < right.x; i++) {
-					RobotState p = new RobotState((int) i,
-							(int) (a * i + b + 0.5), 0);
+				for (int i = (int) (left.x + 0.5); i < right.x; i++) {
+					RobotState p = new RobotState(i, (int) (a * i + b), 0);
 					if (!historyOfPoints.contains(p))
 						historyOfPoints.add(p);
 				}

@@ -13,7 +13,6 @@ import emulator.interfaces.ModelInterface;
 public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	private Roomba roomba;
-	private final static int QUARTER_TURN_TIME = 1000;
 
 	public Emulator() {
 		roomba = new Roomba(this);
@@ -29,11 +28,11 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	@Override
-	public void turn(int milliseconds, boolean right) {
+	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode) {
 		// TODO Add logic to draw this action on screen
-		log("E: " + (right ? "RIGHT" : "LEFT") + " (" + milliseconds + ")");
-		fireStateChanged(new Event(EventType.TURN, milliseconds, right));
-		roomba.turn(milliseconds, right);
+		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "°)");
+		fireStateChanged(new Event(EventType.TURN, degrees, turnRight));
+		roomba.turn(degrees, turnRight, turnMode, driveMode);
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		// TODO Add logic to draw this action on screen
 		log("E: RIGHT");
 		fireStateChanged(new Event(EventType.TURN_RIGHT));
-		roomba.turn(QUARTER_TURN_TIME, true);
+		roomba.turn(90, true, Roomba.TURN_MODE_SPOT, Roomba.DRIVE_MODE_MED);
 
 	}
 
@@ -50,7 +49,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		// TODO Auto-generated method stub
 		log("E: LEFT");
 		fireStateChanged(new Event(EventType.TURN_LEFT));
-		roomba.turn(QUARTER_TURN_TIME, false);
+		roomba.turn(90, false, Roomba.TURN_MODE_SPOT, Roomba.DRIVE_MODE_MED);
 	}
 
 	@Override

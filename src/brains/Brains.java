@@ -4,6 +4,8 @@ import roomba.RoombaConfig;
 import emulator.Emulator;
 import emulator.Event;
 import emulator.interfaces.ListenerInterface;
+import java.awt.Point;
+import java.util.ArrayList;
 
 /**
  * This class will start everything up, and will eventually control everything
@@ -35,6 +37,13 @@ public class Brains implements ListenerInterface {
 		emulator = new Emulator();
 
 		emulator.log("Initiating application");
+                
+                ArrayList<Point> obstacle = new ArrayList<Point>();
+                obstacle.add(new Point(-10,-10));
+                obstacle.add(new Point(-10,-11));
+                obstacle.add(new Point(-10,-12));
+                obstacle.add(new Point(-10,-13));
+                emulator.addObstacle(obstacle);
 
 		// Just drive around to test the emulator and Roomba
 		try {

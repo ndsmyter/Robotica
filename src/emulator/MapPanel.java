@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import emulator.interfaces.ViewListenerInterface;
+import java.awt.Point;
 
 /**
  * The panel will draw a grid where the robot can move on
@@ -30,12 +31,14 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private final static Color BACKGROUND_COLOR = Color.WHITE;
 	private final static Color ZERO_COLOR = Color.BLACK;
+	private final static Color OBSTACLE_COLOR = Color.BLACK;
 	private final static Color ROBOT_COLOR = Color.BLUE;
 	private final static Color GRID_COLOR = Color.LIGHT_GRAY;
 	private final static Color PATH_COLOR = Color.GRAY;
 
 	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
+        private ArrayList<Point> obstacles = new ArrayList<Point>();
 
 	public MapPanel(Emulator emulator) {
 		super();
@@ -62,6 +65,9 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		// Draw the (0,0) point
 		g.setColor(ZERO_COLOR);
 		g.fillArc(-2, -2, 4, 4, 0, 360);
+                
+                // Draw the obstacles
+                drawObstacles(g);
 
 		// Draw previous points
 		drawPreviousPoints(g);
@@ -126,6 +132,19 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 				(int) (y + LINE_LENGTH * Math.sin(theta) + 0.5));
 	}
         
+        /**
+	 * Draw obstacles on the panel
+	 * 
+	 * @param g
+	 *            The Graphics used to draw the robot on
+	 */
+        private void drawObstacles(Graphics g){
+		g.setColor(OBSTACLE_COLOR);
+                for (Point p : obstacles){
+                    g.drawRect(p.x, p.y, 1, 1);
+                }
+        }
+
 	@Override
 	public void viewStateChanged(Event event) {
 		switch (event.getType()) {
@@ -146,6 +165,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		case TURN_RIGHT:
 			move(position.x, position.y, (position.dir - 90 + 360) % 360);
 			break;
+                case OBSTACLE:
+                        addObstacle(event.getObstacle());
 		default:
 			break;
 		}
@@ -157,6 +178,11 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		position = point;
 		repaint();
 	}
+       
+        private void addObstacle(ArrayList<Point> obstacle){
+            obstacles.addAll(obstacle);
+            repaint();
+        }
 
 	private class RobotState {
 		public final int x;

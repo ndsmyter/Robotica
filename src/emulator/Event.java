@@ -1,5 +1,8 @@
 package emulator;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
 public class Event {
 
 	private EventType eventType;
@@ -9,6 +12,7 @@ public class Event {
 	private int degrees;
 	private boolean turnRight;
 	private int driveMode;
+        private ArrayList<Point> obstacle;
 
 	/**
 	 * Make an event with given eventType and data
@@ -36,6 +40,11 @@ public class Event {
 		this(eventType, distance, 0, false, driveMode);
 	}
 
+        public Event(EventType eventType, ArrayList<Point> obstacle) {
+                this(eventType);
+		this.obstacle = obstacle;
+	}
+        
 	public Event(EventType eventType) {
 		this.eventType = eventType;
 	}
@@ -136,6 +145,21 @@ public class Event {
 	 */
 	public void setDriveMode(int driveMode) {
 		this.driveMode = driveMode;
+	}
+        
+        /**
+	 * @return the obstacle
+	 */
+	public ArrayList<Point> getObstacle() {
+		return obstacle;
+	}
+
+	/**
+	 * @param obstacle
+	 *            the obstacle to add
+	 */
+	public void setDriveMode(ArrayList<Point> obstacle) {
+		this.obstacle = obstacle;
 	}
 
 }

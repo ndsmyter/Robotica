@@ -11,6 +11,7 @@ public enum EventType {
 	TURN, // The robot turns
 	TURN_RIGHT, // The robot turns right
 	TURN_LEFT, // The robot turns left
+        OBSTACLE, // The robot detected an obstacle
 	COLLISION, // The robot has collided with an object
 	LOG // A log message
 }

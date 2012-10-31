@@ -32,36 +32,16 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode) {
-		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "Â°)");
+		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "°)");
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
 		roomba.turn(degrees, turnRight, turnMode, driveMode);
 	}
 
-	@Override
-	public void turnRight() {
-		log("E: RIGHT");
-		fireStateChanged(true, new Event(EventType.TURN_RIGHT, 0, 90, true,
-				RoombaConfig.DRIVE_MODE_MED));
-		roomba.turn(90, true, RoombaConfig.TURN_MODE_SPOT,
-				RoombaConfig.DRIVE_MODE_MED);
-
+	public void addObstacle(ArrayList<Point> obstacle) {
+		log("E: Obstacle");
+		fireStateChanged(true, new Event(EventType.OBSTACLE, obstacle));
 	}
-
-	@Override
-	public void turnLeft() {
-		log("E: LEFT");
-		fireStateChanged(true, new Event(EventType.TURN_LEFT, 0, 90, false,
-				RoombaConfig.DRIVE_MODE_MED));
-		roomba.turn(90, false, RoombaConfig.TURN_MODE_SPOT,
-				RoombaConfig.DRIVE_MODE_MED);
-	}
-        
-        
-        public void addObstacle(ArrayList<Point> obstacle){
-            log("E: Obstacle");
-            fireStateChanged(true, new Event(EventType.OBSTACLE,obstacle));
-        }
 
 	@Override
 	public void log(String message) {

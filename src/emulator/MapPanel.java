@@ -38,7 +38,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
-        private ArrayList<Point> obstacles = new ArrayList<Point>();
+	private ArrayList<Point> obstacles = new ArrayList<Point>();
 
 	public MapPanel(Emulator emulator) {
 		super();
@@ -65,9 +65,9 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		// Draw the (0,0) point
 		g.setColor(ZERO_COLOR);
 		g.fillArc(-2, -2, 4, 4, 0, 360);
-                
-                // Draw the obstacles
-                drawObstacles(g);
+
+		// Draw the obstacles
+		drawObstacles(g);
 
 		// Draw previous points
 		drawPreviousPoints(g);
@@ -105,10 +105,10 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		g.setColor(PATH_COLOR);
 		for (RobotState state : historyOfPoints)
 			g.drawRect(state.x, state.y, 1, 1);
-                for (int i = 0; i < historyOfPoints.size()-1; i++){
-                    g.drawLine(historyOfPoints.get(i).x, historyOfPoints.get(i).y, historyOfPoints.get(i+1).x,
-				historyOfPoints.get(i+1).y);
-                }
+		for (int i = 0; i < historyOfPoints.size() - 1; i++) {
+			g.drawLine(historyOfPoints.get(i).x, historyOfPoints.get(i).y,
+					historyOfPoints.get(i + 1).x, historyOfPoints.get(i + 1).y);
+		}
 	}
 
 	/**
@@ -131,33 +131,35 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		g.drawLine(x, y, (int) (x + LINE_LENGTH * Math.cos(theta) + 0.5),
 				(int) (y + LINE_LENGTH * Math.sin(theta) + 0.5));
 	}
-        
-        /**
+
+	/**
 	 * Draw obstacles on the panel
 	 * 
 	 * @param g
 	 *            The Graphics used to draw the robot on
 	 */
-        private void drawObstacles(Graphics g){
+	private void drawObstacles(Graphics g) {
 		g.setColor(OBSTACLE_COLOR);
-                for (Point p : obstacles){
-                    g.drawRect(p.x, p.y, 1, 1);
-                }
-        }
+		for (Point p : obstacles) {
+			g.drawRect(p.x, p.y, 1, 1);
+		}
+	}
 
 	@Override
 	public void viewStateChanged(Event event) {
 		switch (event.getType()) {
-		case DRIVE:                    
-                        double theta = Math.PI * position.dir / 180;
-                        int newx = (int) (position.x + event.getDistance()/10 * Math.cos(theta) + 0.5);
-                        int newy = (int) (position.y + event.getDistance()/10 * Math.sin(theta) + 0.5);
-                        move(newx,newy,position.dir);
+		case DRIVE:
+			double theta = Math.PI * position.dir / 180;
+			int newx = (int) (position.x + event.getDistance() / 10
+					* Math.cos(theta) + 0.5);
+			int newy = (int) (position.y + event.getDistance() / 10
+					* Math.sin(theta) + 0.5);
+			move(newx, newy, position.dir);
 			break;
 		case TURN:
-                        int angle = (event.isTurnRight() ? -event.getDegrees() : event.getDegrees());
-			move(position.x, position.y,
-					(position.dir + angle + 360) % 360);
+			int angle = (event.isTurnRight() ? -event.getDegrees() : event
+					.getDegrees());
+			move(position.x, position.y, (position.dir + angle + 360) % 360);
 			break;
 		case TURN_LEFT:
 			move(position.x, position.y, (position.dir + 90 + 360) % 360);
@@ -165,8 +167,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		case TURN_RIGHT:
 			move(position.x, position.y, (position.dir - 90 + 360) % 360);
 			break;
-                case OBSTACLE:
-                        addObstacle(event.getObstacle());
+		case OBSTACLE:
+			addObstacle(event.getObstacle());
 		default:
 			break;
 		}
@@ -174,15 +176,15 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	private void move(int x, int y, int dir) {
 		RobotState point = new RobotState(x, y, dir);
-                historyOfPoints.add(point);
+		historyOfPoints.add(point);
 		position = point;
 		repaint();
 	}
-       
-        private void addObstacle(ArrayList<Point> obstacle){
-            obstacles.addAll(obstacle);
-            repaint();
-        }
+
+	private void addObstacle(ArrayList<Point> obstacle) {
+		obstacles.addAll(obstacle);
+		repaint();
+	}
 
 	private class RobotState {
 		public final int x;

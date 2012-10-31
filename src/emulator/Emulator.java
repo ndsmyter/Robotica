@@ -32,7 +32,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode) {
-		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "°)");
+		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "ï¿½)");
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
 		roomba.turn(degrees, turnRight, turnMode, driveMode);
@@ -42,6 +42,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		log("E: Obstacle");
 		fireStateChanged(true, new Event(EventType.OBSTACLE, obstacle));
 	}
+        
+        public int[] getSensorData(){
+            //Stub
+            int[] sensordata = {50,50,50,50,50};
+            return sensordata;
+        }
 
 	@Override
 	public void log(String message) {

@@ -16,7 +16,8 @@ public class Roomba implements RoombaInterface {
 	private SerialIO serial = null;
 
 	public static void main(String[] args) {
-		Roomba r = new Roomba();
+		Roomba r = new Roomba(null);
+		r.setDebug(true);
 		r.turnAtSpot(180, true);
 		r.turnAtSpot(180, false);
 		r.drive(500);
@@ -35,29 +36,12 @@ public class Roomba implements RoombaInterface {
 
 	}
 
-	public Roomba(Emulator emulator) {
-		this.emulator = emulator;
-		try {
-			this.serial = new SerialIO(RoombaConfig.IO_PORT);
-		} catch (NoSuchPortException e) {
-			e.printStackTrace();
-		} catch (PortInUseException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		start();
-		selectMode(RoombaConfig.ROOMBA_MODE_FULL);
+	public void setDebug(boolean debug) {
+		this.DEBUG = debug;
 	}
 
-	private Roomba() {
-		this.emulator = null;
-		DEBUG = true;
+	public Roomba(Emulator emulator) {
+		this.emulator = emulator;
 		try {
 			this.serial = new SerialIO(RoombaConfig.IO_PORT);
 		} catch (NoSuchPortException e) {

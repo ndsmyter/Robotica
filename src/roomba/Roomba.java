@@ -201,7 +201,7 @@ public class Roomba implements RoombaInterface {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (NullPointerException e){}
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class Roomba implements RoombaInterface {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} catch (NullPointerException e){}
 	}
 
 }

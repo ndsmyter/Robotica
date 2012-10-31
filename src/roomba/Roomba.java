@@ -38,7 +38,7 @@ public class Roomba implements RoombaInterface {
 	public Roomba(Emulator emulator) {
 		this.emulator = emulator;
 		try {
-			this.serial = new SerialIO("COM9");
+			this.serial = new SerialIO(RoombaConfig.IO_PORT);
 		} catch (NoSuchPortException e) {
 			e.printStackTrace();
 		} catch (PortInUseException e) {
@@ -59,7 +59,7 @@ public class Roomba implements RoombaInterface {
 		this.emulator = null;
 		DEBUG = true;
 		try {
-			this.serial = new SerialIO("COM9");
+			this.serial = new SerialIO(RoombaConfig.IO_PORT);
 		} catch (NoSuchPortException e) {
 			e.printStackTrace();
 		} catch (PortInUseException e) {
@@ -114,13 +114,14 @@ public class Roomba implements RoombaInterface {
 
 		try {
 			// Start roomba
-			serial.sendCommand((byte) 137,
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE,
 					SerialIO.toByteArray(velocity, radius));
 			// wait for roomba to travel
 			Thread.sleep(delay);
 			// TODO use internal distance sensor to track distance traveled
 			// stop roomba
-			serial.sendCommand((byte) 137, new byte[] { 0, 0, 0, 0 });
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {
+					0, 0, 0, 0 });
 		} catch (NullPointerException e) {
 			// Serial doesn't exist
 		} catch (InterruptedException e) {
@@ -211,13 +212,14 @@ public class Roomba implements RoombaInterface {
 
 		try {
 			// Start roomba
-			serial.sendCommand((byte) 137,
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE,
 					SerialIO.toByteArray(velocity, radius));
 			// wait for roomba to travel
 			Thread.sleep(delay);
 			// TODO use internal distance sensor to track distance traveled
 			// stop roomba
-			serial.sendCommand((byte) 137, new byte[] { 0, 0, 0, 0 });
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {
+					0, 0, 0, 0 });
 		} catch (NullPointerException e) {
 			// Roomba doesn exist yet
 		} catch (InterruptedException e) {
@@ -241,7 +243,7 @@ public class Roomba implements RoombaInterface {
 	@Override
 	public void start() {
 		try {
-			serial.sendCommand((byte) 128, new byte[] {});
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_START, new byte[] {});
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
@@ -250,25 +252,26 @@ public class Roomba implements RoombaInterface {
 	}
 
 	@Override
-	public void selectMode(int roomba_mode) {
+	public void selectMode(int roombaMode) {
 		int opcode = 0;
-		switch (roomba_mode) {
+		switch (roombaMode) {
 		case RoombaConfig.ROOMBA_MODE_SAFE:
-			opcode = 131;
+			opcode = RoombaConfig.ROOMBA_COMMAND_SAFE;
 			break;
 		case RoombaConfig.ROOMBA_MODE_FULL:
-			opcode = 132;
+			opcode = RoombaConfig.ROOMBA_COMMAND_FULL;
 			break;
 		}
 
-		if (opcode != 0)
+		if (opcode != 0) {
 			try {
 				serial.sendCommand((byte) opcode, new byte[] {});
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NullPointerException e) {
+				// Serial doesn't exist
 			}
+		}
 	}
 
 }

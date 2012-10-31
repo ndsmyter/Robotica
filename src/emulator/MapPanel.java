@@ -34,17 +34,13 @@ import emulator.interfaces.ViewListenerInterface;
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements ViewListenerInterface {
 
-	// TODO Solve following issues
-	// - The grid isn't redrawn correctly if the size of the panel changes
-	// - Make a method to draw walls, objects etcetera
-
 	// Some scaling parameters
 	private final static int PIXEL_SIZE = 20;
 	private final static int ROBOT_SIZE = 10;
 	private final static int LINE_LENGTH = 10;
 
 	private double scale = 0.2;
-	private final static double ZOOM_FACTOR = 2;
+	private final static double ZOOM_FACTOR = 0.05;
 
 	// The colors which you can change to the color you like
 	private final static Color BACKGROUND_COLOR = Color.WHITE;
@@ -54,7 +50,9 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static Color GRID_COLOR = Color.LIGHT_GRAY;
 	private final static Color PATH_COLOR = Color.GRAY;
 	private final static Color SENSOR_COLOR = Color.PINK;
+	private final static Color TEXT_COLOR = Color.BLACK;
 
+	// Points to draw on the screen (current & previous states, obstacles..)
 	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
 	private ArrayList<Point> obstacles = new ArrayList<Point>();
@@ -104,10 +102,38 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 		// Draw robot
 		drawRobot(g2);
+
+		// Draw the scale
+		drawScale(g2);
 	}
 
+	private void drawScale(Graphics2D g) {
+		g.setColor(TEXT_COLOR);
+		g.scale(1, -1);
+		g.drawString("1 kotje = " + ((int) (scale * 50)) + " cm",
+				-windowPosition.x + 5, (getHeight() - windowPosition.y) - 10);
+	}
+
+	/**
+	 * Scale the value and round to the nearest integer
+	 * 
+	 * @param value
+	 *            The value to scale
+	 * @return The scaled value
+	 */
 	private int scale(double value) {
-		return (int) (scale * value + 0.5);
+		return (int) (scale2(value) + 0.5);
+	}
+
+	/**
+	 * Scale the value
+	 * 
+	 * @param value
+	 *            The value to scale
+	 * @return The scaled value
+	 */
+	private double scale2(double value) {
+		return scale * value;
 	}
 
 	/**
@@ -165,8 +191,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 
 		// Draw a dot to represent the robot
 		g.setColor(ROBOT_COLOR);
-		g.fillArc((int) (scale * position.x + 0.5 - ROBOT_SIZE / 2),
-				(int) (scale * position.y + 0.5 - ROBOT_SIZE / 2), ROBOT_SIZE,
+		g.fillArc((int) (scale2(position.x) + 0.5 - ROBOT_SIZE / 2),
+				(int) (scale2(position.y) + 0.5 - ROBOT_SIZE / 2), ROBOT_SIZE,
 				ROBOT_SIZE, 0, 360);
 
 		// Draw a line to show the direction of the robot
@@ -227,7 +253,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	}
 
 	public void zoom(boolean zoomIn) {
-		scale = zoomIn ? scale * ZOOM_FACTOR : scale / ZOOM_FACTOR;
+		scale = zoomIn ? scale + ZOOM_FACTOR : Math.max(scale - ZOOM_FACTOR,
+				ZOOM_FACTOR);
 		repaint();
 	}
 

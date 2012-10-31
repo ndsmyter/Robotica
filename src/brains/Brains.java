@@ -24,12 +24,11 @@ public class Brains implements ListenerInterface {
 	private static final byte LEFT = 2;
 
 	// Change this if you want to debug the application
-	private byte[] movements = { LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
-                        LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, 
-                        LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE,
-			RIGHT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE,  
-                        LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE,
-                        DRIVE, DRIVE, DRIVE, DRIVE, DRIVE};
+	private byte[] movements = { LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
+			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
+			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, RIGHT, DRIVE, LEFT,
+			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
+			DRIVE, LEFT, DRIVE, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE };
 
 	private final static int SLEEP_TIME = 100;
 
@@ -37,13 +36,13 @@ public class Brains implements ListenerInterface {
 		emulator = new Emulator();
 
 		emulator.log("Initiating application");
-                
-                ArrayList<Point> obstacle = new ArrayList<Point>();
-                obstacle.add(new Point(-10,-10));
-                obstacle.add(new Point(-10,-11));
-                obstacle.add(new Point(-10,-12));
-                obstacle.add(new Point(-10,-13));
-                emulator.addObstacle(obstacle);
+
+		ArrayList<Point> obstacle = new ArrayList<Point>();
+		obstacle.add(new Point(-10, -10));
+		obstacle.add(new Point(-10, -11));
+		obstacle.add(new Point(-10, -12));
+		obstacle.add(new Point(-10, -13));
+		emulator.addObstacle(obstacle);
 
 		// Just drive around to test the emulator and Roomba
 		try {
@@ -55,12 +54,14 @@ public class Brains implements ListenerInterface {
 					emulator.drive(200, RoombaConfig.DRIVE_MODE_MED);
 					break;
 				case RIGHT:
-                                        emulator.turn(140, true, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
-					//emulator.turnRight();
+					emulator.turn(140, true, RoombaConfig.TURN_RADIUS_SPOT,
+							RoombaConfig.DRIVE_MODE_MED);
+					// emulator.turnRight();
 					break;
 				case LEFT:
-                                        emulator.turn(25, false, RoombaConfig.TURN_RADIUS_SPOT, RoombaConfig.DRIVE_MODE_MED);
-					//emulator.turnLeft();
+					emulator.turn(25, false, RoombaConfig.TURN_RADIUS_SPOT,
+							RoombaConfig.DRIVE_MODE_MED);
+					// emulator.turnLeft();
 					break;
 				}
 				Thread.sleep(SLEEP_TIME);

@@ -1,20 +1,20 @@
 package roomba.interfaces;
 
 public interface RoombaInterface {
-	
+
 	/**
 	 * Sends start command to roomba
 	 */
 	public void start();
-	
+
 	/**
 	 * Sends the mode to the roomba
 	 * 
-	 * @param roomba_mode
-	 * 					The mode to select.
+	 * @param roombaMode
+	 *            The mode to select.
 	 */
-	public void selectMode(int roomba_mode);
-	
+	public void selectMode(int roombaMode);
+
 	/**
 	 * Drive for a certain distance
 	 * 

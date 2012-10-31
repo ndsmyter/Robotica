@@ -53,23 +53,29 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
 	private ArrayList<Point> obstacles = new ArrayList<Point>();
 
+	private final Emulator emulator;
+	private Point windowPosition;
+
 	public MapPanel(Emulator emulator) {
 		super();
+		this.emulator = emulator;
+		int w = 500, h = 500;
 		this.setBackground(BACKGROUND_COLOR);
-		this.setPreferredSize(new Dimension(500, 500));
+		this.setPreferredSize(new Dimension(w, h));
 
 		move(0, 0, 0);
 
 		emulator.addChangeListener(this);
+
+		windowPosition = new Point(w / 2, h / 2);
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		int width = getWidth(), height = getHeight();
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Move the (0,0) point to middle of screen
-		g.translate(width / 2, height / 2);
+		g.translate(windowPosition.x, windowPosition.y);
 		g2.scale(1, -1);
 
 		// Draw grid
@@ -101,19 +107,15 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 */
 	private void drawGrid(Graphics g) {
 		Rectangle clip = g.getClipBounds();
-		int xMax = clip.height + clip.x;
-		int yMax = clip.width + clip.y;
+		int xMax = clip.width + clip.x;
+		int yMax = clip.height + clip.y;
 		g.setColor(GRID_COLOR);
-		for (int i = clip.x; i < xMax; i++) {
-			if (i % PIXEL_SIZE == 0) {
+		for (int i = clip.x; i < xMax; i++)
+			if (i % PIXEL_SIZE == 0)
 				g.drawLine(i, clip.y, i, yMax);
-			}
-		}
-		for (int i = clip.y; i < yMax; i++) {
-			if (i % PIXEL_SIZE == 0) {
+		for (int i = clip.y; i < yMax; i++)
+			if (i % PIXEL_SIZE == 0)
 				g.drawLine(clip.x, i, xMax, i);
-			}
-		}
 	}
 
 	/**

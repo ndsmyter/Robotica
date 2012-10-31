@@ -1,11 +1,16 @@
 package brains;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
 import roomba.RoombaConfig;
+
+import common.RobotState;
+import common.Utils;
+
 import emulator.Emulator;
 import emulator.Event;
 import emulator.interfaces.ListenerInterface;
-import java.awt.Point;
-import java.util.ArrayList;
 
 /**
  * This class will start everything up, and will eventually control everything
@@ -20,9 +25,11 @@ public class Brains implements ListenerInterface {
 	private final Emulator emulator;
 	private RobotState currentState;
 	private ArrayList<Point> obstacles = new ArrayList<Point>();
+
 	private static final byte DRIVE = 0;
 	private static final byte RIGHT = 1;
 	private static final byte LEFT = 2;
+
 	// Change this if you want to debug the application
 	private byte[] movements = { LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
 			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
@@ -77,9 +84,10 @@ public class Brains implements ListenerInterface {
 		currentState = new RobotState(0, 0, 0);
 		// Just drive around to test the emulator and Roomba
 		try {
+			drive(100);
 			Thread.sleep(SLEEP_TIME);
-			for (int i = 0; i < 1; i++) {
-				turn(60, false);
+			for (int i = 0; i < 36; i++) {
+				turn(10, false);
 				// drive(100);
 				processSensorData();
 				Thread.sleep(SLEEP_TIME);
@@ -105,8 +113,8 @@ public class Brains implements ListenerInterface {
 
 	private void drive(int distance) {
 		double theta = Math.PI * currentState.dir / 180;
-		int newx = (int) (currentState.x + distance / 10 * Math.cos(theta) + 0.5);
-		int newy = (int) (currentState.y + distance / 10 * Math.sin(theta) + 0.5);
+		int newx = (int) (currentState.x + distance * Math.cos(theta) + 0.5);
+		int newy = (int) (currentState.y + distance * Math.sin(theta) + 0.5);
 		move(newx, newy, currentState.dir);
 		emulator.drive(distance, RoombaConfig.DRIVE_MODE_MED);
 	}
@@ -121,22 +129,11 @@ public class Brains implements ListenerInterface {
 		int[] data = emulator.getSensorData();
 		ArrayList<Point> obstacle = new ArrayList<Point>();
 		for (int i = 0; i < 5; i++) {
-			obstacle.add(sensorDataToPoint(data[i], RoombaConfig.SENSORS[i]));
+			obstacle.add(Utils.sensorDataToPoint(currentState, data[i],
+					RoombaConfig.SENSORS[i]));
 		}
 		obstacles.addAll(obstacle);
 		emulator.addObstacle(obstacle);
-	}
-
-	private Point sensorDataToPoint(int distance, Sensor sensor) {
-		double theta = currentState.dir * Math.PI / 180;
-		int sensorX = (int) (currentState.x + sensor.xOffset * Math.cos(theta) + sensor.yOffset
-				* Math.cos(theta + Math.PI / 2));
-		int sensorY = (int) (currentState.y + sensor.xOffset * Math.sin(theta) + sensor.yOffset
-				* Math.sin(theta + Math.PI / 2));
-		double sensorTheta = (currentState.dir + sensor.dir) * Math.PI / 180;
-		int obstacleX = (int) (sensorX + distance * Math.cos(sensorTheta) + 0.5);
-		int obstacleY = (int) (sensorY + distance * Math.sin(sensorTheta) + 0.5);
-		return new Point(obstacleX, obstacleY);
 	}
 
 	/**

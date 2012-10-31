@@ -1,5 +1,7 @@
 package roomba;
 
+import brains.Sensor;
+
 public final class RoombaConfig {
 	public static final int DRIVE_DISTANCE_SLOW = 100;
 	public static final int DRIVE_DISTANCE_MED = 300;
@@ -27,4 +29,13 @@ public final class RoombaConfig {
 	public static final byte ROOMBA_COMMAND_START = (byte) 128;
 	public static final byte ROOMBA_COMMAND_SAFE = (byte) 131;
 	public static final byte ROOMBA_COMMAND_FULL = (byte) 132;
+
+	// Roomba 5200: height=8cm, diameter=33cm
+	public static final int ROOMBA_HEIGHT = 80;
+	public static final int ROOMBA_DIAMETER = 330;
+
+	// Sensor placement
+	public static final Sensor[] SENSORS = { new Sensor(10, 0, 0),
+			new Sensor(10, 5, 0), new Sensor(10, -5, 0),
+			new Sensor(8, -8, -45), new Sensor(8, 8, 45) };
 }

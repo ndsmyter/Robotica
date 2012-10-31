@@ -1,11 +1,17 @@
 package emulator;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
@@ -38,7 +44,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static int LINE_LENGTH = 10;
 
 	private double scale = 0.2;
-	private final static int ZOOM_FACTOR = 2;
+	private final static double ZOOM_FACTOR = 2;
 
 	// The colors which you can change to the color you like
 	private final static Color BACKGROUND_COLOR = Color.WHITE;
@@ -68,6 +74,11 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		emulator.addChangeListener(this);
 
 		windowPosition = new Point(w / 2, h / 2);
+
+		PanMouseListener l = new PanMouseListener();
+		this.addMouseMotionListener(l);
+		this.addMouseWheelListener(l);
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 	}
 
 	public void paintComponent(Graphics g) {
@@ -218,5 +229,37 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	public void zoom(boolean zoomIn) {
 		scale = zoomIn ? scale * ZOOM_FACTOR : scale / ZOOM_FACTOR;
 		repaint();
+	}
+
+	public void movePanel(Point newPosition) {
+		if (!newPosition.equals(windowPosition)) {
+			windowPosition = newPosition;
+			repaint();
+		}
+	}
+
+	private class PanMouseListener implements MouseMotionListener,
+			MouseWheelListener {
+
+		private Point previousPosition;
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			e.translatePoint(-windowPosition.x, -windowPosition.y);
+			movePanel(new Point(windowPosition.x + e.getX()
+					- previousPosition.x, windowPosition.y + e.getY()
+					- previousPosition.y));
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			e.translatePoint(-windowPosition.x, -windowPosition.y);
+			previousPosition = new Point(e.getX(), e.getY());
+		}
+
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			zoom(e.getWheelRotation() < 0);
+		}
 	}
 }

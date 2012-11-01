@@ -20,7 +20,7 @@ public class Roomba implements RoombaInterface {
 		r.setDebug(true);
 		r.turnAtSpot(180, true);
 		r.turnAtSpot(180, false);
-		r.drive(500);
+		/*r.drive(500);
 		r.turn(90, true, RoombaConfig.TURN_MODE_SHARP,
 				RoombaConfig.DRIVE_MODE_MED);
 		r.drive(500);
@@ -32,7 +32,7 @@ public class Roomba implements RoombaInterface {
 		r.drive(500);
 		r.turn(90, true, RoombaConfig.TURN_MODE_SHARP,
 				RoombaConfig.DRIVE_MODE_MED);
-		r.drive(500);
+		r.drive(500);*/
 
 	}
 
@@ -101,7 +101,7 @@ public class Roomba implements RoombaInterface {
 			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE,
 					SerialIO.toByteArray(velocity, radius));
 			// wait for roomba to travel
-			Thread.sleep(delay);
+			Thread.sleep(delay*1000);
 			// TODO use internal distance sensor to track distance traveled
 			// stop roomba
 			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {
@@ -199,7 +199,7 @@ public class Roomba implements RoombaInterface {
 			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE,
 					SerialIO.toByteArray(velocity, radius));
 			// wait for roomba to travel
-			Thread.sleep(delay);
+			Thread.sleep(delay*1000);
 			// TODO use internal distance sensor to track distance traveled
 			// stop roomba
 			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {

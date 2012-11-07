@@ -1,6 +1,7 @@
 package emulator;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -27,12 +28,10 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 	private MapPanel mapPanel;
 	private TextArea logArea;
-	private ArrayList<Point> backgroundMap;
 
 	public EmulatorWindow(final Emulator emulator) {
 		super("Emulator");
 
-		backgroundMap = new ArrayList<Point>();
 		mapPanel = new MapPanel(emulator);
 
 		// Init log area
@@ -75,34 +74,26 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					File file = chooser.getSelectedFile();
 					try {
+						ArrayList<Point> backgroundMap = new ArrayList<Point>();
 						emulator.log("Approved");
 						BufferedImage img = ImageIO.read(file);
-						emulator.log("Read");
 						PixelGrabber grabber = new PixelGrabber(img, 0, 0, -1,
 								-1, true);
 						grabber.grabPixels();
-						emulator.log("Grabbed");
 						int[] pixels = (int[]) grabber.getPixels();
 						int w = img.getWidth(), h = img.getHeight();
-						emulator.log("Pixels=" + pixels.length + ", w=" + w
-								+ ", h=" + h);
-						ArrayList<Integer> diffs = new ArrayList<Integer>();
+						int w2 = (int) (1.0 * w / 2 + 0.5), h2 = (int) (1.0 * h / 2 + 0.5);
 						for (int i = 0; i < w; i++) {
 							for (int j = 0; j < h; j++) {
-								int k = w * i + j;
-								if (!diffs.contains(pixels[k]))
-									diffs.add(pixels[k]);
+								int k = w * j + i;
+								Color c = new Color(pixels[k]);
+								if (c.getBlue() == 0 && c.getRed() == 0
+										&& c.getGreen() == 0)
+									backgroundMap.add(new Point((i - w2) * 5,
+											(j - h2) * 5));
 							}
 						}
-						emulator.log(diffs.size() + " different colors");
-						for (int i = 0; i < diffs.size(); i++) {
-							emulator.log("color " + i + ": " + diffs.get(i));
-						}
-						emulator.log("GET");
-						if (pixels != null) {
-							emulator.log("Length: " + pixels.length);
-						} else
-							emulator.log("NULL");
+						mapPanel.setBackground(backgroundMap);
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InterruptedException e) {

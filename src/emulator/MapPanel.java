@@ -64,6 +64,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private Point windowPosition;
 
 	private Brains brains;
+	private ArrayList<Point> background = new ArrayList<Point>();
 
 	public MapPanel(Emulator emulator) {
 		super();
@@ -95,15 +96,18 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		g.translate(windowPosition.x, windowPosition.y);
 		g2.scale(1, -1);
 
-		// Draw grid
-		drawGrid(g);
-
 		// Draw the (0,0) point
 		g.setColor(ZERO_COLOR);
 		g.fillArc(-2, -2, 4, 4, 0, 360);
 
 		// Draw the obstacles
 		drawObstacles(g);
+
+		// Draw grid
+		drawGrid(g);
+
+		// Draw map
+		drawMap(g);
 
 		// Draw previous points
 		drawPreviousPoints(g);
@@ -120,6 +124,17 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		g.scale(1, -1);
 		g.drawString("1 kotje = " + ((int) (scale * 50)) + " cm",
 				-windowPosition.x + 5, (getHeight() - windowPosition.y) - 10);
+	}
+
+	private void drawMap(Graphics g) {
+		try {
+			g.setColor(MAP_COLOR);
+			for (Point p : background) {
+				g.drawRect(scale(p.x), scale(p.y), 1, 1);
+			}
+		} catch (Exception e) {
+
+		}
 	}
 
 	/**
@@ -297,6 +312,11 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 
 	@Override
 	public void obstacleAdded(Point point, double value) {
+		repaint();
+	}
+
+	public void setBackground(ArrayList<Point> background) {
+		this.background = background;
 		repaint();
 	}
 }

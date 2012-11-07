@@ -64,7 +64,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private Point windowPosition;
 
 	private Brains brains;
-	private ArrayList<Point> background = new ArrayList<Point>();
 
 	public MapPanel(Emulator emulator) {
 		super();
@@ -129,11 +128,10 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private void drawMap(Graphics g) {
 		try {
 			g.setColor(MAP_COLOR);
-			for (Point p : background) {
+			for (Point p : emulator.getBackground()) {
 				g.drawRect(scale(p.x), scale(p.y), 1, 1);
 			}
 		} catch (Exception e) {
-
 		}
 	}
 
@@ -312,11 +310,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 
 	@Override
 	public void obstacleAdded(Point point, double value) {
-		repaint();
-	}
-
-	public void setBackground(ArrayList<Point> background) {
-		this.background = background;
 		repaint();
 	}
 }

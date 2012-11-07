@@ -75,7 +75,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 					File file = chooser.getSelectedFile();
 					try {
 						ArrayList<Point> backgroundMap = new ArrayList<Point>();
-						emulator.log("Approved");
 						BufferedImage img = ImageIO.read(file);
 						PixelGrabber grabber = new PixelGrabber(img, 0, 0, -1,
 								-1, true);
@@ -85,15 +84,15 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 						int w2 = (int) (1.0 * w / 2 + 0.5), h2 = (int) (1.0 * h / 2 + 0.5);
 						for (int i = 0; i < w; i++) {
 							for (int j = 0; j < h; j++) {
-								int k = w * j + i;
-								Color c = new Color(pixels[k]);
+								Color c = new Color(pixels[w * j + i]);
 								if (c.getBlue() == 0 && c.getRed() == 0
 										&& c.getGreen() == 0)
 									backgroundMap.add(new Point((i - w2) * 5,
 											(j - h2) * 5));
 							}
 						}
-						mapPanel.setBackground(backgroundMap);
+						emulator.setBackground(backgroundMap);
+						mapPanel.repaint();
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InterruptedException e) {

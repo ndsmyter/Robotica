@@ -4,10 +4,10 @@
  */
 package brains;
 
-import common.RobotState;
-import common.Utils;
 import java.awt.Point;
 import java.util.ArrayList;
+
+import common.Utils;
 
 public class DummyAlgorithm {
 

@@ -52,7 +52,7 @@ public class Brains implements ListenerInterface {
         obstacle.add(new Point(-10, -11));
         obstacle.add(new Point(-10, -12));
         obstacle.add(new Point(-10, -13));
-        emulator.addObstacle(obstacle);
+        //emulator.addObstacle(obstacle);
 
         // Just drive around to test the emulator and Roomba
         try {
@@ -128,10 +128,18 @@ public class Brains implements ListenerInterface {
         int[] data = emulator.getSensorData();
         ArrayList<Point> obstacle = new ArrayList<Point>();
         for (int i = 0; i < 5; i++) {
-            mapStructure.put(Utils.sensorDataToPoint(currentState, data[i],
-                    RoombaConfig.SENSORS[i]), 1);
+            RobotState sensorState = Utils.getSensorState(currentState,RoombaConfig.SENSORS[i]);
+            Point measurement = Utils.sensorDataToPoint(currentState, data[i], RoombaConfig.SENSORS[i]);
+            ArrayList<Point> path = Utils.getPath(sensorState, new RobotState(measurement.x,measurement.y,sensorState.dir));
+            System.out.println("Sensor at "+sensorState);
+            System.out.println("Measurement at "+measurement);
+            for(Point p : path){
+                System.out.println(p);
+                mapStructure.put(p,0);
+            }
+            mapStructure.put(measurement,1);
+            
         }
-        emulator.addObstacle(obstacle);
     }
 
     public void addObstacleListener(ObstacleListener listener) {

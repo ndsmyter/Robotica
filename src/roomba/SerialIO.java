@@ -13,7 +13,7 @@ public class SerialIO {
 	private InputStream inputStream = null;
 	private OutputStream outputStream = null;
 
-	protected SerialIO(String portIdentifier) throws NoSuchPortException, PortInUseException, IOException{
+	public SerialIO(String portIdentifier) throws NoSuchPortException, PortInUseException, IOException{
 		CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(portIdentifier);
 		SerialPort serialPort = (SerialPort) portId.open("SimpleWriteApp", 2000);
 		inputStream = serialPort.getInputStream();
@@ -78,6 +78,11 @@ public class SerialIO {
 		output[3] = (byte)(s2 & 0xff);
 		return output;
 	}
+        
+        
+        public int[] getInputData(int i){
+            return null;
+        };
 }
 
 class Luisteraar extends Thread {

@@ -47,14 +47,14 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private final static double ZOOM_FACTOR = 0.05;
 
 	// The colors which you can change to the color you like
-	private final static Color BACKGROUND_COLOR = Color.WHITE;
+	private final static Color BACKGROUND_COLOR = Color.GRAY;
 	private final static Color ZERO_COLOR = Color.BLACK;
-	private final static Color OBSTACLE_COLOR = Color.BLACK;
 	private final static Color ROBOT_COLOR = Color.BLUE;
-	private final static Color GRID_COLOR = Color.LIGHT_GRAY;
-	private final static Color PATH_COLOR = Color.GRAY;
+	private final static Color GRID_COLOR = Color.GRAY;
+	private final static Color PATH_COLOR = Color.ORANGE;
 	private final static Color SENSOR_COLOR = Color.PINK;
 	private final static Color TEXT_COLOR = Color.BLACK;
+	private final static Color MAP_COLOR = Color.YELLOW;
 
 	// Points to draw on the screen (current & previous states, obstacles..)
 	private RobotState position = null;

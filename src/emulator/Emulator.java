@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import roomba.Roomba;
+import brains.Brains;
 import emulator.interfaces.EmulatorInterface;
 import emulator.interfaces.ModelInterface;
 
@@ -16,10 +17,16 @@ import emulator.interfaces.ModelInterface;
 public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	private Roomba roomba;
+	private Brains brains;
 
-	public Emulator() {
+	public Emulator(Brains brains) {
+		this.brains = brains;
 		roomba = new Roomba(this);
 		new EmulatorWindow(this);
+	}
+
+	public Brains getBrains() {
+		return brains;
 	}
 
 	@Override

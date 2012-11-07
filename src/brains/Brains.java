@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import roomba.RoombaConfig;
+import brains.interfaces.ObstacleListener;
 
 import common.RobotState;
 import common.Utils;
@@ -24,7 +25,8 @@ public class Brains implements ListenerInterface {
 
 	private final Emulator emulator;
 	private RobotState currentState;
-	private ArrayList<Point> obstacles = new ArrayList<Point>();
+
+	private MapStructure mapStructure;
 
 	private static final byte DRIVE = 0;
 	private static final byte RIGHT = 1;
@@ -39,7 +41,8 @@ public class Brains implements ListenerInterface {
 	private final static int SLEEP_TIME = 100;
 
 	public Brains() {
-		emulator = new Emulator();
+		mapStructure = new MapStructure();
+		emulator = new Emulator(this);
 
 		emulator.log("Initiating application");
 		// testDriving(movements);
@@ -129,11 +132,18 @@ public class Brains implements ListenerInterface {
 		int[] data = emulator.getSensorData();
 		ArrayList<Point> obstacle = new ArrayList<Point>();
 		for (int i = 0; i < 5; i++) {
-			obstacle.add(Utils.sensorDataToPoint(currentState, data[i],
-					RoombaConfig.SENSORS[i]));
+			mapStructure.put(Utils.sensorDataToPoint(currentState, data[i],
+					RoombaConfig.SENSORS[i]), 1);
 		}
-		obstacles.addAll(obstacle);
 		emulator.addObstacle(obstacle);
+	}
+	
+	public void addObstacleListener(ObstacleListener listener){
+		mapStructure.addObstacleListener(listener);
+	}
+	
+	public MapStructure getMap(){
+		return mapStructure;
 	}
 
 	/**

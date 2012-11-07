@@ -13,10 +13,14 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.swing.JPanel;
 
 import roomba.RoombaConfig;
+import brains.Brains;
+import brains.interfaces.ObstacleListener;
 
 import common.RobotState;
 import common.Sensor;
@@ -31,7 +35,8 @@ import emulator.interfaces.ViewListenerInterface;
  * 
  */
 @SuppressWarnings("serial")
-public class MapPanel extends JPanel implements ViewListenerInterface {
+public class MapPanel extends JPanel implements ViewListenerInterface,
+		ObstacleListener {
 
 	// Some scaling parameters
 	private final static int PIXEL_SIZE = 20;
@@ -54,14 +59,16 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	// Points to draw on the screen (current & previous states, obstacles..)
 	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
-	private ArrayList<Point> obstacles = new ArrayList<Point>();
 
 	private final Emulator emulator;
 	private Point windowPosition;
 
+	private Brains brains;
+
 	public MapPanel(Emulator emulator) {
 		super();
 		this.emulator = emulator;
+		this.brains = emulator.getBrains();
 		int w = 500, h = 500;
 		this.setBackground(BACKGROUND_COLOR);
 		this.setPreferredSize(new Dimension(w, h));
@@ -76,6 +83,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		this.addMouseMotionListener(l);
 		this.addMouseWheelListener(l);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+		brains.addObstacleListener(this);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -210,9 +219,13 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 */
 	private void drawObstacles(Graphics g) {
 		try {
-			g.setColor(OBSTACLE_COLOR);
-			for (Point p : obstacles)
-				g.drawRect(scale(p.x), scale(p.y), 1, 1);
+			HashMap<Point, Double> points = brains.getMap().getAll();
+			for (Entry<Point, Double> entry : points.entrySet()) {
+				float c = (float) (double) (1 - entry.getValue());
+				g.setColor(new Color(c, c, c));
+				g.drawRect(scale(entry.getKey().x), scale(entry.getKey().y), 1,
+						1);
+			}
 		} catch (ConcurrentModificationException e) {
 		}
 	}
@@ -233,8 +246,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 					.getDegrees());
 			move(position.x, position.y, (position.dir + angle + 360) % 360);
 			break;
-		case OBSTACLE:
-			addObstacle(event.getObstacle());
 		default:
 			break;
 		}
@@ -243,11 +254,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private void move(int x, int y, int dir) {
 		position = new RobotState(x, y, dir);
 		historyOfPoints.add(position);
-		repaint();
-	}
-
-	private void addObstacle(ArrayList<Point> obstacle) {
-		obstacles.addAll(obstacle);
 		repaint();
 	}
 
@@ -287,5 +293,10 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			zoom(e.getWheelRotation() < 0);
 		}
+	}
+
+	@Override
+	public void obstacleAdded(Point point, double value) {
+		repaint();
 	}
 }

@@ -33,7 +33,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	public Emulator(Brains brains) {
 		this.brains = brains;
-		File file = new File("C:\\Users\\Nicolas\\Documents\\circle.bmp");
+		File file = new File("circle.bmp");
 		try {
 			ArrayList<Point> backgroundMap = new ArrayList<Point>();
 			BufferedImage img = ImageIO.read(file);

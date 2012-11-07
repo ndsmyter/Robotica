@@ -17,139 +17,139 @@ import emulator.interfaces.ListenerInterface;
  * This class will start everything up, and will eventually control everything
  * that happens to the robot. So that is the reason why this class is called
  * Brains
- * 
+ *
  * @author Nicolas
- * 
+ *
  */
 public class Brains implements ListenerInterface {
 
-	private final Emulator emulator;
-	private RobotState currentState;
+    private final Emulator emulator;
+    private RobotState currentState;
+    private MapStructure mapStructure;
+    private static final byte DRIVE = 0;
+    private static final byte RIGHT = 1;
+    private static final byte LEFT = 2;
+    // Change this if you want to debug the application
+    private byte[] movements = {LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
+        DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
+        DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, RIGHT, DRIVE, LEFT,
+        DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
+        DRIVE, LEFT, DRIVE, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE};
+    private final static int SLEEP_TIME = 100;
 
-	private MapStructure mapStructure;
+    public Brains() {
+        mapStructure = new MapStructure();
+        emulator = new Emulator(this);
 
-	private static final byte DRIVE = 0;
-	private static final byte RIGHT = 1;
-	private static final byte LEFT = 2;
+        emulator.log("Initiating application");
+        // testDriving(movements);
+        testSensors();
+    }
 
-	// Change this if you want to debug the application
-	private byte[] movements = { LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,
-			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
-			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, RIGHT, DRIVE, LEFT,
-			DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT, DRIVE, LEFT,
-			DRIVE, LEFT, DRIVE, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE };
-	private final static int SLEEP_TIME = 100;
+    private void testDriving(byte[] movements) {
+        ArrayList<Point> obstacle = new ArrayList<Point>();
+        obstacle.add(new Point(-10, -10));
+        obstacle.add(new Point(-10, -11));
+        obstacle.add(new Point(-10, -12));
+        obstacle.add(new Point(-10, -13));
+        emulator.addObstacle(obstacle);
 
-	public Brains() {
-		mapStructure = new MapStructure();
-		emulator = new Emulator(this);
+        // Just drive around to test the emulator and Roomba
+        try {
+            Thread.sleep(SLEEP_TIME);
 
-		emulator.log("Initiating application");
-		// testDriving(movements);
-		testSensors();
-	}
+            for (byte movement : movements) {
+                switch (movement) {
+                    case DRIVE:
+                        emulator.drive(200, RoombaConfig.DRIVE_MODE_MED);
+                        break;
+                    case RIGHT:
+                        emulator.turn(140, true, RoombaConfig.TURN_RADIUS_SPOT,
+                                RoombaConfig.DRIVE_MODE_MED);
+                        break;
+                    case LEFT:
+                        emulator.turn(25, false, RoombaConfig.TURN_RADIUS_SPOT,
+                                RoombaConfig.DRIVE_MODE_MED);
+                        break;
+                }
+                Thread.sleep(SLEEP_TIME);
+            }
 
-	private void testDriving(byte[] movements) {
-		ArrayList<Point> obstacle = new ArrayList<Point>();
-		obstacle.add(new Point(-10, -10));
-		obstacle.add(new Point(-10, -11));
-		obstacle.add(new Point(-10, -12));
-		obstacle.add(new Point(-10, -13));
-		emulator.addObstacle(obstacle);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-		// Just drive around to test the emulator and Roomba
-		try {
-			Thread.sleep(SLEEP_TIME);
+    private void testSensors() {
+        currentState = new RobotState(0, 0, 0);
+        // Just drive around to test the emulator and Roomba
+        try {
+            drive(100);
+            Thread.sleep(SLEEP_TIME);
+            for (int i = 0; i < 36; i++) {
+                turn(10, false);
+                // drive(100);
+                processSensorData();
+                Thread.sleep(SLEEP_TIME);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-			for (byte movement : movements) {
-				switch (movement) {
-				case DRIVE:
-					emulator.drive(200, RoombaConfig.DRIVE_MODE_MED);
-					break;
-				case RIGHT:
-					emulator.turn(140, true, RoombaConfig.TURN_RADIUS_SPOT,
-							RoombaConfig.DRIVE_MODE_MED);
-					break;
-				case LEFT:
-					emulator.turn(25, false, RoombaConfig.TURN_RADIUS_SPOT,
-							RoombaConfig.DRIVE_MODE_MED);
-					break;
-				}
-				Thread.sleep(SLEEP_TIME);
-			}
+    @Override
+    public void stateChanged(Event event) {
+        // An event happened to the robot which has to be parsed
+    }
 
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    public void turn(int degrees, boolean isTurnRight) {
+        int angle = (isTurnRight ? -degrees : degrees);
+        move(currentState.x, currentState.y,
+                (currentState.dir + angle + 360) % 360);
+        emulator.turn(degrees, isTurnRight, RoombaConfig.TURN_RADIUS_SPOT,
+                RoombaConfig.DRIVE_MODE_MED);
+    }
 
-	private void testSensors() {
-		currentState = new RobotState(0, 0, 0);
-		// Just drive around to test the emulator and Roomba
-		try {
-			drive(100);
-			Thread.sleep(SLEEP_TIME);
-			for (int i = 0; i < 36; i++) {
-				turn(10, false);
-				// drive(100);
-				processSensorData();
-				Thread.sleep(SLEEP_TIME);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    public void drive(int distance) {
+        double theta = Math.PI * currentState.dir / 180;
+        int newx = (int) (currentState.x + distance * Math.cos(theta) + 0.5);
+        int newy = (int) (currentState.y + distance * Math.sin(theta) + 0.5);
+        move(newx, newy, currentState.dir);
+        emulator.drive(distance, RoombaConfig.DRIVE_MODE_MED);
+    }
 
-	@Override
-	public void stateChanged(Event event) {
-		// An event happened to the robot which has to be parsed
+    public void move(int x, int y, int dir) {
+        currentState.x = x;
+        currentState.y = y;
+        currentState.dir = dir;
+    }
 
-	}
+    public void processSensorData() {
+        int[] data = emulator.getSensorData();
+        ArrayList<Point> obstacle = new ArrayList<Point>();
+        for (int i = 0; i < 5; i++) {
+            mapStructure.put(Utils.sensorDataToPoint(currentState, data[i],
+                    RoombaConfig.SENSORS[i]), 1);
+        }
+        emulator.addObstacle(obstacle);
+    }
 
-	private void turn(int degrees, boolean isTurnRight) {
-		int angle = (isTurnRight ? -degrees : degrees);
-		move(currentState.x, currentState.y,
-				(currentState.dir + angle + 360) % 360);
-		emulator.turn(degrees, isTurnRight, RoombaConfig.TURN_RADIUS_SPOT,
-				RoombaConfig.DRIVE_MODE_MED);
-	}
+    public void addObstacleListener(ObstacleListener listener) {
+        mapStructure.addObstacleListener(listener);
+    }
 
-	private void drive(int distance) {
-		double theta = Math.PI * currentState.dir / 180;
-		int newx = (int) (currentState.x + distance * Math.cos(theta) + 0.5);
-		int newy = (int) (currentState.y + distance * Math.sin(theta) + 0.5);
-		move(newx, newy, currentState.dir);
-		emulator.drive(distance, RoombaConfig.DRIVE_MODE_MED);
-	}
+    public MapStructure getMap() {
+        return mapStructure;
+    }
 
-	private void move(int x, int y, int dir) {
-		currentState.x = x;
-		currentState.y = y;
-		currentState.dir = dir;
-	}
+    public RobotState getCurrentState() {
+        return currentState;
+    }
 
-	private void processSensorData() {
-		int[] data = emulator.getSensorData();
-		ArrayList<Point> obstacle = new ArrayList<Point>();
-		for (int i = 0; i < 5; i++) {
-			mapStructure.put(Utils.sensorDataToPoint(currentState, data[i],
-					RoombaConfig.SENSORS[i]), 1);
-		}
-		emulator.addObstacle(obstacle);
-	}
-	
-	public void addObstacleListener(ObstacleListener listener){
-		mapStructure.addObstacleListener(listener);
-	}
-	
-	public MapStructure getMap(){
-		return mapStructure;
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		new Brains();
-	}
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        new Brains();
+    }
 }

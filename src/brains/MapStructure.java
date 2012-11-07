@@ -11,7 +11,7 @@ public class MapStructure implements MapInterface {
 	private HashMap<Point, Double> cells;
 
 	public MapStructure() {
-		cells = new HashMap<>();
+		cells = new HashMap<Point, Double>();
 	}
 
 	@Override

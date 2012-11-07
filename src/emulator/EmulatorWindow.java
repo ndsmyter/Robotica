@@ -3,13 +3,22 @@ package emulator;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
 
 import emulator.interfaces.ViewListenerInterface;
 
@@ -18,10 +27,12 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 	private MapPanel mapPanel;
 	private TextArea logArea;
+	private ArrayList<Point> backgroundMap;
 
-	public EmulatorWindow(Emulator emulator) {
+	public EmulatorWindow(final Emulator emulator) {
 		super("Emulator");
 
+		backgroundMap = new ArrayList<Point>();
 		mapPanel = new MapPanel(emulator);
 
 		// Init log area
@@ -43,6 +54,64 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				mapPanel.zoom(false);
 			}
 		});
+		JButton openButton = new JButton(new AbstractAction("Open") {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser chooser = new JFileChooser();
+				FileFilter filter = new FileFilter() {
+					@Override
+					public String getDescription() {
+						return null;
+					}
+
+					@Override
+					public boolean accept(File f) {
+						return f.getName().endsWith(".bmp");
+					}
+				};
+				chooser.setMultiSelectionEnabled(false);
+				chooser.setFileFilter(filter);
+				int returnValue = chooser.showOpenDialog(EmulatorWindow.this);
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File file = chooser.getSelectedFile();
+					try {
+						emulator.log("Approved");
+						BufferedImage img = ImageIO.read(file);
+						emulator.log("Read");
+						PixelGrabber grabber = new PixelGrabber(img, 0, 0, -1,
+								-1, true);
+						grabber.grabPixels();
+						emulator.log("Grabbed");
+						int[] pixels = (int[]) grabber.getPixels();
+						int w = img.getWidth(), h = img.getHeight();
+						emulator.log("Pixels=" + pixels.length + ", w=" + w
+								+ ", h=" + h);
+						ArrayList<Integer> diffs = new ArrayList<Integer>();
+						for (int i = 0; i < w; i++) {
+							for (int j = 0; j < h; j++) {
+								int k = w * i + j;
+								if (!diffs.contains(pixels[k]))
+									diffs.add(pixels[k]);
+							}
+						}
+						emulator.log(diffs.size() + " different colors");
+						for (int i = 0; i < diffs.size(); i++) {
+							emulator.log("color " + i + ": " + diffs.get(i));
+						}
+						emulator.log("GET");
+						if (pixels != null) {
+							emulator.log("Length: " + pixels.length);
+						} else
+							emulator.log("NULL");
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		buttonPanel.add(openButton);
 		buttonPanel.add(zoomInButton);
 		buttonPanel.add(zoomOutButton);
 

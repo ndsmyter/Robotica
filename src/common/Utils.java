@@ -32,10 +32,10 @@ public class Utils {
         
         public static ArrayList<Point> getPath(RobotState currentState, RobotState nextState){
             ArrayList<Point> path = new ArrayList<Point>();
+            currentState.x = currentState.x - (currentState.x % Config.GRID_SIZE);            
+            currentState.y = currentState.y - (currentState.y % Config.GRID_SIZE);
             int length = (int) Math.sqrt((currentState.x - nextState.x)*(currentState.x - nextState.x) + 
                     (currentState.y - nextState.y)*(currentState.y - nextState.y));
-            System.out.println(length);
-            System.out.println( "X1 " +currentState.x +" X2 "+ nextState.x + " Y1 "+ currentState.y + "Y2" + nextState.y);
             for(int i = 0; i < length; i+=Config.GRID_SIZE){
                 RobotState intermediate = driveForward(currentState, i);
                 path.add(new Point(intermediate.x,intermediate.y));
@@ -45,6 +45,8 @@ public class Utils {
         
         public static ArrayList<Point> getPath(RobotState currentState, int distance){
             ArrayList<Point> path = new ArrayList<Point>();
+            currentState.x = currentState.x - (currentState.x % Config.GRID_SIZE);            
+            currentState.y = currentState.y - (currentState.y % Config.GRID_SIZE);
             for(int i = 0; i <= distance; i+=Config.GRID_SIZE){
                 RobotState intermediate = driveForward(currentState, i);
                 path.add(new Point(intermediate.x,intermediate.y));

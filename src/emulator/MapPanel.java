@@ -9,7 +9,6 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -20,7 +19,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import javax.swing.DefaultFocusManager;
 import javax.swing.JPanel;
 
 import roomba.RoombaConfig;
@@ -205,6 +203,14 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		return scale * value;
 	}
 
+	private int descale(double value) {
+		return (int) (descale2(value) + 0.5);
+	}
+
+	private double descale2(double value) {
+		return 1.0 * value / scale;
+	}
+
 	/**
 	 * Draw a grid on the screen
 	 * 
@@ -323,8 +329,15 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	 *            If true zoom in, otherwise zoom out
 	 */
 	public void zoom(boolean zoomIn) {
+
+		Point middle = new Point(getWidth() / 2, getHeight() / 2);
+		int xDist = descale(middle.x - winPos.x);
+		int yDist = descale(middle.y - winPos.y);
 		scale = zoomIn ? scale + ZOOM_FACTOR : Math.max(scale - ZOOM_FACTOR,
 				ZOOM_FACTOR);
+		xDist = scale(xDist);
+		yDist = scale(yDist);
+		winPos = new Point(middle.x - xDist, middle.y - yDist);
 		repaint();
 	}
 

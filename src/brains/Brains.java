@@ -143,12 +143,13 @@ public class Brains implements ListenerInterface {
 			ArrayList<Point> path = Utils.getPath(sensorState, new RobotState(
 					measurement.x, measurement.y, sensorState.dir));
 			for (Point p : path) {
-				double newValue = mapStructure.get(Utils.pointToGrid(p)) - 0.10;
-				if (newValue > 1)
-					newValue = 1;
-				if (newValue < 0)
-					newValue = 0;
-				mapStructure.put(Utils.pointToGrid(p), newValue);
+//				double newValue = mapStructure.get(Utils.pointToGrid(p)) - 0.10;
+//				if (newValue > 1)
+//					newValue = 1;
+//				if (newValue < 0)
+//					newValue = 0;
+//				mapStructure.put(Utils.pointToGrid(p), newValue);
+				mapStructure.put(Utils.pointToGrid(p), 0);
 			}
 			if (data[i] < 800)
 				mapStructure.put(Utils.pointToGrid(measurement), 1);

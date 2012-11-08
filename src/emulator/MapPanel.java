@@ -31,282 +31,304 @@ import emulator.interfaces.ViewListenerInterface;
 
 /**
  * The panel will draw a grid where the robot can move on
- *
+ * 
  * @author Nicolas
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements ViewListenerInterface,
-        ObstacleListener {
+		ObstacleListener {
 
-    // Some scaling parameters
-    private final static int PIXEL_SIZE = 20;
-    private final static int CELLS_IN_GRID = 10;
-    private final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;//10;
-    private final static int LINE_LENGTH = 100; //10;
-    private double scale = 0.2;
-    private final static double ZOOM_FACTOR = 0.05;
-    // The colors which you can change to the color you like
-    private final static Color BACKGROUND_COLOR = Color.GRAY;
-    private final static Color ZERO_COLOR = Color.BLACK;
-    private final static Color ROBOT_COLOR = new Color(210,250,255);//Color.BLUE;
-    private final static Color GRID_COLOR = Color.DARK_GRAY;//Color.GRAY;
-    private final static Color PATH_COLOR = Color.ORANGE;
-    private final static Color SENSOR_COLOR = new Color(5,80,90); //Color.PINK;
-    private final static Color TEXT_COLOR = Color.BLACK;
-    private final static Color MAP_COLOR = Color.YELLOW;
-    // Points to draw on the screen (current & previous states, obstacles..)
-    private RobotState position = null;
-    private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
-    private final Emulator emulator;
-    private Point windowPosition;
-    private Brains brains;
+	// Some scaling parameters
+	private final static int CELLS_IN_GRID = 10;
+	private final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
+	private final static int LINE_LENGTH = 100;
 
-    public MapPanel(Emulator emulator) {
-        super();
-        this.emulator = emulator;
-        this.brains = emulator.getBrains();
-        int w = 500, h = 500;
-        this.setBackground(BACKGROUND_COLOR);
-        this.setPreferredSize(new Dimension(w, h));
+	// Scaling parameters
+	private final static double ZOOM_FACTOR = 0.05;
+	private final static double ORIGINAL_ZOOM = 0.2;
+	private double scale = ORIGINAL_ZOOM;
 
-        
-        move(brains.getCurrentState());
+	// The colors which you can change to the color you like
+	private final static Color BACKGROUND_COLOR = Color.GRAY;
+	private final static Color ZERO_COLOR = Color.BLACK;
+	private final static Color ROBOT_COLOR = new Color(210, 250, 255);
+	private final static Color GRID_COLOR = Color.DARK_GRAY;
+	private final static Color PATH_COLOR = Color.ORANGE;
+	private final static Color SENSOR_COLOR = new Color(5, 80, 90);
+	private final static Color TEXT_COLOR = Color.BLACK;
+	private final static Color MAP_COLOR = Color.YELLOW;
 
-        emulator.addChangeListener(this);
+	// Points to draw on the screen (current & previous states, obstacles..)
+	private RobotState position = null;
+	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
+	private final Emulator emulator;
+	private Point windowPosition;
+	private Brains brains;
 
-        windowPosition = new Point(w / 2, h / 2);
+	public MapPanel(Emulator emulator) {
+		super();
+		this.emulator = emulator;
+		this.brains = emulator.getBrains();
+		int w = 500, h = 500;
+		this.setBackground(BACKGROUND_COLOR);
+		this.setPreferredSize(new Dimension(w, h));
 
-        PanMouseListener l = new PanMouseListener();
-        this.addMouseMotionListener(l);
-        this.addMouseWheelListener(l);
-        this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		move(brains.getCurrentState());
 
-        brains.addObstacleListener(this);
-    }
+		emulator.addChangeListener(this);
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
+		windowPosition = new Point(w / 2, h / 2);
 
-        // Move the (0,0) point to middle of screen
-        g.translate(windowPosition.x, windowPosition.y);
-        g2.scale(1, -1);
+		PanMouseListener l = new PanMouseListener();
+		this.addMouseMotionListener(l);
+		this.addMouseWheelListener(l);
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
-        // Draw the (0,0) point
-        g.setColor(ZERO_COLOR);
-        g.fillArc(-2, -2, 4, 4, 0, 360);
+		brains.addObstacleListener(this);
+	}
 
-        // Draw map
-        drawMap(g);
+	/**
+	 * Reset the view
+	 */
+	public void reset() {
+		emulator.log("MapPanel RESET");
+		scale = ORIGINAL_ZOOM;
+		historyOfPoints.clear();
+		windowPosition = new Point(getWidth() / 2, getHeight() / 2);
+		move(brains.getCurrentState());
+	}
 
-        // Draw the obstacles
-        drawObstacles(g);
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2 = (Graphics2D) g;
 
-        // Draw grid
-        drawGrid(g);
+		// Move the (0,0) point to middle of screen
+		g.translate(windowPosition.x, windowPosition.y);
+		g2.scale(1, -1);
 
-        // Draw previous points
-        drawPreviousPoints(g);
+		// Draw the (0,0) point
+		g.setColor(ZERO_COLOR);
+		g.fillArc(-2, -2, 4, 4, 0, 360);
 
-        // Draw robot
-        drawRobot(g2);
+		// Draw map
+		drawMap(g);
 
-        // Draw the scale
-        drawScale(g2);
-    }
+		// Draw the obstacles
+		drawObstacles(g);
 
-    private void drawScale(Graphics2D g) {
-        g.setColor(TEXT_COLOR);
-        g.scale(1, -1);
-        //g.drawString("1 kotje = " + ((int) (scale * 50)) + " cm",
-        //		-windowPosition.x + 5, (getHeight() - windowPosition.y) - 10);
+		// Draw grid
+		drawGrid(g);
 
-        g.drawString("1 kotje = " + ((int) (CELLS_IN_GRID * Config.GRID_SIZE) / 10) + " cm",
-                -windowPosition.x + 5, (getHeight() - windowPosition.y) - 10);
+		// Draw previous points
+		drawPreviousPoints(g);
 
-    }
+		// Draw robot
+		drawRobot(g2);
 
-    private void drawMap(Graphics g) {
-        try {
-            g.setColor(MAP_COLOR);
-            for (Point p : emulator.getBackground()) {
-                g.drawRect(scale(p.x), scale(p.y), scale(Config.GRID_SIZE), scale(Config.GRID_SIZE));//1,1);
-            }
-        } catch (Exception e) {
-        }
-    }
+		// Draw the scale
+		drawScale(g2);
+	}
 
-    /**
-     * Scale the value and round to the nearest integer
-     *
-     * @param value The value to scale
-     * @return The scaled value
-     */
-    private int scale(double value) {
-        return (int) (scale2(value) + 0.5);
-    }
+	private void drawScale(Graphics2D g) {
+		g.setColor(TEXT_COLOR);
+		g.scale(1, -1);
+		g.drawString("1 kotje = "
+				+ ((int) (CELLS_IN_GRID * Config.GRID_SIZE) / 10) + " cm",
+				-windowPosition.x + 5, (getHeight() - windowPosition.y) - 10);
 
-    /**
-     * Scale the value
-     *
-     * @param value The value to scale
-     * @return The scaled value
-     */
-    private double scale2(double value) {
-        return scale * value;
-    }
+	}
 
-    /**
-     * Draw a grid on the screen
-     *
-     * @param g The Graphics to be used for painting
-     */
-    private void drawGrid(Graphics g) {
-        Rectangle clip = g.getClipBounds();
-        int xMax = clip.width + clip.x;
-        int yMax = clip.height + clip.y;
-        g.setColor(GRID_COLOR);
-        for (int i = clip.x; i < xMax; i++) {
-            if (i % scale(CELLS_IN_GRID * Config.GRID_SIZE) == 0) //if (i % PIXEL_SIZE == 0)  
-            {
-                g.drawLine(i, clip.y, i, yMax);
-            }
-        }
-        for (int i = clip.y; i < yMax; i++) {
-            if (i % scale(CELLS_IN_GRID * Config.GRID_SIZE) == 0) //if (i % PIXEL_SIZE == 0) 
-            {
-                g.drawLine(clip.x, i, xMax, i);
-            }
-        }
-    }
+	private void drawMap(Graphics g) {
+		try {
+			g.setColor(MAP_COLOR);
+			for (Point p : emulator.getBackground()) {
+				g.drawRect(scale(p.x), scale(p.y), scale(Config.GRID_SIZE),
+						scale(Config.GRID_SIZE));
+			}
+		} catch (Exception e) {
+		}
+	}
 
-    /**
-     * Draw a path of previous positions
-     *
-     * @param g The Graphics to be used for painting
-     */
-    private void drawPreviousPoints(Graphics g) {
-        g.setColor(PATH_COLOR);
-        for (RobotState state : historyOfPoints) {
-            g.drawRect(scale(state.x), scale(state.y), 1, 1);
-        }
-        for (int i = 0; i < historyOfPoints.size() - 1; i++) {
-            RobotState first = historyOfPoints.get(i);
-            RobotState last = historyOfPoints.get(i + 1);
-            g.drawLine(scale(first.x), scale(first.y), scale(last.x),
-                    scale(last.y));
-        }
-    }
+	/**
+	 * Scale the value and round to the nearest integer
+	 * 
+	 * @param value
+	 *            The value to scale
+	 * @return The scaled value
+	 */
+	private int scale(double value) {
+		return (int) (scale2(value) + 0.5);
+	}
 
-    /**
-     * Draw robot on the panel
-     *
-     * @param g The Graphics used to draw the robot on
-     */
-    private void drawRobot(Graphics g) {
-        
+	/**
+	 * Scale the value
+	 * 
+	 * @param value
+	 *            The value to scale
+	 * @return The scaled value
+	 */
+	private double scale2(double value) {
+		return scale * value;
+	}
 
+	/**
+	 * Draw a grid on the screen
+	 * 
+	 * @param g
+	 *            The Graphics to be used for painting
+	 */
+	private void drawGrid(Graphics g) {
+		Rectangle clip = g.getClipBounds();
+		int xMax = clip.width + clip.x;
+		int yMax = clip.height + clip.y;
+		g.setColor(GRID_COLOR);
+		for (int i = clip.x; i < xMax; i++) {
+			if (i % scale(CELLS_IN_GRID * Config.GRID_SIZE) == 0) {
+				g.drawLine(i, clip.y, i, yMax);
+			}
+		}
+		for (int i = clip.y; i < yMax; i++) {
+			if (i % scale(CELLS_IN_GRID * Config.GRID_SIZE) == 0) {
+				g.drawLine(clip.x, i, xMax, i);
+			}
+		}
+	}
 
-        // Draw a dot to represent the robot
-        g.setColor(ROBOT_COLOR);
-        g.fillArc((int) (scale2(position.x) + 0.5 - scale(ROBOT_SIZE) / 2),
-                (int) (scale2(position.y) + 0.5 - scale(ROBOT_SIZE) / 2), scale(ROBOT_SIZE),
-                scale(ROBOT_SIZE), 0, 360);
-        
-        // Draw the sensors of the robot
-        g.setColor(SENSOR_COLOR);
-        for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
-            Sensor sensor = RoombaConfig.SENSORS[i];
-            Point pos = Utils.sensorDataToPoint(position, 0, sensor);
-            g.fillRect(scale(pos.x - 2), scale(pos.y - 2), 4, 4);
-        }
-        // Draw a line to show the direction of the robot
-        RobotState endpoint = Utils.driveForward(position, LINE_LENGTH);
-        int x = scale(position.x);
-        int y = scale(position.y);
-        int endX = scale(endpoint.x);
-        int endY = scale(endpoint.y);
-        g.drawLine(x, y, endX, endY);
-    }
+	/**
+	 * Draw a path of previous positions
+	 * 
+	 * @param g
+	 *            The Graphics to be used for painting
+	 */
+	private void drawPreviousPoints(Graphics g) {
+		g.setColor(PATH_COLOR);
+		for (RobotState state : historyOfPoints) {
+			g.drawRect(scale(state.x), scale(state.y), 1, 1);
+		}
+		for (int i = 0; i < historyOfPoints.size() - 1; i++) {
+			RobotState first = historyOfPoints.get(i);
+			RobotState last = historyOfPoints.get(i + 1);
+			g.drawLine(scale(first.x), scale(first.y), scale(last.x),
+					scale(last.y));
+		}
+	}
 
-    /**
-     * Draw obstacles on the panel
-     *
-     * @param g The Graphics used to draw the robot on
-     */
-    private void drawObstacles(Graphics g) {
-        try {
-            HashMap<Point, Double> points = brains.getMap().getAll();
-            for (Entry<Point, Double> entry : points.entrySet()) {
-                float c = (float) (double) (1 - entry.getValue());
-                g.setColor(new Color(c, c, c));
-                g.fillRect(scale(entry.getKey().x), scale(entry.getKey().y), scale(Config.GRID_SIZE), scale(Config.GRID_SIZE));//1,1);
-            }
-        } catch (ConcurrentModificationException e) {
-        }
-    }
+	/**
+	 * Draw robot on the panel
+	 * 
+	 * @param g
+	 *            The Graphics used to draw the robot on
+	 */
+	private void drawRobot(Graphics g) {
 
-    @Override
-    public void viewStateChanged(Event event) {
-        switch (event.getType()) {
-            case DRIVE:
-                move(brains.getCurrentState());
-                break;
-            case TURN:
-                move(brains.getCurrentState());
-                break;
-            default:
-                break;
-        }
-    }
+		// Draw a dot to represent the robot
+		g.setColor(ROBOT_COLOR);
+		g.fillArc((int) (scale2(position.x) + 0.5 - scale(ROBOT_SIZE) / 2),
+				(int) (scale2(position.y) + 0.5 - scale(ROBOT_SIZE) / 2),
+				scale(ROBOT_SIZE), scale(ROBOT_SIZE), 0, 360);
 
-    private void move(RobotState s) {
-        position = s;
-        historyOfPoints.add(position);
-        repaint();
-    }
+		// Draw the sensors of the robot
+		g.setColor(SENSOR_COLOR);
+		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
+			Sensor sensor = RoombaConfig.SENSORS[i];
+			Point pos = Utils.sensorDataToPoint(position, 0, sensor);
+			g.fillRect(scale(pos.x - 2), scale(pos.y - 2), 4, 4);
+		}
+		// Draw a line to show the direction of the robot
+		RobotState endpoint = Utils.driveForward(position, LINE_LENGTH);
+		int x = scale(position.x);
+		int y = scale(position.y);
+		int endX = scale(endpoint.x);
+		int endY = scale(endpoint.y);
+		g.drawLine(x, y, endX, endY);
+	}
 
-    public void zoom(boolean zoomIn) {
-        scale = zoomIn ? scale + ZOOM_FACTOR : Math.max(scale - ZOOM_FACTOR,
-                ZOOM_FACTOR);
-        repaint();
-    }
+	/**
+	 * Draw obstacles on the panel
+	 * 
+	 * @param g
+	 *            The Graphics used to draw the robot on
+	 */
+	private void drawObstacles(Graphics g) {
+		try {
+			HashMap<Point, Double> points = brains.getMap().getAll();
+			for (Entry<Point, Double> entry : points.entrySet()) {
+				float c = (float) (double) (1 - entry.getValue());
+				g.setColor(new Color(c, c, c));
+				g.fillRect(scale(entry.getKey().x), scale(entry.getKey().y),
+						scale(Config.GRID_SIZE), scale(Config.GRID_SIZE));// 1,1);
+			}
+		} catch (ConcurrentModificationException e) {
+		}
+	}
 
-    public void movePanel(Point newPosition) {
-        if (!newPosition.equals(windowPosition)) {
-            windowPosition = newPosition;
-            repaint();
-        }
-    }
+	@Override
+	public void viewStateChanged(Event event) {
+		switch (event.getType()) {
+		case DRIVE:
+			move(brains.getCurrentState());
+			break;
+		case TURN:
+			move(brains.getCurrentState());
+			break;
+		default:
+			break;
+		}
+	}
 
-    private class PanMouseListener implements MouseMotionListener,
-            MouseWheelListener {
+	private void move(RobotState s) {
+		position = s;
+		historyOfPoints.add(position);
+		repaint();
+	}
 
-        private Point previousPosition;
+	/**
+	 * Zoom in or out
+	 * 
+	 * @param zoomIn
+	 *            If true zoom in, otherwise zoom out
+	 */
+	public void zoom(boolean zoomIn) {
+		scale = zoomIn ? scale + ZOOM_FACTOR : Math.max(scale - ZOOM_FACTOR,
+				ZOOM_FACTOR);
+		repaint();
+	}
 
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            e.translatePoint(-windowPosition.x, -windowPosition.y);
-            movePanel(new Point(windowPosition.x + e.getX()
-                    - previousPosition.x, windowPosition.y + e.getY()
-                    - previousPosition.y));
-        }
+	public void movePanel(Point newPosition) {
+		if (!newPosition.equals(windowPosition)) {
+			windowPosition = newPosition;
+			repaint();
+		}
+	}
 
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            e.translatePoint(-windowPosition.x, -windowPosition.y);
-            previousPosition = new Point(e.getX(), e.getY());
-        }
+	private class PanMouseListener implements MouseMotionListener,
+			MouseWheelListener {
 
-        @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
-            zoom(e.getWheelRotation() < 0);
-        }
-    }
+		private Point previousPosition;
 
-    @Override
-    public void obstacleAdded(Point point, double value) {
-        repaint();
-    }
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			e.translatePoint(-windowPosition.x, -windowPosition.y);
+			movePanel(new Point(windowPosition.x + e.getX()
+					- previousPosition.x, windowPosition.y + e.getY()
+					- previousPosition.y));
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			e.translatePoint(-windowPosition.x, -windowPosition.y);
+			previousPosition = new Point(e.getX(), e.getY());
+		}
+
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			zoom(e.getWheelRotation() < 0);
+		}
+	}
+
+	@Override
+	public void obstacleAdded(Point point, double value) {
+		repaint();
+	}
 }

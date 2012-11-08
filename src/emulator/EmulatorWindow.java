@@ -1,19 +1,12 @@
 package emulator;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -28,9 +21,11 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 	private MapPanel mapPanel;
 	private TextArea logArea;
+	private Emulator emulator;
 
 	public EmulatorWindow(final Emulator emulator) {
 		super("Emulator");
+		this.emulator = emulator;
 
 		mapPanel = new MapPanel(emulator);
 
@@ -72,38 +67,33 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				chooser.setFileFilter(filter);
 				int returnValue = chooser.showOpenDialog(EmulatorWindow.this);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					try {
-						ArrayList<Point> backgroundMap = new ArrayList<Point>();
-						BufferedImage img = ImageIO.read(file);
-						PixelGrabber grabber = new PixelGrabber(img, 0, 0, -1,
-								-1, true);
-						grabber.grabPixels();
-						int[] pixels = (int[]) grabber.getPixels();
-						int w = img.getWidth(), h = img.getHeight();
-						int w2 = (int) (1.0 * w / 2 + 0.5), h2 = (int) (1.0 * h / 2 + 0.5);
-						for (int i = 0; i < w; i++) {
-							for (int j = 0; j < h; j++) {
-								Color c = new Color(pixels[w * j + i]);
-								if (c.getBlue() == 0 && c.getRed() == 0
-										&& c.getGreen() == 0)
-									backgroundMap.add(new Point((i - w2) * 5,
-											(j - h2) * 5));
-							}
-						}
-						emulator.setBackground(backgroundMap);
-						mapPanel.repaint();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					emulator.loadBackgroundMap(chooser.getSelectedFile());
+					notifyReset();
 				}
+			}
+		});
+		JButton resetButton = new JButton(new AbstractAction("Reset") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				notifyReset();
+			}
+		});
+		JButton startButton = new JButton(new AbstractAction("Start") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						emulator.restart();
+					}
+				}).start();
 			}
 		});
 		buttonPanel.add(openButton);
 		buttonPanel.add(zoomInButton);
 		buttonPanel.add(zoomOutButton);
+		buttonPanel.add(resetButton);
+		buttonPanel.add(startButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);
@@ -114,6 +104,11 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
+	}
+
+	public void notifyReset() {
+		emulator.reset();
+		mapPanel.reset();
 	}
 
 	@Override

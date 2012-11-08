@@ -12,7 +12,7 @@ import roomba.RoombaConfig;
 
 public class DummyAlgorithm {
 
-    public static void run(Brains b) {
+	public static void run(Brains b) {
         int step = 50; // Step length in mm 
         for (int i = 0; i < 100; i++) {
             //System.out.println(b.getCurrentState());

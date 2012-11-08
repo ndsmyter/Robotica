@@ -105,14 +105,15 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 			}
 		};
 		startStopButton.setAction(startStopAction);
-		JButton zoomInButton = new JButton(zoomInAction);
-		JButton zoomOutButton = new JButton(zoomOutAction);
-		JButton openButton = new JButton(openAction);
-		JButton resetButton = new JButton(resetAction);
-		buttonPanel.add(openButton);
-		buttonPanel.add(zoomInButton);
-		buttonPanel.add(zoomOutButton);
-		buttonPanel.add(resetButton);
+		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Start/Stop execution (Space)");
+		openAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Open image (Ctrl+O)");
+		zoomInAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Zoom IN (+, scroll up)");
+		zoomOutAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Zoom OUT (-, scroll down)");
+		resetAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
+		buttonPanel.add(new JButton(openAction));
+		buttonPanel.add(new JButton(zoomInAction));
+		buttonPanel.add(new JButton(zoomOutAction));
+		buttonPanel.add(new JButton(resetAction));
 		buttonPanel.add(startStopButton);
 
 		JPanel panel = new JPanel(new BorderLayout());

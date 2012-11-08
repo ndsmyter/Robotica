@@ -55,7 +55,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 					if (c.getBlue() == 0 && c.getRed() == 0
 							&& c.getGreen() == 0) {
 						backgroundMap
-								.add(new Point(5 * (i - w2), 5 * (j - h2)));
+								.add(new Point(5 * (i - w2), -5 * (j - h2)));
 					}
 				}
 			}
@@ -93,7 +93,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode) {
-		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + "�)");
+		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
 		roomba.turn(degrees, turnRight, turnMode, driveMode);

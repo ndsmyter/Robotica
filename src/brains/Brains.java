@@ -63,7 +63,7 @@ public class Brains implements ListenerInterface {
 		if (isStopped())
 			// Continue previous execution
 			stop(false);
-		
+
 		// testDriving();
 		// testSensors();
 		algorithm.run(this);
@@ -150,7 +150,8 @@ public class Brains implements ListenerInterface {
 					newValue = 0;
 				mapStructure.put(Utils.pointToGrid(p), newValue);
 			}
-			mapStructure.put(Utils.pointToGrid(measurement), 1);
+			if (data[i] < 800)
+				mapStructure.put(Utils.pointToGrid(measurement), 1);
 		}
 	}
 

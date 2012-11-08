@@ -5,8 +5,12 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -16,13 +20,14 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import javax.swing.DefaultFocusManager;
 import javax.swing.JPanel;
 
 import roomba.RoombaConfig;
 import brains.Brains;
 import brains.interfaces.ObstacleListener;
-import common.Config;
 
+import common.Config;
 import common.RobotState;
 import common.Sensor;
 import common.Utils;
@@ -43,6 +48,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private final static int CELLS_IN_GRID = 10;
 	private final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
 	private final static int LINE_LENGTH = 100;
+	private final static int ARROW_MOVEMENT = 5;
 
 	// Scaling parameters
 	private final static double ZOOM_FACTOR = 0.05;
@@ -63,7 +69,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
 	private final Emulator emulator;
-	private Point windowPosition;
+	private Point winPos;
 	private Brains brains;
 
 	public MapPanel(Emulator emulator) {
@@ -78,12 +84,40 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 
 		emulator.addChangeListener(this);
 
-		windowPosition = new Point(w / 2, h / 2);
+		winPos = new Point(w / 2, h / 2);
 
-		PanMouseListener l = new PanMouseListener();
+		PanelListener l = new PanelListener();
 		this.addMouseMotionListener(l);
 		this.addMouseWheelListener(l);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+		KeyEventDispatcher myKeyEventDispatcher = new KeyEventDispatcher() {
+
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				boolean found = true;
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_LEFT:
+					movePanel(new Point(winPos.x + ARROW_MOVEMENT, winPos.y));
+					break;
+				case KeyEvent.VK_RIGHT:
+					movePanel(new Point(winPos.x - ARROW_MOVEMENT, winPos.y));
+					break;
+				case KeyEvent.VK_UP:
+					movePanel(new Point(winPos.x, winPos.y + ARROW_MOVEMENT));
+					break;
+				case KeyEvent.VK_DOWN:
+					movePanel(new Point(winPos.x, winPos.y - ARROW_MOVEMENT));
+					break;
+				default:
+					found = false;
+					break;
+				}
+				return found;
+			}
+		};
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(myKeyEventDispatcher);
 
 		brains.addObstacleListener(this);
 	}
@@ -94,7 +128,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	public void reset() {
 		scale = ORIGINAL_ZOOM;
 		historyOfPoints.clear();
-		windowPosition = new Point(getWidth() / 2, getHeight() / 2);
+		winPos = new Point(getWidth() / 2, getHeight() / 2);
 		move(brains.getCurrentState());
 	}
 
@@ -103,7 +137,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Move the (0,0) point to middle of screen
-		g.translate(windowPosition.x, windowPosition.y);
+		g.translate(winPos.x, winPos.y);
 		g2.scale(1, -1);
 
 		// Draw the (0,0) point
@@ -134,7 +168,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		g.scale(1, -1);
 		g.drawString("1 kotje = "
 				+ ((int) (CELLS_IN_GRID * Config.GRID_SIZE) / 10) + " cm",
-				-windowPosition.x + 5, (getHeight() - windowPosition.y) - 10);
+				-winPos.x + 5, (getHeight() - winPos.y) - 10);
 
 	}
 
@@ -295,28 +329,27 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	}
 
 	public void movePanel(Point newPosition) {
-		if (!newPosition.equals(windowPosition)) {
-			windowPosition = newPosition;
+		if (!newPosition.equals(winPos)) {
+			winPos = newPosition;
 			repaint();
 		}
 	}
 
-	private class PanMouseListener implements MouseMotionListener,
+	private class PanelListener implements MouseMotionListener,
 			MouseWheelListener {
 
 		private Point previousPosition;
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			e.translatePoint(-windowPosition.x, -windowPosition.y);
-			movePanel(new Point(windowPosition.x + e.getX()
-					- previousPosition.x, windowPosition.y + e.getY()
-					- previousPosition.y));
+			e.translatePoint(-winPos.x, -winPos.y);
+			movePanel(new Point(winPos.x + e.getX() - previousPosition.x,
+					winPos.y + e.getY() - previousPosition.y));
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			e.translatePoint(-windowPosition.x, -windowPosition.y);
+			e.translatePoint(-winPos.x, -winPos.y);
 			previousPosition = new Point(e.getX(), e.getY());
 		}
 

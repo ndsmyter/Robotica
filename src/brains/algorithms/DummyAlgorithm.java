@@ -32,7 +32,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
 			if (free) {
 				b.drive(STEP);
 			} else {
-				b.turn(90, false);
+				b.turn(90, true);
 			}
 			i++;
 		}

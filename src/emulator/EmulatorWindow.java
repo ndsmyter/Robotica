@@ -89,11 +89,18 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				}).start();
 			}
 		});
+		JButton stopButton = new JButton(new AbstractAction("Stop") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				emulator.stop();
+			}
+		});
 		buttonPanel.add(openButton);
 		buttonPanel.add(zoomInButton);
 		buttonPanel.add(zoomOutButton);
 		buttonPanel.add(resetButton);
 		buttonPanel.add(startButton);
+		buttonPanel.add(stopButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);

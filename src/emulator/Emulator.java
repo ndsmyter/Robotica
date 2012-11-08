@@ -75,6 +75,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		brains.restart();
 	}
 
+	public void stop() {
+		brains.stop(true);
+	}
+
 	public Brains getBrains() {
 		return brains;
 	}

@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import roomba.RoombaConfig;
+import brains.algorithms.AlgorithmInterface;
+import brains.algorithms.DummyAlgorithm;
 import brains.interfaces.ObstacleListener;
 
 import common.RobotState;
@@ -31,24 +33,40 @@ public class Brains implements ListenerInterface {
 	private static final byte LEFT = 2;
 	private final static int SLEEP_TIME = 100;
 
-	public Brains() {
-		currentState = new RobotState(0, 0, 0);
-		mapStructure = new MapStructure();
-		emulator = new Emulator(this);
+	private AlgorithmInterface algorithm;
 
+	private boolean stopped;
+
+	public Brains() {
+		algorithm = new DummyAlgorithm();
+		reset();
+		emulator = new Emulator(this);
 		emulator.log("Initiating application");
+	}
+
+	public boolean isStopped() {
+		return stopped;
+	}
+
+	public void stop(boolean stop) {
+		this.stopped = stop;
 	}
 
 	public void reset() {
 		currentState = new RobotState(0, 0, 0);
 		mapStructure = new MapStructure();
-		emulator.log("Resetting brains");
+		algorithm.reset();
+		stop(false);
 	}
 
 	public void restart() {
+		if (isStopped())
+			// Continue previous execution
+			stop(false);
+		
 		// testDriving();
 		// testSensors();
-		DummyAlgorithm.run(this);
+		algorithm.run(this);
 	}
 
 	private void testDriving() {

@@ -92,7 +92,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	 * Reset the view
 	 */
 	public void reset() {
-		emulator.log("MapPanel RESET");
 		scale = ORIGINAL_ZOOM;
 		historyOfPoints.clear();
 		windowPosition = new Point(getWidth() / 2, getHeight() / 2);

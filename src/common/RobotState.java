@@ -26,7 +26,7 @@ public class RobotState {
 			return false;
 		}
 		RobotState other = (RobotState) obj;
-		return x == other.x && y == other.y;
+		return x == other.x && y == other.y && dir == other.dir;
 	}
 
 	/*

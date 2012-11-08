@@ -22,7 +22,12 @@ public class MapStructure implements MapInterface {
 
 	@Override
 	public double get(Point point) {
-		return cells.get(point);
+            double value;
+            if(cells.containsKey(point))
+		value = cells.get(point);
+            else 
+                value = 0.5;
+            return value;
 	}
 
 	@Override

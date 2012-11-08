@@ -4,61 +4,64 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 public class Utils {
-	public static Point sensorDataToPoint(RobotState currentState,
-			int distance, Sensor sensor) {
-		RobotState sensorState = getSensorState(currentState, sensor);
-		double sensorTheta = (sensorState.dir) * Math.PI / 180;
-		int obstacleX = (int) (sensorState.x + distance * Math.cos(sensorTheta) + 0.5);
-		int obstacleY = (int) (sensorState.y + distance * Math.sin(sensorTheta) + 0.5);
-		return new Point(obstacleX, obstacleY);
-	}
 
-	public static RobotState getSensorState(RobotState currentState,
-			Sensor sensor) {
-		double theta = currentState.dir * Math.PI / 180;
-		int sensorX = (int) (currentState.x + sensor.xOffset * Math.cos(theta) + sensor.yOffset
-				* Math.cos(theta + Math.PI / 2));
-		int sensorY = (int) (currentState.y + sensor.xOffset * Math.sin(theta) + sensor.yOffset
-				* Math.sin(theta + Math.PI / 2));
-		int sensorDir = (currentState.dir + sensor.dir);
-		return new RobotState(sensorX, sensorY, sensorDir);
-	}
+    public static Point sensorDataToPoint(RobotState currentState,
+            int distance, Sensor sensor) {
+        RobotState sensorState = getSensorState(currentState, sensor);
+        RobotState obstacle = driveForward(sensorState, distance);
+        return new Point(obstacle.x, obstacle.y);
+    }
 
-	public static int euclideanDistance(Point point1, Point point2) {
-		return (int) (Math.sqrt((point1.x - point2.x) * (point1.x - point2.x)
-				+ (point1.y - point2.y) * (point1.y - point2.y)) + 0.5);
-	}
+    public static RobotState getSensorState(RobotState currentState,
+            Sensor sensor) {        
+        RobotState step1 = driveForward(currentState, sensor.xOffset);
+        step1.dir = step1.dir + 90;
+        RobotState step2 = driveForward(step1, sensor.yOffset);
+        step2.dir = (currentState.dir + sensor.dir);
+        return step2;
+    }
 
-	public static RobotState driveForward(RobotState currentState, int distance) {
-		double theta = currentState.dir * Math.PI / 180;
-		int nextX = (int) (currentState.x + distance * Math.cos(theta) + 0.5);
-		int nextY = (int) (currentState.y + distance * Math.sin(theta) + 0.5);
-		return new RobotState(nextX, nextY, currentState.dir);
-	}
+    public static int euclideanDistance(Point point1, Point point2) {
+        return (int) (Math.sqrt((point1.x - point2.x) * (point1.x - point2.x)
+                + (point1.y - point2.y) * (point1.y - point2.y)) + 0.5);
+    }
 
-	public static ArrayList<Point> getPath(RobotState currentState,
-			RobotState nextState) {
-		ArrayList<Point> path = new ArrayList<Point>();
-		currentState.x = currentState.x - (currentState.x % Config.GRID_SIZE);
-		currentState.y = currentState.y - (currentState.y % Config.GRID_SIZE);
-		int length = euclideanDistance(
-				new Point(currentState.x, currentState.y), new Point(
-						nextState.x, nextState.y));
-		for (int i = 0; i < length; i += Config.GRID_SIZE) {
-			RobotState intermediate = driveForward(currentState, i);
-			path.add(new Point(intermediate.x, intermediate.y));
-		}
-		return path;
-	}
+    public static RobotState driveForward(RobotState currentState, int distance) {
+        double theta = Math.toRadians(currentState.dir);
+        int x = currentState.x + (int) (distance * Math.cos(theta));
+        int y = currentState.y + (int) (distance * Math.sin(theta));
+        return new RobotState(x,y,currentState.dir);
+        
+    }
 
-	public static ArrayList<Point> getPath(RobotState currentState, int distance) {
-		ArrayList<Point> path = new ArrayList<Point>();
-		currentState.x = currentState.x - (currentState.x % Config.GRID_SIZE);
-		currentState.y = currentState.y - (currentState.y % Config.GRID_SIZE);
-		for (int i = 0; i <= distance; i += Config.GRID_SIZE) {
-			RobotState intermediate = driveForward(currentState, i);
-			path.add(new Point(intermediate.x, intermediate.y));
-		}
-		return path;
-	}
+    public static ArrayList<Point> getPath(RobotState currentState,
+            RobotState nextState) {
+        ArrayList<Point> path = new ArrayList<Point>();
+        Point currentG = pointToGrid(new Point(currentState.x, currentState.y));
+        Point nextG = pointToGrid(new Point(nextState.x, nextState.y));
+        int length = euclideanDistance(currentG, nextG);
+        for (int i = 0; i < length; i += Config.GRID_SIZE) {
+            RobotState intermediate = driveForward(currentState, i);
+            path.add(new Point(intermediate.x, intermediate.y));
+        }
+        return path;
+    }
+
+    public static ArrayList<Point> getPath(RobotState currentState, int distance) {
+        ArrayList<Point> path = new ArrayList<Point>();
+        Point g = pointToGrid(new Point(currentState.x, currentState.y));
+        currentState.x = g.x;
+        currentState.y = g.y;
+        for (int i = 0; i < distance; i += Config.GRID_SIZE) {
+            RobotState intermediate = driveForward(currentState, i);
+            path.add(new Point(intermediate.x, intermediate.y));
+        }
+        return path;
+    }
+
+    public static Point pointToGrid(Point p) {
+        p.x = p.x - p.x % Config.GRID_SIZE;
+        p.y = p.y - p.y % Config.GRID_SIZE;
+        return p;
+    }
 }

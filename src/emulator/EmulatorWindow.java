@@ -5,13 +5,17 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import emulator.interfaces.ViewListenerInterface;
@@ -22,6 +26,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 	private MapPanel mapPanel;
 	private TextArea logArea;
 	private Emulator emulator;
+
+	private boolean running = false;
 
 	public EmulatorWindow(final Emulator emulator) {
 		super("Emulator");
@@ -36,19 +42,20 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 		// Init button bar
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
-		JButton zoomInButton = new JButton(new AbstractAction("+") {
+		final JButton startStopButton = new JButton();
+		Action zoomInAction = new AbstractAction("+") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mapPanel.zoom(true);
 			}
-		});
-		JButton zoomOutButton = new JButton(new AbstractAction("-") {
+		};
+		Action zoomOutAction = new AbstractAction("-") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mapPanel.zoom(false);
 			}
-		});
-		JButton openButton = new JButton(new AbstractAction("Open") {
+		};
+		Action openAction = new AbstractAction("Open") {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser chooser = new JFileChooser();
@@ -71,41 +78,58 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 					notifyReset();
 				}
 			}
-		});
-		JButton resetButton = new JButton(new AbstractAction("Reset") {
+		};
+		Action resetAction = new AbstractAction("Reset") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				notifyReset();
 			}
-		});
-		JButton startButton = new JButton(new AbstractAction("Start") {
+		};
+		Action startStopAction = new AbstractAction("Start") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						emulator.restart();
+						if (running) {
+							startStopButton.setText("Start");
+							running = false;
+							emulator.stop();
+						} else {
+							startStopButton.setText("Stop");
+							running = true;
+							emulator.restart();
+						}
 					}
 				}).start();
 			}
-		});
-		JButton stopButton = new JButton(new AbstractAction("Stop") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				emulator.stop();
-			}
-		});
+		};
+		startStopButton.setAction(startStopAction);
+		JButton zoomInButton = new JButton(zoomInAction);
+		JButton zoomOutButton = new JButton(zoomOutAction);
+		JButton openButton = new JButton(openAction);
+		JButton resetButton = new JButton(resetAction);
 		buttonPanel.add(openButton);
 		buttonPanel.add(zoomInButton);
 		buttonPanel.add(zoomOutButton);
 		buttonPanel.add(resetButton);
-		buttonPanel.add(startButton);
-		buttonPanel.add(stopButton);
+		buttonPanel.add(startStopButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);
 		panel.add(logArea, BorderLayout.EAST);
 		panel.add(buttonPanel, BorderLayout.NORTH);
+		panel.getInputMap().put(KeyStroke.getKeyStroke("ctrl O"), "openAction");
+		panel.getInputMap().put(KeyStroke.getKeyStroke(' '), "startAction");
+		panel.getInputMap()
+				.put(KeyStroke.getKeyStroke("ctrl R"), "resetAction");
+		panel.getInputMap().put(KeyStroke.getKeyStroke('+'), "zoomInAction");
+		panel.getInputMap().put(KeyStroke.getKeyStroke('-'), "zoomOutAction");
+		panel.getActionMap().put("openAction", openAction);
+		panel.getActionMap().put("startAction", startStopAction);
+		panel.getActionMap().put("resetAction", resetAction);
+		panel.getActionMap().put("zoomInAction", zoomInAction);
+		panel.getActionMap().put("zoomOutAction", zoomOutAction);
 		this.setContentPane(panel);
 
 		this.pack();

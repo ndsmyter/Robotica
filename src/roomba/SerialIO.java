@@ -1,7 +1,9 @@
 package roomba;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import javax.comm.CommPortIdentifier;
@@ -26,6 +28,7 @@ public class SerialIO {
 		outputStream.write(toByteArray(opcode, data));
 		outputStream.write(new byte[]{10});
 		outputStream.flush();
+		//TODO wachten op ACK van roomba voor terug te keren.
 	}
 
 	private short getUnsignedByte(byte opcode) {
@@ -87,9 +90,11 @@ public class SerialIO {
 
 class Luisteraar extends Thread {
 	private InputStream inputStream = null;
+	private BufferedReader br = null;
 
 	public Luisteraar(InputStream inputStream) {
 		this.inputStream = inputStream;
+		br = new BufferedReader(new InputStreamReader(inputStream));
 	}
 
 	public void run() {
@@ -97,10 +102,12 @@ class Luisteraar extends Thread {
 			try {
 				while(inputStream.available() > 0){
 					int in;
-					if((in = inputStream.read()) != 45)
+					System.out.println("[ROOMBA]" + br.readLine());
+					/*if((in = inputStream.read()) != 45)
 						System.out.println(in);
 					else
 						System.out.println("---");
+						*/
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

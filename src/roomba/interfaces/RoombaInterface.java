@@ -60,4 +60,9 @@ public interface RoombaInterface {
 	 */
 	public void turnAtSpot(int degrees, boolean turnRight);
 
+	/**
+	 * Sends stop command to roomba
+	 */
+	public void stop();
+
 }

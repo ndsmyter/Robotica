@@ -1,6 +1,7 @@
 package emulator;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -8,10 +9,9 @@ import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.IOException;
 
-import javax.imageio.ImageWriter;
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -83,22 +83,31 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				}
 			}
 		};
-		Action saveAction = new AbstractAction("Save") {
+		Action saveAction = new AbstractAction("Screenshot") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("SAVE");
-//				BufferedImage offImage = new BufferedImage(100, 50,
-//						BufferedImage.TYPE_INT_ARGB);
-//
-//				Graphics2D g2 = offImage.createGraphics();
-//
-//				try {
-//					FileOutputStream fos = new FileOutputStream(new File(
-//							"output.bmp"));
-//					fos.write(new byte[] {0, 0, 0, 0, 0, 0})
-//				} catch (FileNotFoundException e1) {
-//					e1.printStackTrace();
-//				}
+				BufferedImage offImage = new BufferedImage(mapPanel.getWidth(),
+						mapPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+				offImage.setRGB(0, 0, Color.BLACK.getRGB());
+				Graphics2D g2 = offImage.createGraphics();
+
+				g2.setBackground(Color.BLUE);
+				g2.setColor(Color.RED);
+				g2.drawRect(0, 0, 50, 50);
+
+				g2.setClip(0, 0, mapPanel.getWidth(), mapPanel.getHeight());
+				mapPanel.paintComponent(g2);
+
+				int nr = 1;
+				while (new File("screenshot" + nr + ".png").exists())
+					nr++;
+				try {
+					ImageIO.write(offImage, "png", new File("screenshot" + nr
+							+ ".png"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		};
 		Action resetAction = new AbstractAction("Reset") {
@@ -157,7 +166,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		panel.getActionMap().put("zoomOutAction", zoomOutAction);
 		this.setContentPane(panel);
 
-		saveAction.actionPerformed(null);
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);

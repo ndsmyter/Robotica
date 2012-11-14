@@ -29,9 +29,9 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
         ArrayList<Particle> particlesNewTmp = new ArrayList<Particle>();
         ArrayList<Particle> particlesNew = new ArrayList<Particle>();
         for(Particle p : particles){
-            RobotState newPosition = sample_motion_model(u, p.getPosition());
-            double weight = measurement_model_map(z, newPosition, p.getMap());
-            MapStructure newMap = updated_occupancy_grid(z, newPosition, p.getMap());
+            RobotState newPosition = sampleMotionModel(u, p.getPosition());
+            double weight = measurementModelMap(z, newPosition, p.getMap());
+            MapStructure newMap = updatedOccupancyGrid(z, newPosition, p.getMap());
             particlesNewTmp.add(new Particle(newPosition,newMap,weight));
         }
         for (int i = 0; i < particles.size(); i++) {
@@ -41,16 +41,16 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
         return particlesNew;
     }
     
-    public RobotState sample_motion_model(int[] u, RobotState x){
+    public RobotState sampleMotionModel(int[] u, RobotState x){
         return x;
     }
     
-    public double measurement_model_map(int[] z, RobotState x, MapStructure m){
+    public double measurementModelMap(int[] z, RobotState x, MapStructure m){
     
         return 1.0;
     }
     
-    public MapStructure updated_occupancy_grid(int[] z, RobotState x, MapStructure m){
+    public MapStructure updatedOccupancyGrid(int[] z, RobotState x, MapStructure m){
         return m;
     }
     

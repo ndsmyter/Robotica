@@ -1,6 +1,7 @@
 package emulator;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -8,16 +9,16 @@ import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.IOException;
 
-import javax.imageio.ImageWriter;
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
@@ -83,22 +84,31 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				}
 			}
 		};
-		Action saveAction = new AbstractAction("Save") {
+		Action saveAction = new AbstractAction("Screenshot") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("SAVE");
-//				BufferedImage offImage = new BufferedImage(100, 50,
-//						BufferedImage.TYPE_INT_ARGB);
-//
-//				Graphics2D g2 = offImage.createGraphics();
-//
-//				try {
-//					FileOutputStream fos = new FileOutputStream(new File(
-//							"output.bmp"));
-//					fos.write(new byte[] {0, 0, 0, 0, 0, 0})
-//				} catch (FileNotFoundException e1) {
-//					e1.printStackTrace();
-//				}
+				BufferedImage offImage = new BufferedImage(mapPanel.getWidth(),
+						mapPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+				offImage.setRGB(0, 0, Color.BLACK.getRGB());
+				Graphics2D g2 = offImage.createGraphics();
+
+				g2.setBackground(Color.BLUE);
+				g2.setColor(Color.RED);
+				g2.drawRect(0, 0, 50, 50);
+
+				g2.setClip(0, 0, mapPanel.getWidth(), mapPanel.getHeight());
+				mapPanel.paintComponent(g2);
+
+				int nr = 1;
+				while (new File("screenshot" + nr + ".png").exists())
+					nr++;
+				try {
+					ImageIO.write(offImage, "png", new File("screenshot" + nr
+							+ ".png"));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		};
 		Action resetAction = new AbstractAction("Reset") {
@@ -118,6 +128,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				}).start();
 			}
 		};
+		Action showMapAction = new AbstractAction("Show map") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapPanel.mapShowing = !mapPanel.mapShowing;
+				repaint();
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -131,12 +148,17 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				"Zoom OUT (-, scroll down)");
 		resetAction
 				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
+		showMapAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Show map or not");
 		buttonPanel.add(new JButton(openAction));
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
 		buttonPanel.add(new JButton(zoomOutAction));
 		buttonPanel.add(new JButton(resetAction));
 		buttonPanel.add(startStopButton);
+		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
+		mapShowingButton.setSelected(mapPanel.mapShowing);
+		buttonPanel.add(mapShowingButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);
@@ -157,7 +179,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		panel.getActionMap().put("zoomOutAction", zoomOutAction);
 		this.setContentPane(panel);
 
-		saveAction.actionPerformed(null);
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);

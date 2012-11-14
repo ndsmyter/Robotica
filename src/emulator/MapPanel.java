@@ -70,6 +70,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private Point winPos;
 	private Brains brains;
 
+	public boolean mapShowing = false;
+
 	public MapPanel(Emulator emulator) {
 		super();
 		this.emulator = emulator;
@@ -143,7 +145,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		g.fillArc(-2, -2, 4, 4, 0, 360);
 
 		// Draw map
-		drawMap(g);
+		if (mapShowing)
+			drawMap(g);
 
 		// Draw the obstacles
 		drawObstacles(g);

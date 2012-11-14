@@ -4,3 +4,5 @@
 /bin/*.jar
 *.war
 *.ear
+
+screenshot*.png

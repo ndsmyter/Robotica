@@ -24,6 +24,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 	private MapPanel mapPanel;
 	private TextArea logArea;
 	private Emulator emulator;
+	private JButton startStopButton;
 
 	private boolean running = false;
 
@@ -40,7 +41,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 		// Init button bar
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
-		final JButton startStopButton = new JButton();
+		startStopButton = new JButton();
 		Action zoomInAction = new AbstractAction("+") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -89,25 +90,22 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						if (running) {
-							startStopButton.setText("Start");
-							running = false;
-							emulator.stop();
-						} else {
-							startStopButton.setText("Stop");
-							running = true;
-							emulator.restart();
-						}
+						startStop();
 					}
 				}).start();
 			}
 		};
 		startStopButton.setAction(startStopAction);
-		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Start/Stop execution (Space)");
-		openAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Open image (Ctrl+O)");
-		zoomInAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Zoom IN (+, scroll up)");
-		zoomOutAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Zoom OUT (-, scroll down)");
-		resetAction.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
+		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Start/Stop execution (Space)");
+		openAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Open image (Ctrl+O)");
+		zoomInAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Zoom IN (+, scroll up)");
+		zoomOutAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Zoom OUT (-, scroll down)");
+		resetAction
+				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
 		buttonPanel.add(new JButton(openAction));
 		buttonPanel.add(new JButton(zoomInAction));
 		buttonPanel.add(new JButton(zoomOutAction));
@@ -137,8 +135,22 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 	}
 
 	public void notifyReset() {
+		if (running)
+			startStop();
 		emulator.reset();
 		mapPanel.reset();
+	}
+
+	public void startStop() {
+		if (running) {
+			startStopButton.setText("Start");
+			running = false;
+			emulator.stop();
+		} else {
+			startStopButton.setText("Stop");
+			running = true;
+			emulator.restart();
+		}
 	}
 
 	@Override

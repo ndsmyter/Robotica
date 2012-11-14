@@ -20,17 +20,15 @@ public class Roomba implements RoombaInterface {
 		r.setDebug(true);
 		r.getBumberSensors();
 		r.waitFor(1000);
-		
-		/*for(int i=0; i<5; i++){
-			r.turnAtSpot(180, RoombaConfig.TURN_RIGHT);
-			r.turnAtSpot(180, RoombaConfig.TURN_LEFT);
-		}*/
-		/*for(int i=0; i<5; i++){
-			r.drive(500);
-			r.waitFor(5000);
-			r.drive(-500);
-			r.waitFor(10000);
-		}*/
+
+		/*
+		 * for(int i=0; i<5; i++){ r.turnAtSpot(180, RoombaConfig.TURN_RIGHT);
+		 * r.turnAtSpot(180, RoombaConfig.TURN_LEFT); }
+		 */
+		/*
+		 * for(int i=0; i<5; i++){ r.drive(500); r.waitFor(5000); r.drive(-500);
+		 * r.waitFor(10000); }
+		 */
 	}
 
 	public void setDebug(boolean debug) {
@@ -42,11 +40,10 @@ public class Roomba implements RoombaInterface {
 		try {
 			this.serial = new SerialIO(RoombaConfig.IO_PORT);
 		} catch (NoSuchPortException e) {
-			e.printStackTrace();
+			System.out.println("Port not found");
 		} catch (PortInUseException e) {
-			e.printStackTrace();
+			System.out.println("Port in use");
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		waitFor(5000);
@@ -61,8 +58,10 @@ public class Roomba implements RoombaInterface {
 		short velocity = 0, radius = Short.MAX_VALUE;
 		long delay = 0;
 
-		if (millimeters < 0) velocity = -1;
-		else velocity = 1;
+		if (millimeters < 0)
+			velocity = -1;
+		else
+			velocity = 1;
 
 		switch (drive_mode) {
 		case RoombaConfig.DRIVE_MODE_SLOW:
@@ -75,19 +74,25 @@ public class Roomba implements RoombaInterface {
 			velocity *= RoombaConfig.DRIVE_DISTANCE_FAST;
 			break;
 		default:
-			if (!DEBUG) this.emulator.log("Unknow drive mode");
-			else System.err.println("Unknow drive mode");
+			if (!DEBUG)
+				this.emulator.log("Unknow drive mode");
+			else
+				System.err.println("Unknow drive mode");
 		}
 
-		delay = (millimeters * 1000/ velocity) ;
+		delay = (millimeters * 1000 / velocity);
 
-		if (DEBUG) System.out.println("[DRIVE] Dist: " + radius);
-		if (DEBUG) System.out.println("[DRIVE] Velo: " + velocity);
-		if (DEBUG) System.out.println("[DRIVE] Delay: " + delay);
+		if (DEBUG)
+			System.out.println("[DRIVE] Dist: " + radius);
+		if (DEBUG)
+			System.out.println("[DRIVE] Velo: " + velocity);
+		if (DEBUG)
+			System.out.println("[DRIVE] Delay: " + delay);
 
 		try {
 			// Start roomba
-			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, SerialIO.toByteArray(velocity, radius));
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE,
+					SerialIO.toByteArray(velocity, radius));
 			// wait for roomba to travel
 			waitFor(delay);
 			// TODO use internal distance sensor to track distance traveled
@@ -107,12 +112,15 @@ public class Roomba implements RoombaInterface {
 	}
 
 	@Override
-	public void turn(int degrees, boolean turnRight, int turn_mode, int drive_mode) {
+	public void turn(int degrees, boolean turnRight, int turn_mode,
+			int drive_mode) {
 		short velocity = 0, radius = 0;
 		long delay = 0;
 
-		if (degrees < 0) velocity = -1;
-		else velocity = 1;
+		if (degrees < 0)
+			velocity = -1;
+		else
+			velocity = 1;
 
 		switch (drive_mode) {
 		case RoombaConfig.DRIVE_MODE_SLOW:
@@ -125,15 +133,17 @@ public class Roomba implements RoombaInterface {
 			velocity *= RoombaConfig.DRIVE_DISTANCE_FAST;
 			break;
 		default:
-			if (!DEBUG) this.emulator.log("Unknow drive mode");
-			else System.err.println("Unknow drive mode");
+			if (!DEBUG)
+				this.emulator.log("Unknow drive mode");
+			else
+				System.err.println("Unknow drive mode");
 		}
 
 		radius = 1;
 
 		switch (turn_mode) {
 		case RoombaConfig.TURN_MODE_SPOT:
-			//radius *= RoombaConfig.TURN_RADIUS_SPOT;
+			// radius *= RoombaConfig.TURN_RADIUS_SPOT;
 			radius = RoombaConfig.ROOMBA_WHEEL_DISTANCE / 2;
 			break;
 		case RoombaConfig.TURN_MODE_SHARP:
@@ -146,43 +156,52 @@ public class Roomba implements RoombaInterface {
 			radius *= RoombaConfig.TURN_RADIUS_VERYWIDE;
 			break;
 		default:
-			if (!DEBUG) this.emulator.log("Unknow turning mode");
-			else System.err.println("Unknow turning mode");
+			if (!DEBUG)
+				this.emulator.log("Unknow turning mode");
+			else
+				System.err.println("Unknow turning mode");
 		}
 
-		double distance = Math.PI * radius * (degrees / 180.0); //[mm]
+		double distance = Math.PI * radius * (degrees / 180.0); // [mm]
 
-		delay = Math.abs((long) ((distance * 1000) / velocity)); //[ms]
+		delay = Math.abs((long) ((distance * 1000) / velocity)); // [ms]
 
-		if(turn_mode == RoombaConfig.TURN_MODE_SPOT) radius = 1;
+		if (turn_mode == RoombaConfig.TURN_MODE_SPOT)
+			radius = 1;
 
-		if(turnRight) radius *= -1;
+		if (turnRight)
+			radius *= -1;
 
-		if (DEBUG) System.out.println("[TURN] Radius: " + radius);
-		if (DEBUG) System.out.println("[TURN] Degrees: " + degrees);
-		if (DEBUG) System.out.println("[TURN] Dist: " + distance);
-		if (DEBUG) System.out.println("[TURN] Velo: " + velocity);
-		if (DEBUG) System.out.println("[TURN] Delay: " + delay);
+		if (DEBUG)
+			System.out.println("[TURN] Radius: " + radius);
+		if (DEBUG)
+			System.out.println("[TURN] Degrees: " + degrees);
+		if (DEBUG)
+			System.out.println("[TURN] Dist: " + distance);
+		if (DEBUG)
+			System.out.println("[TURN] Velo: " + velocity);
+		if (DEBUG)
+			System.out.println("[TURN] Delay: " + delay);
 
 		try {
 			// Start roomba
-			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, SerialIO.toByteArray(velocity, radius));
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE,
+					SerialIO.toByteArray(velocity, radius));
 			// wait for roomba to travel
 			waitFor(delay);
 			// TODO use internal distance sensor to track distance traveled
 			stop();
 		} catch (NullPointerException e) {
 			// Roomba doesn exist yet
-			e.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
 
 	@Override
 	public void turnAtSpot(int degrees, boolean turnRight) {
-		turn(degrees, turnRight, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+		turn(degrees, turnRight, RoombaConfig.TURN_MODE_SPOT,
+				RoombaConfig.DRIVE_MODE_SLOW);
 	}
 
 	@Override
@@ -190,20 +209,19 @@ public class Roomba implements RoombaInterface {
 		try {
 			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_START, new byte[] {});
 		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (NullPointerException e) {
-			e.printStackTrace();
+			// Serial doesn't exist
 		}
 	}
 
 	@Override
 	public void stop() {
 		try {
-			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {0, 0, 0, 0 });
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {
+					0, 0, 0, 0 });
 		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (NullPointerException e) {
-			e.printStackTrace();
+			// Serial doesn't exist
 		}
 	}
 
@@ -223,14 +241,13 @@ public class Roomba implements RoombaInterface {
 			try {
 				serial.sendCommand((byte) opcode, new byte[] {});
 			} catch (IOException e) {
-				e.printStackTrace();
 			} catch (NullPointerException e) {
 				// Serial doesn't exist
 			}
 		}
 	}
 
-	private void waitFor(long milliseconds){
+	private void waitFor(long milliseconds) {
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
@@ -238,31 +255,34 @@ public class Roomba implements RoombaInterface {
 			e.printStackTrace();
 		}
 	}
-	
-	private void setSongs(){
+
+	private void setSongs() {
 		try {
-			serial.sendCommand((byte) 140, new byte[] {(byte)0, 5, 69, 8, 69, 16, 30, 8, 69, 8, 69, 8});
-			serial.sendCommand((byte) 140, new byte[] {(byte)1, 11, 69, 8, 69, 8, 69, 8, 30, 8, 69, 16, 69, 16, 69, 16, 30, 8, 69, 8, 69, 8, 69, 8});
+			serial.sendCommand((byte) 140, new byte[] { (byte) 0, 5, 69, 8, 69,
+					16, 30, 8, 69, 8, 69, 8 });
+			serial.sendCommand((byte) 140, new byte[] { (byte) 1, 11, 69, 8,
+					69, 8, 69, 8, 30, 8, 69, 16, 69, 16, 69, 16, 30, 8, 69, 8,
+					69, 8, 69, 8 });
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
 			// Serial doesn't exist
 		}
 	}
-	
-	private void singSong(int select){
+
+	private void singSong(int select) {
 		try {
-			serial.sendCommand((byte) 141, new byte[] {(byte)select});
+			serial.sendCommand((byte) 141, new byte[] { (byte) select });
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
 			// Serial doesn't exist
 		}
 	}
-	
-	private void getBumberSensors(){
+
+	private void getBumberSensors() {
 		try {
-			serial.sendCommand((byte) 148, new byte[] {1, 7});
+			serial.sendCommand((byte) 148, new byte[] { 1, 7 });
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {

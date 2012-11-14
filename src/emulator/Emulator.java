@@ -35,7 +35,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	public Emulator(Brains brains) {
 		this.brains = brains;
-		loadBackgroundMap(new File("spiral.bmp"));
+		if (brains.getMapToShow() != null)
+			loadBackgroundMap(new File(brains.getMapToShow()));
 		roomba = new Roomba(this);
 		new EmulatorWindow(this);
 	}

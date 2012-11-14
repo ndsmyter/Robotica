@@ -36,12 +36,25 @@ public class Brains implements ListenerInterface {
 	private AlgorithmInterface algorithm;
 
 	private boolean stopped;
+	private String mapToShow;
 
 	public Brains() {
+		this(null);
+	}
+
+	public Brains(String map) {
+		this.mapToShow = map;
 		algorithm = new DummyAlgorithm();
 		reset();
 		emulator = new Emulator(this);
 		emulator.log("Initiating application");
+	}
+
+	/**
+	 * @return the map to show in the emulator
+	 */
+	public String getMapToShow() {
+		return mapToShow;
 	}
 
 	public boolean isStopped() {
@@ -143,12 +156,13 @@ public class Brains implements ListenerInterface {
 			ArrayList<Point> path = Utils.getPath(sensorState, new RobotState(
 					measurement.x, measurement.y, sensorState.dir));
 			for (Point p : path) {
-//				double newValue = mapStructure.get(Utils.pointToGrid(p)) - 0.10;
-//				if (newValue > 1)
-//					newValue = 1;
-//				if (newValue < 0)
-//					newValue = 0;
-//				mapStructure.put(Utils.pointToGrid(p), newValue);
+				// double newValue = mapStructure.get(Utils.pointToGrid(p)) -
+				// 0.10;
+				// if (newValue > 1)
+				// newValue = 1;
+				// if (newValue < 0)
+				// newValue = 0;
+				// mapStructure.put(Utils.pointToGrid(p), newValue);
 				mapStructure.put(Utils.pointToGrid(p), 0);
 			}
 			if (data[i] < 800)
@@ -172,6 +186,12 @@ public class Brains implements ListenerInterface {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new Brains();
+		/*
+		 * args[0] -> the map to be used
+		 */
+		if (args.length > 0)
+			new Brains(args[0]);
+		else
+			new Brains();
 	}
 }

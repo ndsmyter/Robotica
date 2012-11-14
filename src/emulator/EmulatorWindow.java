@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
@@ -127,6 +128,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				}).start();
 			}
 		};
+		Action showMapAction = new AbstractAction("Show map") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapPanel.mapShowing = !mapPanel.mapShowing;
+				repaint();
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -140,12 +148,17 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				"Zoom OUT (-, scroll down)");
 		resetAction
 				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
+		showMapAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Show map or not");
 		buttonPanel.add(new JButton(openAction));
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
 		buttonPanel.add(new JButton(zoomOutAction));
 		buttonPanel.add(new JButton(resetAction));
 		buttonPanel.add(startStopButton);
+		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
+		mapShowingButton.setSelected(mapPanel.mapShowing);
+		buttonPanel.add(mapShowingButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);

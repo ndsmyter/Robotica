@@ -70,7 +70,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private Point winPos;
 	private Brains brains;
 
-	public boolean mapShowing = false;
+	public boolean mapShowing = true;
 
 	public MapPanel(Emulator emulator) {
 		super();

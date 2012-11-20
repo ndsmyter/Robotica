@@ -55,11 +55,44 @@ public class RouletteWheelSelectionTest {
 			double diff = probability - occurrenceRate; 
 			
 			String msg = 
-				"Particle with key " + key + " occurred too often. (With an occurrence rate of " +
-				occurrenceRate + " instead of the expected rate of " + probability + ".";
+				"Particle with key " + key + " occurred too often or too little. \n(With an occurrence rate of " +
+				occurrenceRate + " instead of the expected rate of " + probability + ".)";
 			assertTrue(msg, diff < 0.01);
-			System.out.println("Particle " + key + ", probability - occurrence_rate = " + diff);
+			//System.out.println("Particle " + key + ", probability - occurrence_rate = " + diff);
 		}
 	}
 
+	@Test
+	public void testNextRandomParticle() {
+		int amount = 1000000;
+		List<Particle> sample = new ArrayList<Particle>();
+		for (int i = 0; i < amount; i++) {
+			sample.add(rws.nextRandomParticle(particles));
+		}
+	
+		assertEquals("Did not receive the right amount of samples", amount, sample.size());
+		
+		double sumWeights = 0;
+		Map<Double, Integer> counting = new HashMap<Double, Integer>();
+		for (Particle p : particles) {
+			counting.put(p.getWeight(), 0);
+			sumWeights += p.getWeight();
+		}
+		for (Particle p : sample) {
+			double key = p.getWeight();
+			counting.put(key, counting.get(key)+1);
+		}
+		for (Particle p : particles) {
+			double key = p.getWeight();
+			double probability = key / sumWeights;
+			double occurrenceRate = ((double) counting.get(key)) / amount;
+			double diff = probability - occurrenceRate; 
+			
+			String msg = 
+				"Particle with key " + key + " occurred too often or too little. \n(With an occurrence rate of " +
+				occurrenceRate + " instead of the expected rate of " + probability + ".)";
+			assertTrue(msg, diff < 0.01);
+			//System.out.println("Particle " + key + ", probability - occurrence_rate = " + diff);
+		}
+	}
 }

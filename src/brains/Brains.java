@@ -2,6 +2,7 @@ package brains;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 
 import roomba.RoombaConfig;
 import brains.algorithms.AlgorithmInterface;
@@ -29,7 +30,7 @@ public class Brains implements ListenerInterface {
     private RobotState currentState;
     private MapStructure mapStructure;
     
-    private ArrayList<Particle> particles;
+    private List<Particle> particles;
     
     private static final byte DRIVE = 0;
     private static final byte RIGHT = 1;
@@ -52,11 +53,11 @@ public class Brains implements ListenerInterface {
     }
     
     
-    public ArrayList<Particle> getParticles() {
+    public List<Particle> getParticles() {
         return particles;
     }
 
-    public void setParticles(ArrayList<Particle> particles) {
+    public void setParticles(List<Particle> particles) {
         this.particles = particles;
     }
 

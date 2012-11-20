@@ -4,9 +4,13 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.imageio.ImageIO;
 
@@ -32,6 +36,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Roomba roomba;
 	private Brains brains;
 	private ArrayList<Point> background = new ArrayList<Point>();
+
+	private static final String LOG_FILENAME = "log.txt";
 
 	public Emulator(Brains brains) {
 		this.brains = brains;
@@ -134,13 +140,23 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void log(String message) {
 		fireStateChanged(true, new Event(EventType.LOG, message));
 		System.out.println(message);
+		try {
+			// Create file
+			FileWriter fstream = new FileWriter(LOG_FILENAME, true);
+			BufferedWriter out = new BufferedWriter(fstream);
+			SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+			out.append(sdf.format(Calendar.getInstance().getTime()) + "  "
+					+ message + "\n");
+			// Close the output stream
+			out.close();
+		} catch (Exception e) {
+		}
 	}
 
 	public void setBackground(ArrayList<Point> background) {
 		ArrayList<Point> backgroundGrid = new ArrayList<Point>();
-		for (Point p : background) {
+		for (Point p : background)
 			backgroundGrid.add(Utils.pointToGrid(p));
-		}
 		this.background = background;
 	}
 

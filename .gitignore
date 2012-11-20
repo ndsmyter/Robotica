@@ -5,4 +5,6 @@
 *.war
 *.ear
 
+# Project dependencies #
 screenshot*.png
+log.txt

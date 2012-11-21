@@ -27,7 +27,7 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 	}
 
 	public void run(Brains b) {
-		while (i < 10) {
+		while (i < 10 && !b.isStopped()) {
 			doStep(b);
 		}
 	}

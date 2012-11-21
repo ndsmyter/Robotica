@@ -1,8 +1,6 @@
 package brains;
 
-import java.awt.Point;
 import java.util.List;
-import java.util.Map;
 
 import roomba.RoombaConfig;
 import brains.algorithms.AlgorithmInterface;

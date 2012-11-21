@@ -1,18 +1,18 @@
 package brains.algorithms;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import roomba.RoombaConfig;
 import brains.Brains;
 import brains.MapStructure;
 import brains.Particle;
-import common.Config;
 
+import common.Config;
 import common.RobotState;
 import common.Sensor;
 import common.Utils;
-import java.awt.Point;
-import roomba.RoombaConfig;
 
 /**
  * 
@@ -27,7 +27,7 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 	}
 
 	public void run(Brains b) {
-		while (i < 10 && !b.isStopped()) {
+		while (i < 10) {
 			doStep(b);
 		}
 	}
@@ -76,12 +76,10 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
 			Sensor s = RoombaConfig.SENSORS[i];
 			RobotState sensorState = Utils.getSensorState(x, s);
-			Point measurement = Utils.sensorDataToPoint(x, z[i], s);
-
 			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
 			for (Point p : path) {
 				double logOdds = m.getLogOdds(p)
-						+ inverseSensorModel(m, p, x, z[i], s);
+						+ inverseSensorModel(m, p, x, sensorState, z[i], s);
 				mapNew.putLogOdds(Utils.pointToGrid(p), logOdds);
 			}
 		}
@@ -89,12 +87,13 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 	}
 
 	public double inverseSensorModel(MapStructure m, Point p, RobotState x,
-			int z, Sensor s) {
+			RobotState sensorState, int z, Sensor s) {
 		double result = 0;
-		int r = Utils.euclideanDistance(new Point(x.x, x.y), p);
+		int r = Utils.euclideanDistance(
+				new Point(sensorState.x, sensorState.y), p);
 		p = Utils.pointToGrid(p);
 		Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(x, z, s));
-		if (r > Math.min(s.zMax, z)) {
+		if (r > Math.min(s.zMax, z) + Config.GRID_SIZE) {
 			result = 0;
 		} else if (z < s.zMax && p.equals(measurement)) {
 			result = 1;

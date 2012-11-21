@@ -45,6 +45,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		// Init log area
 		logArea = new TextArea();
 		logArea.setPreferredSize(new Dimension(200, 500));
+		logArea.setEditable(false);
 		emulator.addChangeListener(this);
 
 		// Init button bar
@@ -134,6 +135,17 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				}).start();
 			}
 		};
+		Action stepAction = new AbstractAction("Step") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						doStep();
+					}
+				}).start();
+			}
+		};
 		Action showMapAction = new AbstractAction("Show map") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -152,6 +164,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				"Zoom IN (+, scroll up)");
 		zoomOutAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Zoom OUT (-, scroll down)");
+		stepAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Do one step of the Algorithm (Ctrl+N)");
 		resetAction
 				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
 		showMapAction.putValue(AbstractAction.SHORT_DESCRIPTION,
@@ -162,6 +176,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		buttonPanel.add(new JButton(zoomOutAction));
 		buttonPanel.add(new JButton(resetAction));
 		buttonPanel.add(startStopButton);
+		buttonPanel.add(new JButton(stepAction));
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
 		mapShowingButton.setSelected(mapPanel.mapShowing);
 		buttonPanel.add(mapShowingButton);
@@ -177,12 +192,14 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				.put(KeyStroke.getKeyStroke("ctrl R"), "resetAction");
 		panel.getInputMap().put(KeyStroke.getKeyStroke('+'), "zoomInAction");
 		panel.getInputMap().put(KeyStroke.getKeyStroke('-'), "zoomOutAction");
+		panel.getInputMap().put(KeyStroke.getKeyStroke("ctrl N"), "stepAction");
 		panel.getActionMap().put("openAction", openAction);
 		panel.getActionMap().put("saveAction", saveAction);
 		panel.getActionMap().put("startAction", startStopAction);
 		panel.getActionMap().put("resetAction", resetAction);
 		panel.getActionMap().put("zoomInAction", zoomInAction);
 		panel.getActionMap().put("zoomOutAction", zoomOutAction);
+		panel.getActionMap().put("stepAction", stepAction);
 		this.setContentPane(panel);
 
 		this.pack();
@@ -207,6 +224,10 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 			running = true;
 			emulator.restart();
 		}
+	}
+
+	public void doStep() {
+		emulator.doStep();
 	}
 
 	@Override

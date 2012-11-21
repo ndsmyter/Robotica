@@ -93,6 +93,10 @@ public class Brains implements ListenerInterface {
 		algorithm.run(this);
 	}
 
+	public void doStep() {
+		algorithm.doStep(this);
+	}
+
 	private void testDriving() {
 		// Change this if you want to debug the application
 		byte[] movements = { LEFT, LEFT, DRIVE, DRIVE, DRIVE, DRIVE, DRIVE,

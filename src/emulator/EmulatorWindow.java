@@ -34,6 +34,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 	private boolean running = false;
 
+	private static final String SCREENSHOTS = "screenshots";
+
 	public EmulatorWindow(final Emulator emulator) {
 		super("Emulator");
 		this.emulator = emulator;
@@ -100,12 +102,16 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				g2.setClip(0, 0, mapPanel.getWidth(), mapPanel.getHeight());
 				mapPanel.paintComponent(g2);
 
+				// Make screenshot folder
+				if (!new File(SCREENSHOTS).exists())
+					new File(SCREENSHOTS).mkdir();
 				int nr = 1;
-				while (new File("screenshot" + nr + ".png").exists())
+				while (new File(SCREENSHOTS + "/screenshot" + nr + ".png")
+						.exists())
 					nr++;
 				try {
-					ImageIO.write(offImage, "png", new File("screenshot" + nr
-							+ ".png"));
+					ImageIO.write(offImage, "png", new File(SCREENSHOTS
+							+ "/screenshot" + nr + ".png"));
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}

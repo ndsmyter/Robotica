@@ -172,7 +172,7 @@ public class Brains implements ListenerInterface {
 	}
 
 	public void setMap(MapStructure m) {
-		m.useNewMap(m);
+		mapStructure.useNewMap(m);
 	}
 
 	public RobotState getCurrentState() {

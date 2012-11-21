@@ -15,6 +15,7 @@ import common.Utils;
 import emulator.Emulator;
 import emulator.Event;
 import emulator.interfaces.ListenerInterface;
+import java.util.Map;
 
 /**
  * This class will start everything up, and will eventually control everything
@@ -133,7 +134,7 @@ public class Brains implements ListenerInterface {
             Thread.sleep(SLEEP_TIME);
             for (int i = 0; i < 36; i++) {
                 turn(10, false);
-                processSensorData();
+                DummyAlgorithm.processSensorData(this);
                 Thread.sleep(SLEEP_TIME);
             }
         } catch (InterruptedException e) {
@@ -162,37 +163,17 @@ public class Brains implements ListenerInterface {
         return emulator.getSensorData();
     }
 
-    public void processSensorData() {
-        int[] data = getSensorData();
-        for (int i = 0; i < 5; i++) {
-            RobotState sensorState = Utils.getSensorState(currentState,
-                    RoombaConfig.SENSORS[i]);
-            Point measurement = Utils.sensorDataToPoint(currentState, data[i],
-                    RoombaConfig.SENSORS[i]);
-            ArrayList<Point> path = Utils.getPath(sensorState, new RobotState(
-                    measurement.x, measurement.y, sensorState.dir));
-            for (Point p : path) {
-                // double newValue = mapStructure.get(Utils.pointToGrid(p)) -
-                // 0.10;
-                // if (newValue > 1)
-                // newValue = 1;
-                // if (newValue < 0)
-                // newValue = 0;
-                // mapStructure.put(Utils.pointToGrid(p), newValue);
-                mapStructure.put(Utils.pointToGrid(p), 0);
-            }
-            if (data[i] < 800) {
-                mapStructure.put(Utils.pointToGrid(measurement), 1);
-            }
-        }
-    }
-
     public void addObstacleListener(ObstacleListener listener) {
         mapStructure.addObstacleListener(listener);
     }
 
     public MapStructure getMap() {
         return mapStructure;
+    }
+    
+    public void setMap(MapStructure m){
+        for (Map.Entry<Point, Double> cell : m.getAll().entrySet())
+            mapStructure.put(cell.getKey(), cell.getValue());
     }
 
     public RobotState getCurrentState() {

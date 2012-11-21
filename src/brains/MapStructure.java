@@ -10,14 +10,24 @@ import brains.interfaces.ObstacleListener;
 
 public class MapStructure implements MapInterface {
 	private HashMap<Point, Double> cells;
+	private HashMap<Point, Double> logOdds;
 
 	public MapStructure() {
 		cells = new HashMap<Point, Double>();
+		logOdds = new HashMap<Point, Double>();
 	}
 
 	@Override
 	public void put(Point point, double value) {
 		cells.put(point, value);
+		logOdds.put(point, Math.log(value/(1-value)));
+		fireObstacleAdded(point, value);
+	}
+        
+        
+	public void putLogOdds(Point point, double value) {
+		cells.put(point, 1 - (1/(1+Math.exp(value))));
+		logOdds.put(point, value);
 		fireObstacleAdded(point, value);
 	}
 
@@ -28,6 +38,16 @@ public class MapStructure implements MapInterface {
 			value = cells.get(point);
 		else
 			value = 0.5;
+		return value;
+	}
+        
+        
+	public double getLogOdds(Point point) {
+		double value;
+		if (logOdds.containsKey(point))
+			value = logOdds.get(point);
+		else
+			value = 0;
 		return value;
 	}
 

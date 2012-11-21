@@ -20,15 +20,14 @@ public class MapStructure implements MapInterface {
 	@Override
 	public void put(Point point, double value) {
 		cells.put(point, value);
-		logOdds.put(point, Math.log(value/(1-value)));
-		fireObstacleAdded(point, value);
+		logOdds.put(point, Math.log(value / (1 - value)));
+		fireObstacleAdded();
 	}
-        
-        
+
 	public void putLogOdds(Point point, double value) {
-		cells.put(point, 1 - (1/(1+Math.exp(value))));
+		cells.put(point, 1 - (1 / (1 + Math.exp(value))));
 		logOdds.put(point, value);
-		fireObstacleAdded(point, value);
+		fireObstacleAdded();
 	}
 
 	@Override
@@ -40,8 +39,7 @@ public class MapStructure implements MapInterface {
 			value = 0.5;
 		return value;
 	}
-        
-        
+
 	public double getLogOdds(Point point) {
 		double value;
 		if (logOdds.containsKey(point))
@@ -62,9 +60,9 @@ public class MapStructure implements MapInterface {
 		obstacleListener.add(listener);
 	}
 
-	public void fireObstacleAdded(Point point, double value) {
+	public void fireObstacleAdded() {
 		for (ObstacleListener listener : obstacleListener)
-			listener.obstacleAdded(point, value);
+			listener.obstacleAdded();
 	}
 
 	public MapStructure clone() {
@@ -72,5 +70,12 @@ public class MapStructure implements MapInterface {
 		for (Entry<Point, Double> cell : this.cells.entrySet())
 			newMap.put(cell.getKey(), cell.getValue());
 		return newMap;
+	}
+
+	public void useNewMap(MapStructure newMap) {
+		this.cells.clear();
+		for (Entry<Point, Double> cell : newMap.getAll().entrySet())
+			this.put(cell.getKey(), cell.getValue());
+		fireObstacleAdded();
 	}
 }

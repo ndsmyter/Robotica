@@ -20,7 +20,7 @@ public final class RoombaConfig {
 	public static final int TURN_MODE_SHARP = 1;
 	public static final int TURN_MODE_WIDE = 2;
 	public static final int TURN_MODE_VERYWIDE = 3;
-	
+
 	public static final boolean TURN_RIGHT = true;
 	public static final boolean TURN_LEFT = false;
 
@@ -39,9 +39,8 @@ public final class RoombaConfig {
 	public static final int ROOMBA_WHEEL_DISTANCE = 240;
 
 	// Sensor placement
-	public static final Sensor[] SENSORS = { new Sensor(100, 0, 0, 100),
-			new Sensor(100, 50, 0, 100), new Sensor(100, -50, 0, 100),
-			new Sensor(80, -80, -45, 100), new Sensor(80, 80, 45, 100) };
-	
-	
+	public static final Sensor[] SENSORS = { new Sensor(-100, 100, -45, 1000),
+			new Sensor(-50, 120, 0, 1000), new Sensor(0, 120, 0, 1000),
+			new Sensor(-50, 120, 0, 1000), new Sensor(100, 100, 45, 1000) };
+
 }

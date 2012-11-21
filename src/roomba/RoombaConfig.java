@@ -39,8 +39,8 @@ public final class RoombaConfig {
 	public static final int ROOMBA_WHEEL_DISTANCE = 240;
 
 	// Sensor placement
-	public static final Sensor[] SENSORS = { new Sensor(-100, 100, -45, 1000),
-			new Sensor(-50, 120, 0, 1000), new Sensor(0, 120, 0, 1000),
-			new Sensor(-50, 120, 0, 1000), new Sensor(100, 100, 45, 1000) };
+	public static final Sensor[] SENSORS = { new Sensor(100, -100, -45, 1000),
+			new Sensor(120, -50, 0, 1000), new Sensor(120, 0, 0, 1000),
+			new Sensor(120, 50, 0, 1000), new Sensor(100, 100, 45, 1000) };
 
 }

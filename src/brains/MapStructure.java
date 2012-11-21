@@ -28,7 +28,7 @@ public class MapStructure implements MapInterface {
 	public void putLogOdds(Point point, double value) {
 		cells.put(point, 1 - (1/(1+Math.exp(value))));
 		logOdds.put(point, value);
-		fireObstacleAdded(point, value);
+		fireObstacleAdded(point, 1 - (1/(1+Math.exp(value))));
 	}
 
 	@Override

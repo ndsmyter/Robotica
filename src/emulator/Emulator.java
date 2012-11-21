@@ -121,7 +121,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 				sensor);
 		ArrayList<Point> points = Utils.getPath(sensorState, 800);
 		boolean stop = false;
-		int dist = 800;
+		int dist = sensor.zMax;
 		// Loop over all sensor points
 		for (int i = 0; i < points.size() && !stop; i++) {
 			Point sensorP = Utils.pointToGrid(points.get(i));

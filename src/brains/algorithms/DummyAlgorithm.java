@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import brains.Brains;
 import brains.MapStructure;
+import common.Config;
 import common.RobotState;
 import common.Sensor;
 
@@ -37,6 +38,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
             } else {
                 b.turn(90, true);
             }
+//            b.turn(30, true);
             i++;
         }
     }
@@ -82,29 +84,27 @@ public class DummyAlgorithm implements AlgorithmInterface {
         MapStructure mapNew = m.clone();
         for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
             Sensor s = RoombaConfig.SENSORS[i];
-            RobotState sensorState = Utils.getSensorState(x,s);
-            Point measurement = Utils.sensorDataToPoint(x, z[i], s);
-            
+            RobotState sensorState = Utils.getSensorState(x,s);            
             ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
             for (Point p : path) {
-                double logOdds = m.getLogOdds(p) + inverseSensorModel(m,p,x,z[i], s);
+                double logOdds = m.getLogOdds(p) + inverseSensorModel(m,p,x,sensorState,z[i], s);
                 mapNew.putLogOdds(Utils.pointToGrid(p), logOdds);
             }
         }
         return mapNew;
     }
     
-    public double inverseSensorModel(MapStructure m, Point p, RobotState x, int z, Sensor s){
+    public double inverseSensorModel(MapStructure m, Point p, RobotState x,RobotState sensorState, int z, Sensor s){
         double result = 0;
-        int r = Utils.euclideanDistance(new Point(x.x, x.y), p);
+        int r = Utils.euclideanDistance(new Point(sensorState.x, sensorState.y), p);
         p = Utils.pointToGrid(p);
         Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(x, z, s));
-        if(r > Math.min(s.zMax,z)){
+        if(r > Math.min(s.zMax,z)+Config.GRID_SIZE){
             result = 0;
         } else if (z < s.zMax && p.equals(measurement)){
-            result = 10;
+            result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
         } else if (r < z){
-            result = -10;
+            result = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
         }        
         return result;
     }

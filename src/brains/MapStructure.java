@@ -3,6 +3,7 @@ package brains;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import brains.interfaces.MapInterface;
 import brains.interfaces.ObstacleListener;
@@ -22,12 +23,12 @@ public class MapStructure implements MapInterface {
 
 	@Override
 	public double get(Point point) {
-            double value;
-            if(cells.containsKey(point))
-		value = cells.get(point);
-            else 
-                value = 0.5;
-            return value;
+		double value;
+		if (cells.containsKey(point))
+			value = cells.get(point);
+		else
+			value = 0.5;
+		return value;
 	}
 
 	@Override
@@ -44,5 +45,12 @@ public class MapStructure implements MapInterface {
 	public void fireObstacleAdded(Point point, double value) {
 		for (ObstacleListener listener : obstacleListener)
 			listener.obstacleAdded(point, value);
+	}
+
+	public MapStructure clone() {
+		MapStructure newMap = new MapStructure();
+		for (Entry<Point, Double> cell : this.cells.entrySet())
+			newMap.put(cell.getKey(), cell.getValue());
+		return newMap;
 	}
 }

@@ -42,8 +42,9 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
             updatedParticles.add(new Particle(newPosition,newMap,weight));
         }
         
-        // take samples from updated particles
-        return roulette.nextRandomParticles(updatedParticles, particles.size());
+        List<Particle> resampledParticles = roulette.nextRandomParticles(updatedParticles, particles.size());
+        
+        return resampledParticles;
     }
     
     public RobotState sampleMotionModel(int[] u, RobotState x){

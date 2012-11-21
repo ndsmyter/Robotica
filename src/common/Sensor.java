@@ -8,11 +8,13 @@ public class Sensor {
 	public int xOffset;
 	public int yOffset;
 	public int dir;
+	public int zMax;
 
-	public Sensor(int xOffset, int yOffset, int dir) {
+	public Sensor(int xOffset, int yOffset, int dir, int zMax) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
 		this.dir = dir;
+		this.zMax = zMax;
 	}
 
 	/*

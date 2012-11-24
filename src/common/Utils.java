@@ -36,25 +36,28 @@ public class Utils {
 
     public static ArrayList<Point> getPath(RobotState currentState,
             RobotState nextState) {
-        ArrayList<Point> path = new ArrayList<Point>();
-        Point currentG = pointToGrid(new Point(currentState.x, currentState.y));
-        Point nextG = pointToGrid(new Point(nextState.x, nextState.y));
-        int length = euclideanDistance(currentG, nextG);
-        for (int i = 0; i < length; i += Config.GRID_SIZE) {
-            RobotState intermediate = driveForward(currentState, i);
-            path.add(new Point(intermediate.x, intermediate.y));
-        }
-        return path;
+        int length = euclideanDistance(new Point(currentState.x,currentState.y), new Point(nextState.x, nextState.y));
+        return getPath(currentState, length, 0);
     }
 
     public static ArrayList<Point> getPath(RobotState currentState, int distance) {
+        return getPath(currentState, distance, 0);
+    }
+    
+    public static ArrayList<Point> getPath(RobotState currentState, int distance, int width){
         ArrayList<Point> path = new ArrayList<Point>();
-        Point g = pointToGrid(new Point(currentState.x, currentState.y));
-        currentState.x = g.x;
-        currentState.y = g.y;
-        for (int i = 0; i < distance; i += Config.GRID_SIZE) {
-            RobotState intermediate = driveForward(currentState, i);
-            path.add(new Point(intermediate.x, intermediate.y));
+        RobotState current = new RobotState(currentState.x, currentState.y, currentState.dir - 90);
+        current = driveForward(current,width/2);;        
+        current.dir = currentState.dir;
+        RobotState intermediate;
+        for (int w = 0; w <= width ; w+= Config.GRID_SIZE) {
+            for (int d = 0; d < distance; d += Config.GRID_SIZE) {
+                intermediate = driveForward(current, d);
+                path.add(pointToGrid(new Point(intermediate.x, intermediate.y)));
+            }
+            current.dir += 90;
+            current = driveForward(current,Config.GRID_SIZE);
+            current.dir -= 90;
         }
         return path;
     }

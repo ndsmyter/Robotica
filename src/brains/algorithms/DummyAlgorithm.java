@@ -24,7 +24,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
     }
 
     public void run(Brains b) {
-        while (i < MAX_VALUE && !b.isStopped()) {
+        while (!b.isStopped()) { //i < MAX_VALUE &&
             doStep(b);
         }
     }
@@ -34,14 +34,14 @@ public class DummyAlgorithm implements AlgorithmInterface {
         processSensorData2(b);
         boolean free = true;
         ArrayList<Point> path = Utils.getPath(b.getCurrentState(), STEP
-                + RoombaConfig.ROOMBA_DIAMETER / 2);
+                + RoombaConfig.ROOMBA_DIAMETER / 2, RoombaConfig.ROOMBA_DIAMETER);
         for (Point p : path) {
             free &= (b.getMap().get(Utils.pointToGrid(p)) < 0.60);
         }
         if (free) {
             b.drive(STEP);
         } else {
-            b.turn(90, true);
+            b.turn(1, true);
         }
         i++;
     }

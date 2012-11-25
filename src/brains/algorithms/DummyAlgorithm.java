@@ -2,22 +2,26 @@ package brains.algorithms;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Random;
 
+import roomba.RoombaConfig;
 import brains.Brains;
 import brains.MapStructure;
+
 import common.Config;
 import common.RobotState;
 import common.Sensor;
-
 import common.Utils;
-import roomba.RoombaConfig;
 
 public class DummyAlgorithm implements AlgorithmInterface {
     // Step length in mm
 
+	private Random random = new Random();
     private static final int STEP = 50;
     private static final int MAX_VALUE = 100;
     private int i = 0;
+    private int rotation = 1;
+    private int timeToSwitch = 0;
 
     public DummyAlgorithm() {
         reset();
@@ -40,8 +44,13 @@ public class DummyAlgorithm implements AlgorithmInterface {
         }
         if (free) {
             b.drive(STEP);
+            timeToSwitch--;
+            if (timeToSwitch < 0) {
+            	rotation = -rotation;
+            	timeToSwitch = random.nextInt(100)+50;
+            }
         } else {
-            b.turn(1, true);
+            b.turn(rotation * 2, true);
         }
         i++;
     }

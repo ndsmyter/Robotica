@@ -64,7 +64,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static Color TEXT_COLOR = Color.BLACK;
 	private final static Color MAP_COLOR = Color.YELLOW;
 
-	private final static int REFRESH_TIME = 500;
+	private final static int REFRESH_TIME = 200;
 
 	// Points to draw on the screen (current & previous states, obstacles..)
 	private RobotState position = null;
@@ -185,7 +185,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		try {
 			g.setColor(MAP_COLOR);
 			for (Point p : emulator.getBackground()) {
-				g.drawRect(scale(p.x), scale(p.y), scale(Config.GRID_SIZE),
+				g.fillRect(scale(p.x), scale(p.y), scale(Config.GRID_SIZE),
 						scale(Config.GRID_SIZE));
 			}
 		} catch (Exception e) {

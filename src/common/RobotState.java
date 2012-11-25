@@ -1,5 +1,7 @@
 package common;
 
+import java.awt.Point;
+
 public class RobotState {
 
 	public int x;
@@ -11,7 +13,11 @@ public class RobotState {
 		this.y = y;
 		this.dir = dir;
 	}
-
+	public RobotState(Point p, int dir) {
+		this.x = p.x;
+		this.y = p.y;
+		this.dir = dir;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

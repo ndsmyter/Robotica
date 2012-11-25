@@ -5,6 +5,7 @@ import java.util.List;
 import roomba.RoombaConfig;
 import brains.algorithms.AlgorithmInterface;
 import brains.algorithms.DummyAlgorithm;
+import brains.algorithms.DummyBugAlgorithm;
 import brains.interfaces.ObstacleListener;
 
 import common.RobotState;
@@ -44,7 +45,7 @@ public class Brains implements ListenerInterface {
 
 	public Brains(String map) {
 		this.mapToShow = map;
-		algorithm = new DummyAlgorithm();
+		algorithm = new DummyBugAlgorithm(this);
 		reset();
 		emulator = new Emulator(this);
 		emulator.log("Initiating application");

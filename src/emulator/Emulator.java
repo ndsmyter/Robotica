@@ -143,7 +143,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	@Override
 	public void log(String message) {
 		fireStateChanged(true, new Event(EventType.LOG, message));
-		System.out.println(message);
+		//System.out.println(message);
 		try {
 			// Create file
 			FileWriter fstream = new FileWriter(LOG_FILENAME, true);

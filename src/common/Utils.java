@@ -25,6 +25,10 @@ public class Utils {
         return (int) (Math.sqrt((point1.x - point2.x) * (point1.x - point2.x)
                 + (point1.y - point2.y) * (point1.y - point2.y)) + 0.5);
     }
+    
+    public static int angle(Point point1, Point point2) {
+        return (int) Math.toDegrees(Math.atan2(point2.y - point1.y, point2.x - point1.x));
+    }
 
     public static RobotState driveForward(RobotState currentState, int distance) {
         double theta = Math.toRadians(currentState.dir);
@@ -36,8 +40,13 @@ public class Utils {
 
     public static ArrayList<Point> getPath(RobotState currentState,
             RobotState nextState) {
-        int length = euclideanDistance(new Point(currentState.x,currentState.y), new Point(nextState.x, nextState.y));
-        return getPath(currentState, length, 0);
+        return getPath(currentState, nextState, 0);
+    }
+    
+    public static ArrayList<Point> getPath(RobotState currentState,
+            RobotState nextState, int width) {
+        int distance = euclideanDistance(new Point(currentState.x,currentState.y), new Point(nextState.x, nextState.y));
+        return getPath(currentState, distance, width);
     }
 
     public static ArrayList<Point> getPath(RobotState currentState, int distance) {
@@ -63,6 +72,12 @@ public class Utils {
     }
 
     public static Point pointToGrid(Point p) {
+        p.x = p.x - p.x % Config.GRID_SIZE;
+        p.y = p.y - p.y % Config.GRID_SIZE;
+        return p;
+    }
+    
+    public static RobotState stateToGrid(RobotState p) {
         p.x = p.x - p.x % Config.GRID_SIZE;
         p.y = p.y - p.y % Config.GRID_SIZE;
         return p;

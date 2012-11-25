@@ -9,6 +9,8 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -20,10 +22,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import roomba.RoombaConfig;
 import brains.Brains;
-import brains.interfaces.ObstacleListener;
 
 import common.Config;
 import common.RobotState;
@@ -39,8 +41,7 @@ import emulator.interfaces.ViewListenerInterface;
  * 
  */
 @SuppressWarnings("serial")
-public class MapPanel extends JPanel implements ViewListenerInterface,
-		ObstacleListener {
+public class MapPanel extends JPanel implements ViewListenerInterface {
 
 	// Some scaling parameters
 	private final static int CELLS_IN_GRID = 10;
@@ -62,6 +63,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private final static Color SENSOR_COLOR = new Color(5, 80, 90);
 	private final static Color TEXT_COLOR = Color.BLACK;
 	private final static Color MAP_COLOR = Color.YELLOW;
+
+	private final static int REFRESH_TIME = 1000;
 
 	// Points to draw on the screen (current & previous states, obstacles..)
 	private RobotState position = null;
@@ -119,7 +122,12 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 				.addKeyEventDispatcher(myKeyEventDispatcher);
 
-		brains.addObstacleListener(this);
+		new Timer(REFRESH_TIME, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				repaint();
+			}
+		}).start();
 	}
 
 	/**
@@ -322,7 +330,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 	private void move(RobotState s) {
 		position = s;
 		historyOfPoints.add(position);
-		repaint();
 	}
 
 	/**
@@ -373,11 +380,5 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			zoom(e.getWheelRotation() < 0);
 		}
-	}
-
-	@Override
-	public void obstacleAdded() {
-		emulator.log("obstacleAdded");
-		repaint();
 	}
 }

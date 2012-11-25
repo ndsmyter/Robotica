@@ -1,12 +1,10 @@
 package brains;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import brains.interfaces.MapInterface;
-import brains.interfaces.ObstacleListener;
 
 public class MapStructure implements MapInterface {
 	private HashMap<Point, Double> cells;
@@ -52,17 +50,6 @@ public class MapStructure implements MapInterface {
 		return cells;
 	}
 
-	private ArrayList<ObstacleListener> obstacleListener = new ArrayList<ObstacleListener>();
-
-	public void addObstacleListener(ObstacleListener listener) {
-		obstacleListener.add(listener);
-	}
-
-	public void fireObstacleAdded() {
-		for (ObstacleListener listener : obstacleListener)
-			listener.obstacleAdded();
-	}
-
 	public MapStructure clone() {
 		MapStructure newMap = new MapStructure();
 		for (Entry<Point, Double> cell : this.cells.entrySet())
@@ -74,6 +61,5 @@ public class MapStructure implements MapInterface {
 		this.cells.clear();
 		for (Entry<Point, Double> cell : newMap.getAll().entrySet())
 			this.put(cell.getKey(), cell.getValue());
-		fireObstacleAdded();
 	}
 }

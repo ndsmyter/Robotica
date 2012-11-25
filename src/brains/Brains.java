@@ -6,7 +6,6 @@ import roomba.RoombaConfig;
 import brains.algorithms.AlgorithmInterface;
 import brains.algorithms.DummyAlgorithm;
 import brains.algorithms.DummyBugAlgorithm;
-import brains.interfaces.ObstacleListener;
 
 import common.RobotState;
 import common.Utils;
@@ -162,10 +161,6 @@ public class Brains implements ListenerInterface {
 
 	public int[] getSensorData() {
 		return emulator.getSensorData();
-	}
-
-	public void addObstacleListener(ObstacleListener listener) {
-		mapStructure.addObstacleListener(listener);
 	}
 
 	public MapStructure getMap() {

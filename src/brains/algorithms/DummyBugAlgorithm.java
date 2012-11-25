@@ -2,7 +2,6 @@ package brains.algorithms;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Random;
 
 import roomba.RoombaConfig;
 import brains.Brains;
@@ -147,7 +146,6 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
                         + inverseSensorModel(m, p, measurement, sensorState, z[i], s);
                 mapNew.putLogOdds(p, logOdds);
             }
-            mapNew.fireObstacleAdded();
         }
         return mapNew;
     }

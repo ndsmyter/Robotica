@@ -41,14 +41,17 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
         // System.out.println(b.getCurrentState());
         processSensorData(b);
         Point currentOnGrid = Utils.pointToGrid(new Point(b.getCurrentState().x, b.getCurrentState().y));
-        if (followingObstacle) {
+        if (currentOnGrid.equals(goal)){
+            System.out.println("Goal reached :D");
+            b.stop(true);
+        } else if (followingObstacle) {
 //            if (!first && currentOnGrid.equals(lastPosition)) {
 //                b.stop(true);
 //                System.out.println("Goal is unreachable");
 //            }
             first = false;
             // Following an obstacle
-            System.out.println("Current: " + currentOnGrid);
+            //System.out.println("Current: " + currentOnGrid);
             boolean closer = Utils.euclideanDistance(lastPosition, goal) > Utils.euclideanDistance(currentOnGrid, goal);
             if (straightPath.contains(currentOnGrid) && closer) {
                 System.out.println("Found the path again!");
@@ -111,7 +114,7 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
     }
 
     public void reset() {
-        goal = new Point(1000, 1000);
+        goal = new Point(1600, 800);
         straightDir = Utils.angle(new Point(b.getCurrentState().x, b.getCurrentState().y), goal);
         System.out.println("Dir: " + straightDir);
         //b.turn(straightDir, false);

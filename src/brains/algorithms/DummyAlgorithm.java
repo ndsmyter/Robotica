@@ -47,7 +47,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
         	b.turn(rotation*2, true);
         } else {
         	// should kate perform a pirouette next?
-	        int pir_rand = random.nextInt(100);
+	        int pir_rand = random.nextInt(300);
 	        
 	        // yes, kate should perform a pirouette if pirouette == 0!
 	        // pirouette := amount of steps during which kate has to whirl about.
@@ -55,7 +55,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
 	        	pirouette = random.nextInt(180);
 	        
 	        // should kate switch rotation direction?
-	        int rot_rand = random.nextInt(100);
+	        int rot_rand = random.nextInt(300);
 	        if (rot_rand == 0)
 	        	rotation = -rotation;
 	        

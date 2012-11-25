@@ -8,5 +8,5 @@ public interface MapInterface {
 
 	public double get(Point point);
 
-	public HashMap<Point, Double> getAll();
+	public HashMap<Point, Double> getCells();
 }

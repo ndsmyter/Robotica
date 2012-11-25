@@ -46,20 +46,33 @@ public class MapStructure implements MapInterface {
 	}
 
 	@Override
-	public HashMap<Point, Double> getAll() {
+	public HashMap<Point, Double> getCells() {
 		return cells;
+	}
+
+	public void setCells(HashMap<Point, Double> cells) {
+		// Make deepcopy of the HashMap
+		this.cells = new HashMap<Point, Double>(cells);
+	}
+
+	public HashMap<Point, Double> getLogOdds() {
+		return logOdds;
+	}
+
+	public void setLogOdds(HashMap<Point, Double> logOdds) {
+		// Make deepcopy of the HashMap
+		this.logOdds = new HashMap<Point, Double>(logOdds);
 	}
 
 	public MapStructure clone() {
 		MapStructure newMap = new MapStructure();
-		for (Entry<Point, Double> cell : this.cells.entrySet())
-			newMap.put(cell.getKey(), cell.getValue());
+		newMap.setCells(cells);
+		newMap.setLogOdds(logOdds);
 		return newMap;
 	}
 
 	public void useNewMap(MapStructure newMap) {
-		this.cells.clear();
-		for (Entry<Point, Double> cell : newMap.getAll().entrySet())
-			this.put(cell.getKey(), cell.getValue());
+		setCells(newMap.getCells());
+		setLogOdds(newMap.getLogOdds());
 	}
 }

@@ -302,12 +302,12 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 */
 	private void drawObstacles(Graphics g) {
 		try {
-			HashMap<Point, Double> points = brains.getMap().getAll();
+			HashMap<Point, Double> points = brains.getMap().getCells();
 			for (Entry<Point, Double> entry : points.entrySet()) {
 				float c = (float) (double) (1 - entry.getValue());
 				g.setColor(new Color(c, c, c));
 				g.fillRect(scale(entry.getKey().x), scale(entry.getKey().y),
-						scale(Config.GRID_SIZE), scale(Config.GRID_SIZE));// 1,1);
+						scale(Config.GRID_SIZE), scale(Config.GRID_SIZE));
 			}
 		} catch (ConcurrentModificationException e) {
 		}

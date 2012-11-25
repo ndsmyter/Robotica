@@ -20,8 +20,12 @@ public class DummyAlgorithm implements AlgorithmInterface {
     private static final int STEP = 50;
     private static final int MAX_VALUE = 100;
     private int i = 0;
+    
+    // rotation := the direction of the rotation. should always be either -1 or 1.
     private int rotation = 1;
-    private int timeToSwitch = 0;
+    
+    // pirouette := amount of steps during which kate has to whirl about
+    private int pirouette = 0;
 
     public DummyAlgorithm() {
         reset();
@@ -35,23 +39,42 @@ public class DummyAlgorithm implements AlgorithmInterface {
 
     public void doStep(Brains b) {
         // System.out.println(b.getCurrentState());
-        processSensorData2(b);
-        boolean free = true;
-        ArrayList<Point> path = Utils.getPath(b.getCurrentState(), STEP
-                + RoombaConfig.ROOMBA_DIAMETER / 2, RoombaConfig.ROOMBA_DIAMETER);
-        for (Point p : path) {
-            free &= (b.getMap().get(Utils.pointToGrid(p)) < 0.60);
-        }
-        if (free) {
-            b.drive(STEP);
-            timeToSwitch--;
-            if (timeToSwitch < 0) {
-            	rotation = -rotation;
-            	timeToSwitch = random.nextInt(100)+50;
-            }
+    	processSensorData2(b);
+    	
+    	// if kate is doing a pirouette, continue doing it until it's done 
+        if (pirouette > 0) {
+        	pirouette--;
+        	b.turn(rotation*2, true);
         } else {
-            b.turn(rotation * 2, true);
-        }
+        	// should kate perform a pirouette next?
+	        int pir_rand = random.nextInt(500);
+	        
+	        // yes, kate should perform a pirouette if pirouette == 0!
+	        // pirouette := amount of steps during which kate has to whirl about.
+	        if (pir_rand == 0) 
+	        	pirouette = random.nextInt(180);
+	        
+	        // should kate switch rotation direction?
+	        int rot_rand = random.nextInt(500);
+	        if (rot_rand == 0)
+	        	rotation = -rotation;
+	        
+	        // check whether kate is able to go straight or not
+	        boolean free = true;
+	        ArrayList<Point> path = Utils.getPath(b.getCurrentState(), STEP
+	                + RoombaConfig.ROOMBA_DIAMETER / 2, RoombaConfig.ROOMBA_DIAMETER);
+	        for (Point p : path) {
+	            free &= (b.getMap().get(Utils.pointToGrid(p)) < 0.60);
+	        }
+	        
+	        // if kate is able to go straight, do so.
+	        // else, rotate 2 degrees to the left or the right
+	        if (free) {
+	            b.drive(STEP);
+	        } else {
+	            b.turn(rotation * 2, true);
+	        }
+	    }
         i++;
     }
 

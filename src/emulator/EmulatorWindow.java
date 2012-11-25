@@ -70,12 +70,12 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				FileFilter filter = new FileFilter() {
 					@Override
 					public String getDescription() {
-						return null;
+						return "*.bmp";
 					}
 
 					@Override
 					public boolean accept(File f) {
-						return f.getName().endsWith(".bmp");
+						return f.isDirectory() || f.getName().endsWith(".bmp");
 					}
 				};
 				chooser.setMultiSelectionEnabled(false);

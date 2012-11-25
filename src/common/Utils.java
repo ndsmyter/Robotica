@@ -47,7 +47,7 @@ public class Utils {
     public static ArrayList<Point> getPath(RobotState currentState, int distance, int width){
         ArrayList<Point> path = new ArrayList<Point>();
         RobotState current = new RobotState(currentState.x, currentState.y, currentState.dir - 90);
-        current = driveForward(current,width/2);;        
+        current = driveForward(current,width/2);      
         current.dir = currentState.dir;
         RobotState intermediate;
         for (int w = 0; w <= width ; w+= Config.GRID_SIZE) {

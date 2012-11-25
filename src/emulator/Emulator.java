@@ -123,7 +123,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public int emulateSensor(Sensor sensor) {
 		RobotState sensorState = Utils.getSensorState(brains.getCurrentState(),
 				sensor);
-		ArrayList<Point> points = Utils.getPath(sensorState, 800);
+		ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
 		boolean stop = false;
 		int dist = sensor.zMax;
 		// Loop over all sensor points

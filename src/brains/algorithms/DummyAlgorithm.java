@@ -126,7 +126,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
             for (Point p : path) {
                 double logOdds = m.getLogOdds(p)
                         + inverseSensorModel(m, p, measurement, sensorState, z[i], s);
-                mapNew.putLogOdds(Utils.pointToGrid(p), logOdds);
+                mapNew.putLogOdds(p, logOdds);
             }
         }
         return mapNew;
@@ -136,7 +136,6 @@ public class DummyAlgorithm implements AlgorithmInterface {
             RobotState sensorState, int z, Sensor s) {
         double result = 0;
         int r = Utils.euclideanDistance(new Point(sensorState.x, sensorState.y), p);
-        p = Utils.pointToGrid(p);
         if (r > Math.min(s.zMax, z) + Config.GRID_SIZE) {
             result = 0;
         } else if (z < s.zMax && p.equals(measurement)) {

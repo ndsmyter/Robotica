@@ -134,6 +134,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 						sensorState.x, sensorState.y));
 				if (dist2 < dist) {
 					dist = dist2;
+					stop = true;
 				}
 			}
 		}
@@ -143,7 +144,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	@Override
 	public void log(String message) {
 		fireStateChanged(true, new Event(EventType.LOG, message));
-		//System.out.println(message);
+		// System.out.println(message);
 		try {
 			// Create file
 			FileWriter fstream = new FileWriter(LOG_FILENAME, true);

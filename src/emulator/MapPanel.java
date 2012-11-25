@@ -64,7 +64,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static Color TEXT_COLOR = Color.BLACK;
 	private final static Color MAP_COLOR = Color.YELLOW;
 
-	private final static int REFRESH_TIME = 1000;
+	private final static int REFRESH_TIME = 500;
 
 	// Points to draw on the screen (current & previous states, obstacles..)
 	private RobotState position = null;

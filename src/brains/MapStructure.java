@@ -21,13 +21,11 @@ public class MapStructure implements MapInterface {
 	public void put(Point point, double value) {
 		cells.put(point, value);
 		logOdds.put(point, Math.log(value / (1 - value)));
-		fireObstacleAdded();
 	}
 
 	public void putLogOdds(Point point, double value) {
 		cells.put(point, 1 - (1 / (1 + Math.exp(value))));
 		logOdds.put(point, value);
-		fireObstacleAdded();
 	}
 
 	@Override

@@ -377,6 +377,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface,
 
 	@Override
 	public void obstacleAdded() {
+		emulator.log("obstacleAdded");
 		repaint();
 	}
 }

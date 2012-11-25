@@ -104,6 +104,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
             if (data[i] < 800) {
                 b.getMap().put(Utils.pointToGrid(measurement), 1);
             }
+            b.getMap().fireObstacleAdded();
         }
     }
 
@@ -128,6 +129,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
                         + inverseSensorModel(m, p, measurement, sensorState, z[i], s);
                 mapNew.putLogOdds(p, logOdds);
             }
+            mapNew.fireObstacleAdded();
         }
         return mapNew;
     }

@@ -84,6 +84,7 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
                         + inverseSensorModel(m, p, measurement, sensorState, z[i], s);
                 mapNew.putLogOdds(p, logOdds);
             }
+            mapNew.fireObstacleAdded();
         }
         return mapNew;
     }

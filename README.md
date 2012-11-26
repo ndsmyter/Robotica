@@ -1,19 +1,19 @@
 Robotica
 ========
 
-A project for "Robotica en Mechatronica" (dutch)
+A project for "Robotica en Mechatronica" (dutch) where we control a Roomba robot, which we called Kate or K8 in short, to navigate through an unkwown room and map the environment.
 
 Brains
 ------
 
-This package will be used for the real logic of the robot. The algorithms that will make sure the robot knows where is, what the available options are etcetera.
+This package will be used for the real logic of Kate. The algorithms that will make sure Kate knows where she is, what her available options are etcetera.
 
 The Brains package only communicates with the Emulator.
 
 Roomba
 ------
 
-The Roomba package will be used to hold all the commands to talk to the robot. Here alle commands that are given will be parsed and passed to the robot.
+The Roomba package will be used to hold all the commands to talk to Kate. This package will have the necessary knowledge to communicate with Kate, including the handshake protocol.
 
 The Roomba package only communicates with the Emulator.
 

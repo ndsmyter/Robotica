@@ -62,10 +62,23 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 		return resampledParticles;
 	}
 
+	/**
+	 * TODO Stef
+	 * @param u
+	 * @param x
+	 * @return
+	 */
 	public RobotState sampleMotionModel(int[] u, RobotState x) {
 		return x;
 	}
 
+	/**
+	 * TODO Robrecht
+	 * @param z
+	 * @param x
+	 * @param m
+	 * @return
+	 */
 	public double measurementModelMap(int[] z, RobotState x, MapStructure m) {
 
 		return 1.0;

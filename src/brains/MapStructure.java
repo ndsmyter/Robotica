@@ -60,6 +60,7 @@ public class MapStructure implements MapInterface {
 	 *            the path to set
 	 */
 	public void setPath(ArrayList<Point> path) {
+		// Make deepcopy of the ArrayList
 		this.path = new ArrayList<Point>(path);
 	}
 

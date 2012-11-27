@@ -40,8 +40,10 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 		this.b = b;
 		// System.out.println(b.getCurrentState());
 		processSensorData(b);
-		Point currentOnGrid = Utils.pointToGrid(new Point(b.getMap()
-				.getPosition().x, b.getMap().getPosition().y));
+		MapStructure map = b.getMap();
+		RobotState robotState = map.getPosition();
+		Point currentOnGrid = Utils.pointToGrid(new Point(robotState.x,
+				robotState.y));
 		if (currentOnGrid.equals(goal)) {
 			System.out.println("Goal reached :D");
 			b.stop(true);
@@ -58,7 +60,7 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 			if (straightPath.contains(currentOnGrid) && closer) {
 				System.out.println("Found the path again!");
 				followingObstacle = false;
-				b.turn(straightDir - b.getMap().getPosition().dir, false);
+				b.turn(straightDir - robotState.dir, false);
 			} else {
 				// Keep following the obstacle
 				processSensorData(b);
@@ -72,11 +74,11 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 					b.turn(TURN, true);
 					totalTurn += TURN;
 					processSensorData(b);
-					path = Utils.getPath(b.getMap().getPosition(), STEP
+					path = Utils.getPath(robotState, STEP
 							+ RoombaConfig.ROOMBA_DIAMETER / 2,
 							RoombaConfig.ROOMBA_DIAMETER);
 					for (Point p : path) {
-						free &= (b.getMap().get(p) < 0.60);
+						free &= (map.get(p) < 0.60);
 					}
 				}
 				// Then turn left again untill she can move forward
@@ -87,11 +89,11 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 						b.turn(TURN, false);
 						totalTurn += TURN;
 						processSensorData(b);
-						path = Utils.getPath(b.getMap().getPosition(), STEP
+						path = Utils.getPath(robotState, STEP
 								+ RoombaConfig.ROOMBA_DIAMETER / 2,
 								RoombaConfig.ROOMBA_DIAMETER);
 						for (Point p : path) {
-							free &= (b.getMap().get(p) < 0.60);
+							free &= (map.get(p) < 0.60);
 						}
 					}
 				}
@@ -100,11 +102,11 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 		} else {
 			// On the straight line
 			boolean free = true;
-			ArrayList<Point> path = Utils.getPath(b.getMap().getPosition(),
-					STEP + RoombaConfig.ROOMBA_DIAMETER / 2,
+			ArrayList<Point> path = Utils.getPath(robotState, STEP
+					+ RoombaConfig.ROOMBA_DIAMETER / 2,
 					RoombaConfig.ROOMBA_DIAMETER);
 			for (Point p : path) {
-				free &= (b.getMap().get(Utils.pointToGrid(p)) < 0.60);
+				free &= (map.get(Utils.pointToGrid(p)) < 0.60);
 			}
 
 			if (free) {
@@ -112,8 +114,8 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 				b.drive(STEP);
 			} else {
 				// Reached an obstacle
-				lastPosition = Utils.pointToGrid(new Point(b.getMap()
-						.getPosition().x, b.getMap().getPosition().y));
+				lastPosition = Utils.pointToGrid(new Point(robotState.x,
+						robotState.y));
 				followingObstacle = true;
 				first = true;
 			}
@@ -127,7 +129,7 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 		straightDir = Utils.angle(new Point(robotState.x, robotState.y), goal);
 		System.out.println("Dir: " + straightDir);
 		// b.turn(straightDir, false);
-		b.getMap().getPosition().dir = straightDir;
+		robotState.dir = straightDir;
 		straightPath = Utils.getPath(robotState, new RobotState(goal, 0));
 		System.out.println("Path: ");
 		for (Point p : straightPath) {

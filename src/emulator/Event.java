@@ -12,7 +12,7 @@ public class Event {
 	private int degrees;
 	private boolean turnRight;
 	private int driveMode;
-        private ArrayList<Point> obstacle;
+	private ArrayList<Point> obstacle;
 
 	/**
 	 * Make an event with given eventType and data
@@ -40,11 +40,11 @@ public class Event {
 		this(eventType, distance, 0, false, driveMode);
 	}
 
-        public Event(EventType eventType, ArrayList<Point> obstacle) {
-                this(eventType);
+	public Event(EventType eventType, ArrayList<Point> obstacle) {
+		this(eventType);
 		this.obstacle = obstacle;
 	}
-        
+
 	public Event(EventType eventType) {
 		this.eventType = eventType;
 	}
@@ -146,8 +146,8 @@ public class Event {
 	public void setDriveMode(int driveMode) {
 		this.driveMode = driveMode;
 	}
-        
-        /**
+
+	/**
 	 * @return the obstacle
 	 */
 	public ArrayList<Point> getObstacle() {

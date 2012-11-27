@@ -85,7 +85,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			currentMap = map;
 			if (map.isEmpty()) {
 				background.clear();
-			}else{
+			} else {
 				map = MAPS_DIRECTORY + "/" + map;
 				System.out.println("Loaded map: " + map);
 				loadBackgroundMap(new File(map));
@@ -124,9 +124,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			}
 			setBackground(backgroundMap);
 		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -177,8 +175,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public int emulateSensor(Sensor sensor) {
-		RobotState sensorState = Utils.getSensorState(brains.getMap().getPosition(),
-				sensor);
+		RobotState sensorState = Utils.getSensorState(brains.getMap()
+				.getPosition(), sensor);
 		ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
 		boolean stop = false;
 		int dist = sensor.zMax;
@@ -215,9 +213,6 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public void setBackground(ArrayList<Point> background) {
-		ArrayList<Point> backgroundGrid = new ArrayList<Point>();
-		for (Point p : background)
-			backgroundGrid.add(Utils.pointToGrid(p));
 		this.background = background;
 	}
 

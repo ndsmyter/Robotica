@@ -63,11 +63,12 @@ public class DummyAlgorithm implements AlgorithmInterface {
 
 			// check whether kate is able to go straight or not
 			boolean free = true;
-			ArrayList<Point> path = Utils.getPath(b.getMap().getPosition(),
-					STEP + RoombaConfig.ROOMBA_DIAMETER / 2,
+			MapStructure map = b.getMap();
+			ArrayList<Point> path = Utils.getPath(map.getPosition(), STEP
+					+ RoombaConfig.ROOMBA_DIAMETER / 2,
 					RoombaConfig.ROOMBA_DIAMETER);
 			for (Point p : path) {
-				free &= (b.getMap().get(Utils.pointToGrid(p)) < 0.60);
+				free &= (map.get(Utils.pointToGrid(p)) < 0.60);
 			}
 
 			// if kate is able to go straight, do so.
@@ -120,11 +121,12 @@ public class DummyAlgorithm implements AlgorithmInterface {
 
 	public MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {
 		MapStructure mapNew = m.clone();
+		RobotState robotState = m.getPosition();
 		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
 			Sensor s = RoombaConfig.SENSORS[i];
-			RobotState sensorState = Utils.getSensorState(m.getPosition(), s);
+			RobotState sensorState = Utils.getSensorState(robotState, s);
 			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
-					m.getPosition(), z[i], s));
+					robotState, z[i], s));
 			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
 			for (Point p : path) {
 				double logOdds = m.getLogOdds(p)

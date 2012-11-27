@@ -8,6 +8,9 @@ import java.awt.GridLayout;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -153,6 +156,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
+		this.addWindowListener(new ClosingWindowAdapter());
 	}
 
 	private void saveScreenshot() {
@@ -236,6 +240,12 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			mapPanel.zoom(zoomIn);
+		}
+	}
+
+	private class ClosingWindowAdapter extends WindowAdapter {
+		public void windowClosing(WindowEvent e) {
+			emulator.saveLogToFile();
 		}
 	}
 }

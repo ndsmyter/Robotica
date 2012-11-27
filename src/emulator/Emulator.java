@@ -45,6 +45,9 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private static final String MAPS_DIRECTORY = "maps";
 	private static final String DEFAULT_MAP_FILE = "default.txt";
 
+	// Logs
+	private ArrayList<String> logs = new ArrayList<String>();
+
 	private static final String LOG_FILENAME = "log.txt";
 
 	public Emulator(Brains brains) {
@@ -197,15 +200,20 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void log(String message) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+		logs.add(sdf.format(Calendar.getInstance().getTime()) + "  " + message
+				+ "\n");
 		fireStateChanged(true, new Event(EventType.LOG, message));
-		// System.out.println(message);
+	}
+
+	public void saveLogToFile() {
 		try {
 			// Create file
 			FileWriter fstream = new FileWriter(LOG_FILENAME, true);
 			BufferedWriter out = new BufferedWriter(fstream);
-			SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-			out.append(sdf.format(Calendar.getInstance().getTime()) + "  "
-					+ message + "\n");
+			for (String log : logs) {
+				out.append(log);
+			}
 			// Close the output stream
 			out.close();
 		} catch (Exception e) {

@@ -39,6 +39,7 @@ public class Brains implements ListenerInterface {
 		algorithm = new DummyBugAlgorithm(this);
 		reset();
 		emulator = new Emulator(this);
+		emulator.log("===============================================================================");
 		emulator.log("Initiating application");
 	}
 

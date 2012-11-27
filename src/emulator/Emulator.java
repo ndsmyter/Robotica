@@ -177,7 +177,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public int emulateSensor(Sensor sensor) {
-		RobotState sensorState = Utils.getSensorState(brains.getCurrentState(),
+		RobotState sensorState = Utils.getSensorState(brains.getMap().getPosition(),
 				sensor);
 		ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
 		boolean stop = false;

@@ -1,8 +1,6 @@
 package brains;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import roomba.RoombaConfig;
 import brains.algorithms.AlgorithmInterface;
@@ -27,7 +25,6 @@ import emulator.interfaces.ListenerInterface;
 public class Brains implements ListenerInterface {
 
 	private final Emulator emulator;
-	private RobotState currentState;
 	private MapStructure mapStructure;
 
 	private List<Particle> particles;
@@ -63,7 +60,6 @@ public class Brains implements ListenerInterface {
 	}
 
 	public void reset() {
-		currentState = new RobotState(0, 0, 0);
 		mapStructure = new MapStructure();
 		algorithm.reset();
 		stop(false);
@@ -138,13 +134,15 @@ public class Brains implements ListenerInterface {
 
 	public void turn(int degrees, boolean isTurnRight) {
 		int angle = (isTurnRight ? -degrees : degrees);
-		currentState.dir = (currentState.dir + angle + 360) % 360;
+		mapStructure.getPosition().dir = (mapStructure.getPosition().dir
+				+ angle + 360) % 360;
 		emulator.turn(degrees, isTurnRight, RoombaConfig.TURN_RADIUS_SPOT,
 				RoombaConfig.DRIVE_MODE_MED);
 	}
 
 	public void drive(int distance) {
-		currentState = Utils.driveForward(currentState, distance);
+		mapStructure.setPosition(Utils.driveForward(mapStructure.getPosition(),
+				distance));
 		emulator.drive(distance, RoombaConfig.DRIVE_MODE_MED);
 	}
 
@@ -158,10 +156,6 @@ public class Brains implements ListenerInterface {
 
 	public void setMap(MapStructure m) {
 		mapStructure.useNewMap(m);
-	}
-
-	public RobotState getCurrentState() {
-		return currentState;
 	}
 
 	/**

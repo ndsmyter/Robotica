@@ -21,12 +21,12 @@ public class RouletteWheelSelectionTest {
 	@Before
 	public void setUp() throws Exception {
 		particles = new ArrayList<Particle>();
-		particles.add(new Particle(null, null, 0.1));
-		particles.add(new Particle(null, null, 0.5));
-		particles.add(new Particle(null, null, 0.9));
-		particles.add(new Particle(null, null, 1.5));
-		particles.add(new Particle(null, null, 1.9));
-		particles.add(new Particle(null, null, 2.5));
+		particles.add(new Particle(null, 0.1));
+		particles.add(new Particle(null, 0.5));
+		particles.add(new Particle(null, 0.9));
+		particles.add(new Particle(null, 1.5));
+		particles.add(new Particle(null, 1.9));
+		particles.add(new Particle(null, 2.5));
 		
 		rws = new RouletteWheelSelection();
 	}

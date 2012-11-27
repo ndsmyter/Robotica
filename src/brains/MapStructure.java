@@ -2,13 +2,15 @@ package brains;
 
 import java.awt.Point;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import brains.interfaces.MapInterface;
+
+import common.RobotState;
 
 public class MapStructure implements MapInterface {
 	private HashMap<Point, Double> cells;
 	private HashMap<Point, Double> logOdds;
+	private RobotState position = new RobotState(0, 0, 0);
 
 	public MapStructure() {
 		cells = new HashMap<Point, Double>();
@@ -24,6 +26,21 @@ public class MapStructure implements MapInterface {
 	public void putLogOdds(Point point, double value) {
 		cells.put(point, 1 - (1 / (1 + Math.exp(value))));
 		logOdds.put(point, value);
+	}
+
+	/**
+	 * @return the position
+	 */
+	public RobotState getPosition() {
+		return position;
+	}
+
+	/**
+	 * @param position
+	 *            the position to set
+	 */
+	public void setPosition(RobotState position) {
+		this.position = position;
 	}
 
 	@Override
@@ -66,13 +83,15 @@ public class MapStructure implements MapInterface {
 
 	public MapStructure clone() {
 		MapStructure newMap = new MapStructure();
-		newMap.setCells(cells);
-		newMap.setLogOdds(logOdds);
+		newMap.setCells(getCells());
+		newMap.setLogOdds(getLogOdds());
+		newMap.setPosition(getPosition());
 		return newMap;
 	}
 
 	public void useNewMap(MapStructure newMap) {
 		setCells(newMap.getCells());
 		setLogOdds(newMap.getLogOdds());
+		setPosition(newMap.getPosition());
 	}
 }

@@ -7,14 +7,17 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,12 +28,14 @@ import javax.swing.filechooser.FileFilter;
 import emulator.interfaces.ViewListenerInterface;
 
 @SuppressWarnings("serial")
-public class EmulatorWindow extends JFrame implements ViewListenerInterface {
+public class EmulatorWindow extends JFrame implements ViewListenerInterface,
+		ActionListener {
 
 	private MapPanel mapPanel;
 	private TextArea logArea;
 	private Emulator emulator;
 	private JButton startStopButton;
+	private JComboBox<Object> mapBox;
 
 	private boolean running = false;
 
@@ -48,6 +53,11 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		logArea.setEditable(false);
 		emulator.addChangeListener(this);
 
+		// Maps
+		mapBox = new JComboBox<Object>(emulator.getBackgroundMaps().toArray());
+		mapBox.setSelectedItem(emulator.getMap());
+		mapBox.addActionListener(this);
+
 		// Init button bar
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
 		startStopButton = new JButton();
@@ -61,30 +71,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mapPanel.zoom(false);
-			}
-		};
-		Action openAction = new AbstractAction("Open") {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser chooser = new JFileChooser();
-				FileFilter filter = new FileFilter() {
-					@Override
-					public String getDescription() {
-						return "*.bmp";
-					}
-
-					@Override
-					public boolean accept(File f) {
-						return f.isDirectory() || f.getName().endsWith(".bmp");
-					}
-				};
-				chooser.setMultiSelectionEnabled(false);
-				chooser.setFileFilter(filter);
-				int returnValue = chooser.showOpenDialog(EmulatorWindow.this);
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					emulator.loadBackgroundMap(chooser.getSelectedFile());
-					notifyReset();
-				}
 			}
 		};
 		Action saveAction = new AbstractAction("Screenshot") {
@@ -156,8 +142,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
-		openAction.putValue(AbstractAction.SHORT_DESCRIPTION,
-				"Open image (Ctrl+O)");
 		saveAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Save image (Ctrl+S)");
 		zoomInAction.putValue(AbstractAction.SHORT_DESCRIPTION,
@@ -170,7 +154,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
 		showMapAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Show map or not");
-		buttonPanel.add(new JButton(openAction));
+		buttonPanel.add(mapBox);
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
 		buttonPanel.add(new JButton(zoomOutAction));
@@ -185,7 +169,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		panel.add(mapPanel, BorderLayout.CENTER);
 		panel.add(logArea, BorderLayout.EAST);
 		panel.add(buttonPanel, BorderLayout.NORTH);
-		panel.getInputMap().put(KeyStroke.getKeyStroke("ctrl O"), "openAction");
 		panel.getInputMap().put(KeyStroke.getKeyStroke("ctrl S"), "saveAction");
 		panel.getInputMap().put(KeyStroke.getKeyStroke(' '), "startAction");
 		panel.getInputMap()
@@ -193,7 +176,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 		panel.getInputMap().put(KeyStroke.getKeyStroke('+'), "zoomInAction");
 		panel.getInputMap().put(KeyStroke.getKeyStroke('-'), "zoomOutAction");
 		panel.getInputMap().put(KeyStroke.getKeyStroke("ctrl N"), "stepAction");
-		panel.getActionMap().put("openAction", openAction);
 		panel.getActionMap().put("saveAction", saveAction);
 		panel.getActionMap().put("startAction", startStopAction);
 		panel.getActionMap().put("resetAction", resetAction);
@@ -238,5 +220,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface {
 
 	private void log(String message) {
 		logArea.append(message + "\r\n");
+	}
+
+	@Override
+	/**
+	 * Called whenever the map combobox has a new value
+	 */
+	public void actionPerformed(ActionEvent e) {
+		emulator.setMap(mapBox.getSelectedItem().toString());
 	}
 }

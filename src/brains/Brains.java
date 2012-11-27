@@ -38,14 +38,8 @@ public class Brains implements ListenerInterface {
 	private final static int SLEEP_TIME = 100;
 	private AlgorithmInterface algorithm;
 	private boolean stopped;
-	private String mapToShow;
 
 	public Brains() {
-		this(null);
-	}
-
-	public Brains(String map) {
-		this.mapToShow = map;
 		algorithm = new DummyBugAlgorithm(this);
 		reset();
 		emulator = new Emulator(this);
@@ -58,13 +52,6 @@ public class Brains implements ListenerInterface {
 
 	public void setParticles(List<Particle> particles) {
 		this.particles = particles;
-	}
-
-	/**
-	 * @return the map to show in the emulator
-	 */
-	public String getMapToShow() {
-		return mapToShow;
 	}
 
 	public boolean isStopped() {
@@ -181,13 +168,6 @@ public class Brains implements ListenerInterface {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		/*
-		 * args[0] -> the map to be used
-		 */
-		if (args.length > 0) {
-			new Brains(args[0]);
-		} else {
-			new Brains();
-		}
+		new Brains();
 	}
 }

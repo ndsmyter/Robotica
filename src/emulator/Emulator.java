@@ -6,11 +6,14 @@ import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
@@ -35,19 +38,70 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	private Roomba roomba;
 	private Brains brains;
+
+	private String currentMap = ""; // No map by default
 	private ArrayList<Point> background = new ArrayList<Point>();
+	private ArrayList<String> backgroundFiles = new ArrayList<String>();
+	private static final String MAPS_DIRECTORY = "maps";
+	private static final String DEFAULT_MAP_FILE = "default.txt";
 
 	private static final String LOG_FILENAME = "log.txt";
 
 	public Emulator(Brains brains) {
 		this.brains = brains;
-		if (brains.getMapToShow() != null)
-			loadBackgroundMap(new File(brains.getMapToShow()));
 		roomba = new Roomba(this);
+		loadBackgroundFiles();
 		new EmulatorWindow(this);
 	}
 
+	private void loadBackgroundFiles() {
+		File dir = new File(MAPS_DIRECTORY);
+		if (dir.isDirectory()) {
+			for (File file : dir.listFiles()) {
+				if (file.getName().equals(DEFAULT_MAP_FILE)) {
+					try {
+						Scanner sc = new Scanner(file);
+						if (sc.hasNextLine())
+							setMap(sc.nextLine());
+						sc.close();
+					} catch (FileNotFoundException e) {
+					}
+				} else if (file.getName().endsWith(".bmp") && file.isFile())
+					backgroundFiles.add(file.getName());
+			}
+		}
+	}
+
+	public ArrayList<String> getBackgroundMaps() {
+		return backgroundFiles;
+	}
+
+	public String getMap() {
+		return currentMap;
+	}
+
+	public void setMap(String map) {
+		if (!map.equals(currentMap)) {
+			currentMap = map;
+			map = MAPS_DIRECTORY + "/" + map;
+			if (!map.isEmpty()) {
+				System.out.println("Loaded map: " + map);
+				loadBackgroundMap(new File(map));
+			}
+			try {
+				PrintWriter out = new PrintWriter(
+						new BufferedWriter(new FileWriter(MAPS_DIRECTORY + "/"
+								+ DEFAULT_MAP_FILE)));
+				out.write(currentMap);
+				out.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
 	public void loadBackgroundMap(File file) {
+		if (!file.isFile())
+			return;
 		try {
 			ArrayList<Point> backgroundMap = new ArrayList<Point>();
 			BufferedImage img = ImageIO.read(file);

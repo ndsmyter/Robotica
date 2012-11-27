@@ -7,7 +7,6 @@ import brains.algorithms.AlgorithmInterface;
 import brains.algorithms.DummyAlgorithm;
 import brains.algorithms.DummyBugAlgorithm;
 
-import common.RobotState;
 import common.Utils;
 
 import emulator.Emulator;

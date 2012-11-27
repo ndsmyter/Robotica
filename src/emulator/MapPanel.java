@@ -41,7 +41,7 @@ import emulator.interfaces.ViewListenerInterface;
  * 
  */
 @SuppressWarnings("serial")
-public class MapPanel extends JPanel implements ViewListenerInterface {
+public class MapPanel extends JPanel {
 
 	// Some scaling parameters
 	private final static int CELLS_IN_GRID = 10;
@@ -63,7 +63,8 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static Color MAP_COLOR = Color.YELLOW;
 	private final static int REFRESH_TIME = 200;
 	// Points to draw on the screen (current & previous states, obstacles..)
-	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
+	// private ArrayList<RobotState> historyOfPoints = new
+	// ArrayList<RobotState>();
 	private final Emulator emulator;
 	private Point winPos;
 	private Brains brains;
@@ -76,10 +77,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 		int w = 500, h = 500;
 		this.setBackground(BACKGROUND_COLOR);
 		this.setPreferredSize(new Dimension(w, h));
-
-		move(brains.getMap().getPosition());
-
-		emulator.addChangeListener(this);
 
 		winPos = new Point(w / 2, h / 2);
 
@@ -128,9 +125,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 */
 	public void reset() {
 		scale = ORIGINAL_ZOOM;
-		historyOfPoints.clear();
 		winPos = new Point(getWidth() / 2, getHeight() / 2);
-		move(brains.getMap().getPosition());
 	}
 
 	public void paintComponent(Graphics g) {
@@ -248,12 +243,13 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private void drawPreviousPoints(Graphics g) {
 		try {
 			g.setColor(PATH_COLOR);
-			for (RobotState state : historyOfPoints) {
+			ArrayList<Point> historyOfPoints = brains.getMap().getPath();
+			for (Point state : historyOfPoints) {
 				g.drawRect(scale(state.x), scale(state.y), 1, 1);
 			}
 			for (int i = 0; i < historyOfPoints.size() - 1; i++) {
-				RobotState first = historyOfPoints.get(i);
-				RobotState last = historyOfPoints.get(i + 1);
+				Point first = historyOfPoints.get(i);
+				Point last = historyOfPoints.get(i + 1);
 				g.drawLine(scale(first.x), scale(first.y), scale(last.x),
 						scale(last.y));
 			}
@@ -311,22 +307,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 			}
 		} catch (ConcurrentModificationException e) {
 		}
-	}
-
-	@Override
-	public void viewStateChanged(Event event) {
-		switch (event.getType()) {
-		case DRIVE:
-		case TURN:
-			move(brains.getMap().getPosition());
-			break;
-		default:
-			break;
-		}
-	}
-
-	private void move(RobotState s) {
-		historyOfPoints.add(s);
 	}
 
 	/**

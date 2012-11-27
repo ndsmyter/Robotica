@@ -1,6 +1,7 @@
 package brains;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import brains.interfaces.MapInterface;
@@ -10,11 +11,14 @@ import common.RobotState;
 public class MapStructure implements MapInterface {
 	private HashMap<Point, Double> cells;
 	private HashMap<Point, Double> logOdds;
-	private RobotState position = new RobotState(0, 0, 0);
+	private RobotState position;
+	private ArrayList<Point> path;
 
 	public MapStructure() {
 		cells = new HashMap<Point, Double>();
 		logOdds = new HashMap<Point, Double>();
+		path = new ArrayList<Point>();
+		position = new RobotState(0, 0, 0);
 	}
 
 	@Override
@@ -40,7 +44,23 @@ public class MapStructure implements MapInterface {
 	 *            the position to set
 	 */
 	public void setPosition(RobotState position) {
+		path.add(new Point(position.x, position.y));
 		this.position = position;
+	}
+
+	/**
+	 * @return the path
+	 */
+	public ArrayList<Point> getPath() {
+		return path;
+	}
+
+	/**
+	 * @param path
+	 *            the path to set
+	 */
+	public void setPath(ArrayList<Point> path) {
+		this.path = new ArrayList<Point>(path);
 	}
 
 	@Override
@@ -86,6 +106,7 @@ public class MapStructure implements MapInterface {
 		newMap.setCells(getCells());
 		newMap.setLogOdds(getLogOdds());
 		newMap.setPosition(getPosition());
+		newMap.setPath(getPath());
 		return newMap;
 	}
 
@@ -93,5 +114,6 @@ public class MapStructure implements MapInterface {
 		setCells(newMap.getCells());
 		setLogOdds(newMap.getLogOdds());
 		setPosition(newMap.getPosition());
+		setPath(newMap.getPath());
 	}
 }

@@ -62,18 +62,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		// Init button bar
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
 		startStopButton = new JButton();
-		Action zoomInAction = new AbstractAction("+") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mapPanel.zoom(true);
-			}
-		};
-		Action zoomOutAction = new AbstractAction("-") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mapPanel.zoom(false);
-			}
-		};
+		Action zoomInAction = new ZoomAction(true);
+		Action zoomOutAction = new ZoomAction(false);
 		Action saveAction = new AbstractAction("Screenshot") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -230,5 +220,19 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	public void actionPerformed(ActionEvent e) {
 		String selected = mapBox.getSelectedItem().toString();
 		emulator.setMap(selected.equals(CLEAR_MAP) ? "" : selected);
+	}
+
+	private class ZoomAction extends AbstractAction {
+		private boolean zoomIn;
+
+		public ZoomAction(boolean zoomIn) {
+			super(zoomIn ? "+" : "-");
+			this.zoomIn = zoomIn;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			mapPanel.zoom(zoomIn);
+		}
 	}
 }

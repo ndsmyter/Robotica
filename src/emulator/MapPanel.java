@@ -32,8 +32,6 @@ import common.RobotState;
 import common.Sensor;
 import common.Utils;
 
-import emulator.interfaces.ViewListenerInterface;
-
 /**
  * The panel will draw a grid where the robot can move on
  * 
@@ -48,10 +46,13 @@ public class MapPanel extends JPanel {
 	private final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
 	private final static int LINE_LENGTH = 100;
 	private final static int ARROW_MOVEMENT = 5;
+	private final static int GRID_LEGEND = (CELLS_IN_GRID * Config.GRID_SIZE) / 10;
+
 	// Scaling parameters
 	private final static double ZOOM_FACTOR = 0.05;
 	private final static double ORIGINAL_ZOOM = 0.2;
 	private double scale = ORIGINAL_ZOOM;
+
 	// The colors which you can change to the color you like
 	private final static Color BACKGROUND_COLOR = Color.GRAY;
 	private final static Color ZERO_COLOR = Color.BLACK;
@@ -62,9 +63,8 @@ public class MapPanel extends JPanel {
 	private final static Color TEXT_COLOR = Color.BLACK;
 	private final static Color MAP_COLOR = Color.YELLOW;
 	private final static int REFRESH_TIME = 200;
+
 	// Points to draw on the screen (current & previous states, obstacles..)
-	// private ArrayList<RobotState> historyOfPoints = new
-	// ArrayList<RobotState>();
 	private final Emulator emulator;
 	private Point winPos;
 	private Brains brains;
@@ -164,41 +164,26 @@ public class MapPanel extends JPanel {
 	private void drawScale(Graphics2D g) {
 		g.setColor(TEXT_COLOR);
 		g.scale(1, -1);
-		g.drawString("1 kotje = "
-				+ ((int) (CELLS_IN_GRID * Config.GRID_SIZE) / 10) + " cm",
-				-winPos.x + 5, (getHeight() - winPos.y) - 10);
+		g.drawString("1 kotje = " + GRID_LEGEND + " cm", -winPos.x + 5,
+				(getHeight() - winPos.y) - 10);
 
 	}
 
 	private void drawMap(Graphics g) {
 		try {
 			g.setColor(MAP_COLOR);
+			int gridSize = scale(Config.GRID_SIZE);
 			for (Point p : emulator.getBackground()) {
-				g.fillRect(scale(p.x), scale(p.y), scale(Config.GRID_SIZE),
-						scale(Config.GRID_SIZE));
+				g.fillRect(scale(p.x), scale(p.y), gridSize, gridSize);
 			}
 		} catch (Exception e) {
 		}
 	}
 
-	/**
-	 * Scale the value and round to the nearest integer
-	 * 
-	 * @param value
-	 *            The value to scale
-	 * @return The scaled value
-	 */
 	private int scale(double value) {
 		return (int) (scale2(value) + 0.5);
 	}
 
-	/**
-	 * Scale the value
-	 * 
-	 * @param value
-	 *            The value to scale
-	 * @return The scaled value
-	 */
 	private double scale2(double value) {
 		return scale * value;
 	}
@@ -208,7 +193,7 @@ public class MapPanel extends JPanel {
 	}
 
 	private double descale2(double value) {
-		return 1.0 * value / scale;
+		return value / scale;
 	}
 
 	/**
@@ -222,16 +207,13 @@ public class MapPanel extends JPanel {
 		int xMax = clip.width + clip.x;
 		int yMax = clip.height + clip.y;
 		g.setColor(GRID_COLOR);
-		for (int i = clip.x; i < xMax; i++) {
-			if (i % scale(CELLS_IN_GRID * Config.GRID_SIZE) == 0) {
-				g.drawLine(i, clip.y, i, yMax);
-			}
-		}
-		for (int i = clip.y; i < yMax; i++) {
-			if (i % scale(CELLS_IN_GRID * Config.GRID_SIZE) == 0) {
-				g.drawLine(clip.x, i, xMax, i);
-			}
-		}
+		int line = scale(CELLS_IN_GRID * Config.GRID_SIZE);
+		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
+		for (int i = firstLine; i < xMax; i += line)
+			g.drawLine(i, clip.y, i, yMax);
+		firstLine = (int) Math.ceil(1.0 * clip.y / line) * line;
+		for (int i = firstLine; i < yMax; i += line)
+			g.drawLine(clip.x, i, xMax, i);
 	}
 
 	/**
@@ -267,9 +249,12 @@ public class MapPanel extends JPanel {
 		RobotState position = brains.getMap().getPosition();
 		// Draw a dot to represent the robot
 		g.setColor(ROBOT_COLOR);
-		g.fillArc((int) (scale2(position.x) + 0.5 - scale(ROBOT_SIZE) / 2),
-				(int) (scale2(position.y) + 0.5 - scale(ROBOT_SIZE) / 2),
-				scale(ROBOT_SIZE), scale(ROBOT_SIZE), 0, 360);
+		double scaledRobotSize = 0.5 * scale(ROBOT_SIZE);
+		double scaledX = scale2(position.x) + 0.5;
+		double scaledY = scale2(position.y) + 0.5;
+		g.fillArc((int) (scaledX - scaledRobotSize),
+				(int) (scaledY - scaledRobotSize), scale(ROBOT_SIZE),
+				scale(ROBOT_SIZE), 0, 360);
 
 		// Draw the sensors of the robot
 		g.setColor(SENSOR_COLOR);
@@ -280,8 +265,8 @@ public class MapPanel extends JPanel {
 		}
 		// Draw a line to show the direction of the robot
 		RobotState endpoint = Utils.driveForward(position, LINE_LENGTH);
-		int x = scale(position.x);
-		int y = scale(position.y);
+		int x = (int) scaledX;
+		int y = (int) scaledY;
 		int endX = scale(endpoint.x);
 		int endY = scale(endpoint.y);
 		g.drawLine(x, y, endX, endY);
@@ -297,13 +282,14 @@ public class MapPanel extends JPanel {
 		try {
 			Set<Entry<Point, Double>> points = brains.getMap().getCells()
 					.entrySet();
+			int scaledGridSize = scale(Config.GRID_SIZE);
 			for (Entry<Point, Double> entry : points) {
 				Point key = entry.getKey();
 				double value = entry.getValue();
 				float c = (float) (1.0 - value);
 				g.setColor(new Color(c, c, c));
-				g.fillRect(scale(key.x), scale(key.y), scale(Config.GRID_SIZE),
-						scale(Config.GRID_SIZE));
+				g.fillRect(scale(key.x), scale(key.y), scaledGridSize,
+						scaledGridSize);
 			}
 		} catch (ConcurrentModificationException e) {
 		}

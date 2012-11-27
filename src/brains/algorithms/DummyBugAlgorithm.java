@@ -122,38 +122,35 @@ public class DummyBugAlgorithm implements AlgorithmInterface {
 
 	public void reset() {
 		goal = new Point(1600, 800);
-		straightDir = Utils.angle(new Point(b.getMap().getPosition().x, b
-				.getMap().getPosition().y), goal);
+		MapStructure map = b.getMap();
+		RobotState robotState = map.getPosition();
+		straightDir = Utils.angle(new Point(robotState.x, robotState.y), goal);
 		System.out.println("Dir: " + straightDir);
 		// b.turn(straightDir, false);
 		b.getMap().getPosition().dir = straightDir;
-		straightPath = Utils.getPath(b.getMap().getPosition(), new RobotState(
-				goal, 0));
+		straightPath = Utils.getPath(robotState, new RobotState(goal, 0));
 		System.out.println("Path: ");
 		for (Point p : straightPath) {
 			System.out.print(p + ", ");
 		}
 		System.out.println("");
 		followingObstacle = false;
-		;
 	}
 
 	public void processSensorData(Brains b) {
 		int[] z = b.getSensorData();
-		RobotState x = b.getMap().getPosition();
-		MapStructure m = b.getMap();
-		MapStructure m2 = updatedOccupancyGrid(z, x, m);
+		MapStructure m2 = updatedOccupancyGrid(z, b.getMap());
 		b.setMap(m2);
 	}
 
-	public static MapStructure updatedOccupancyGrid(int[] z, RobotState x,
-			MapStructure m) {
+	public static MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {
 		MapStructure mapNew = m.clone();
+		RobotState robotState = m.getPosition();
 		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
 			Sensor s = RoombaConfig.SENSORS[i];
-			RobotState sensorState = Utils.getSensorState(x, s);
-			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(x,
-					z[i], s));
+			RobotState sensorState = Utils.getSensorState(robotState, s);
+			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
+					robotState, z[i], s));
 			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
 			for (Point p : path) {
 				double logOdds = m.getLogOdds(p)

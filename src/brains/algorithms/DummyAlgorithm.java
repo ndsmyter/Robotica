@@ -87,11 +87,13 @@ public class DummyAlgorithm implements AlgorithmInterface {
 
 	public static void processSensorData(Brains b) {
 		int[] data = b.getSensorData();
+		MapStructure map = b.getMap();
+		RobotState robotState = map.getPosition();
 		for (int i = 0; i < 5; i++) {
-			RobotState sensorState = Utils.getSensorState(b.getMap()
-					.getPosition(), RoombaConfig.SENSORS[i]);
-			Point measurement = Utils.sensorDataToPoint(b.getMap()
-					.getPosition(), data[i], RoombaConfig.SENSORS[i]);
+			RobotState sensorState = Utils.getSensorState(robotState,
+					RoombaConfig.SENSORS[i]);
+			Point measurement = Utils.sensorDataToPoint(robotState, data[i],
+					RoombaConfig.SENSORS[i]);
 			ArrayList<Point> path = Utils.getPath(sensorState, new RobotState(
 					measurement.x, measurement.y, sensorState.dir));
 			for (Point p : path) {
@@ -102,30 +104,27 @@ public class DummyAlgorithm implements AlgorithmInterface {
 				// if (newValue < 0)
 				// newValue = 0;
 				// mapStructure.put(Utils.pointToGrid(p), newValue);
-				b.getMap().put(Utils.pointToGrid(p), 0);
+				map.put(Utils.pointToGrid(p), 0);
 			}
 			if (data[i] < 800) {
-				b.getMap().put(Utils.pointToGrid(measurement), 1);
+				map.put(Utils.pointToGrid(measurement), 1);
 			}
 		}
 	}
 
 	public void processSensorData2(Brains b) {
 		int[] z = b.getSensorData();
-		RobotState x = b.getMap().getPosition();
-		MapStructure m = b.getMap();
-		MapStructure m2 = updatedOccupancyGrid(z, x, m);
+		MapStructure m2 = updatedOccupancyGrid(z, b.getMap());
 		b.setMap(m2);
 	}
 
-	public MapStructure updatedOccupancyGrid(int[] z, RobotState x,
-			MapStructure m) {
+	public MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {
 		MapStructure mapNew = m.clone();
 		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
 			Sensor s = RoombaConfig.SENSORS[i];
-			RobotState sensorState = Utils.getSensorState(x, s);
-			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(x,
-					z[i], s));
+			RobotState sensorState = Utils.getSensorState(m.getPosition(), s);
+			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
+					m.getPosition(), z[i], s));
 			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
 			for (Point p : path) {
 				double logOdds = m.getLogOdds(p)

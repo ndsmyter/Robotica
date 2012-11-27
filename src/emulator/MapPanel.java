@@ -18,8 +18,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -63,7 +63,6 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	private final static Color MAP_COLOR = Color.YELLOW;
 	private final static int REFRESH_TIME = 200;
 	// Points to draw on the screen (current & previous states, obstacles..)
-	private RobotState position = null;
 	private ArrayList<RobotState> historyOfPoints = new ArrayList<RobotState>();
 	private final Emulator emulator;
 	private Point winPos;
@@ -269,7 +268,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 *            The Graphics used to draw the robot on
 	 */
 	private void drawRobot(Graphics g) {
-
+		RobotState position = brains.getMap().getPosition();
 		// Draw a dot to represent the robot
 		g.setColor(ROBOT_COLOR);
 		g.fillArc((int) (scale2(position.x) + 0.5 - scale(ROBOT_SIZE) / 2),
@@ -300,12 +299,15 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	 */
 	private void drawObstacles(Graphics g) {
 		try {
-			HashMap<Point, Double> points = brains.getMap().getCells();
-			for (Entry<Point, Double> entry : points.entrySet()) {
-				float c = (float) (double) (1 - entry.getValue());
+			Set<Entry<Point, Double>> points = brains.getMap().getCells()
+					.entrySet();
+			for (Entry<Point, Double> entry : points) {
+				Point key = entry.getKey();
+				double value = entry.getValue();
+				float c = (float) (1.0 - value);
 				g.setColor(new Color(c, c, c));
-				g.fillRect(scale(entry.getKey().x), scale(entry.getKey().y),
-						scale(Config.GRID_SIZE), scale(Config.GRID_SIZE));
+				g.fillRect(scale(key.x), scale(key.y), scale(Config.GRID_SIZE),
+						scale(Config.GRID_SIZE));
 			}
 		} catch (ConcurrentModificationException e) {
 		}
@@ -324,8 +326,7 @@ public class MapPanel extends JPanel implements ViewListenerInterface {
 	}
 
 	private void move(RobotState s) {
-		position = s;
-		historyOfPoints.add(position);
+		historyOfPoints.add(s);
 	}
 
 	/**

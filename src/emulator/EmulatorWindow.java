@@ -67,32 +67,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		Action saveAction = new AbstractAction("Screenshot") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				BufferedImage offImage = new BufferedImage(mapPanel.getWidth(),
-						mapPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-				offImage.setRGB(0, 0, Color.BLACK.getRGB());
-				Graphics2D g2 = offImage.createGraphics();
-
-				g2.setBackground(Color.BLUE);
-				g2.setColor(Color.RED);
-				g2.drawRect(0, 0, 50, 50);
-
-				g2.setClip(0, 0, mapPanel.getWidth(), mapPanel.getHeight());
-				mapPanel.paintComponent(g2);
-
-				// Make screenshot folder
-				if (!new File(SCREENSHOTS).exists())
-					new File(SCREENSHOTS).mkdir();
-				int nr = 1;
-				while (new File(SCREENSHOTS + "/screenshot" + nr + ".png")
-						.exists())
-					nr++;
-				try {
-					ImageIO.write(offImage, "png", new File(SCREENSHOTS
-							+ "/screenshot" + nr + ".png"));
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				saveScreenshot();
 			}
 		};
 		Action resetAction = new AbstractAction("Reset") {
@@ -178,6 +153,34 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
+	}
+
+	private void saveScreenshot() {
+		BufferedImage offImage = new BufferedImage(mapPanel.getWidth(),
+				mapPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+		offImage.setRGB(0, 0, Color.BLACK.getRGB());
+		Graphics2D g2 = offImage.createGraphics();
+
+		g2.setBackground(Color.BLUE);
+		g2.setColor(Color.RED);
+		g2.drawRect(0, 0, 50, 50);
+
+		g2.setClip(0, 0, mapPanel.getWidth(), mapPanel.getHeight());
+		mapPanel.paintComponent(g2);
+
+		// Make screenshot folder
+		if (!new File(SCREENSHOTS).exists())
+			new File(SCREENSHOTS).mkdir();
+		int nr = 1;
+		while (new File(SCREENSHOTS + "/screenshot" + nr + ".png").exists())
+			nr++;
+		try {
+			ImageIO.write(offImage, "png", new File(SCREENSHOTS + "/screenshot"
+					+ nr + ".png"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	public void notifyReset() {

@@ -221,7 +221,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public void setBackground(ArrayList<Point> background) {
-		this.background = background;
+		this.background = new ArrayList<Point>(background);
 	}
 
 	public ArrayList<Point> getBackground() {

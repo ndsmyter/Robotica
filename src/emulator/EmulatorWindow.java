@@ -11,19 +11,16 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
 
 import emulator.interfaces.ViewListenerInterface;
 
@@ -36,6 +33,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	private Emulator emulator;
 	private JButton startStopButton;
 	private JComboBox<Object> mapBox;
+
+	private static final String CLEAR_MAP = "<Clear map>";
 
 	private boolean running = false;
 
@@ -55,7 +54,9 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 
 		// Maps
 		mapBox = new JComboBox<Object>(emulator.getBackgroundMaps().toArray());
-		mapBox.setSelectedItem(emulator.getMap());
+		mapBox.addItem(CLEAR_MAP);
+		String map = emulator.getMap();
+		mapBox.setSelectedItem(map.isEmpty() ? CLEAR_MAP : map);
 		mapBox.addActionListener(this);
 
 		// Init button bar
@@ -227,6 +228,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	 * Called whenever the map combobox has a new value
 	 */
 	public void actionPerformed(ActionEvent e) {
-		emulator.setMap(mapBox.getSelectedItem().toString());
+		String selected = mapBox.getSelectedItem().toString();
+		emulator.setMap(selected.equals(CLEAR_MAP) ? "" : selected);
 	}
 }

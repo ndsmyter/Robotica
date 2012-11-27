@@ -83,8 +83,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setMap(String map) {
 		if (!map.equals(currentMap)) {
 			currentMap = map;
-			map = MAPS_DIRECTORY + "/" + map;
-			if (!map.isEmpty()) {
+			if (map.isEmpty()) {
+				background.clear();
+			}else{
+				map = MAPS_DIRECTORY + "/" + map;
 				System.out.println("Loaded map: " + map);
 				loadBackgroundMap(new File(map));
 			}

@@ -43,6 +43,10 @@ public class Brains implements ListenerInterface {
 		emulator.log("Initiating application");
 	}
 
+	public void log(String message) {
+		emulator.log(message);
+	}
+
 	public List<Particle> getParticles() {
 		return particles;
 	}

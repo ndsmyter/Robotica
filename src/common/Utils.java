@@ -99,4 +99,8 @@ public class Utils {
 				% Config.GRID_CELL_SIZE;
 		return p;
 	}
+
+	public static boolean goalReached(Point robot, Point goal) {
+		return euclideanDistance(robot, goal) < Config.GOAL_REACHED_TRESHOLD;
+	}
 }

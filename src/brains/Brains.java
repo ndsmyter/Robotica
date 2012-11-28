@@ -1,5 +1,6 @@
 package brains;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import roomba.RoombaConfig;
@@ -36,6 +37,7 @@ public class Brains implements ListenerInterface {
 	private boolean stopped;
 
 	public Brains() {
+		particles = new ArrayList<Particle>();
 		algorithm = new DummyBugAlgorithm(this);
 		reset();
 		emulator = new Emulator(this);
@@ -57,6 +59,7 @@ public class Brains implements ListenerInterface {
 
 	public void setParticles(List<Particle> particles) {
 		this.particles = particles;
+		emulator.updateParticleViewer();
 	}
 
 	public boolean isStopped() {

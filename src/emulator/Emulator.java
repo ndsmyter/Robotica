@@ -45,6 +45,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private static final String MAPS_DIRECTORY = "maps";
 	private static final String DEFAULT_MAP_FILE = "default.txt";
 
+	private ParticleViewer particleViewer = null;
+
 	// Logs
 	private ArrayList<String> logs = new ArrayList<String>();
 
@@ -55,6 +57,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
 		new EmulatorWindow(this);
+		// particleViewer = new ParticleViewer(this);
+	}
+
+	public void updateParticleViewer() {
+		if (particleViewer != null)
+			particleViewer.setParticles(brains.getParticles());
 	}
 
 	private void loadBackgroundFiles() {

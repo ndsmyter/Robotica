@@ -58,10 +58,10 @@ public class MapPanel extends JPanel {
 	private final static Color ZERO_COLOR = Color.BLACK;
 	private final static Color ROBOT_COLOR = new Color(210, 250, 255);
 	private final static Color GRID_COLOR = Color.DARK_GRAY;
-	private final static Color PATH_COLOR = Color.ORANGE;
+	public final static Color PATH_COLOR = Color.ORANGE;
 	private final static Color SENSOR_COLOR = new Color(5, 80, 90);
 	private final static Color TEXT_COLOR = Color.BLACK;
-	private final static Color MAP_COLOR = Color.YELLOW;
+	public final static Color MAP_COLOR = Color.YELLOW;
 	private final static int REFRESH_TIME = 200;
 
 	// Points to draw on the screen (current & previous states, obstacles..)

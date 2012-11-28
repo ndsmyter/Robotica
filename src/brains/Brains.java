@@ -44,6 +44,14 @@ public class Brains implements ListenerInterface {
 		emulator = new Emulator(this);
 		emulator.log("===============================================================================");
 		emulator.log("Initiating application");
+
+		// Make the roomba notify us it is ready to begin playing
+		emulator.setSongs();
+		emulator.singSong(0);
+	}
+
+	public void log(String message) {
+		emulator.log(message);
 	}
 
 	public List<Particle> getParticles() {

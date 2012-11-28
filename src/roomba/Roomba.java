@@ -256,7 +256,7 @@ public class Roomba implements RoombaInterface {
 		}
 	}
 
-	private void setSongs() {
+	public void setSongs() {
 		try {
 			serial.sendCommand((byte) 140, new byte[] { (byte) 0, 5, 69, 8, 69,
 					16, 30, 8, 69, 8, 69, 8 });
@@ -270,7 +270,7 @@ public class Roomba implements RoombaInterface {
 		}
 	}
 
-	private void singSong(int select) {
+	public void singSong(int select) {
 		try {
 			serial.sendCommand((byte) 141, new byte[] { (byte) select });
 		} catch (IOException e) {

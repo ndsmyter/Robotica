@@ -227,4 +227,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public ArrayList<Point> getBackground() {
 		return background;
 	}
+
+	public void setSongs() {
+		roomba.setSongs();
+	}
+
+	public void singSong(int song) {
+		roomba.singSong(song);
+	}
 }

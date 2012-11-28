@@ -1,4 +1,4 @@
-package brains.algorithmsnew.measurement;
+package brains.algorithmsnew.slam;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import common.RobotState;
 import common.Sensor;
 import common.Utils;
 
-public class FastSlamMeasurement implements MeasurementInterface {
+public class FastSlamMeasurement implements SLAMAlgorithmInterface {
 	private RouletteWheelSelection roulette;
 	
 	public FastSlamMeasurement() {
@@ -28,7 +28,7 @@ public class FastSlamMeasurement implements MeasurementInterface {
 	 * For quick reference: pg 478
 	 */
 	@Override
-	public List<Particle> measure(List<Particle> particles, int[] u, int[] z) {
+	public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
 		List<Particle> updatedParticles = new ArrayList<Particle>();
 
 		for (Particle p : particles) {

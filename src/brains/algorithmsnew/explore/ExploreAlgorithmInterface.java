@@ -1,10 +1,10 @@
-package brains.algorithmsnew.movement;
+package brains.algorithmsnew.explore;
 
 import brains.MapStructure;
 
-public abstract class MovementInterface {
+public abstract class ExploreAlgorithmInterface {
 	// returns u
-	public abstract int[] move(MapStructure map);
+	public abstract int[] explore(MapStructure map);
 	public abstract void reset();
 	
 	public int[] drive(int x) {

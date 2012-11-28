@@ -5,24 +5,24 @@ import java.util.List;
 import brains.Brains;
 import brains.MapStructure;
 import brains.Particle;
-import brains.algorithmsnew.measurement.FastSlamMeasurement;
-import brains.algorithmsnew.measurement.MeasurementInterface;
-import brains.algorithmsnew.movement.BugMovement;
-import brains.algorithmsnew.movement.MovementInterface;
-import brains.algorithmsnew.movement.RandomMovement;
+import brains.algorithmsnew.explore.BugMovement;
+import brains.algorithmsnew.explore.ExploreAlgorithmInterface;
+import brains.algorithmsnew.explore.RandomMovement;
+import brains.algorithmsnew.slam.FastSlamMeasurement;
+import brains.algorithmsnew.slam.SLAMAlgorithmInterface;
 
 public class Algorithm {
-	private MovementInterface moi;
-	private MeasurementInterface mei;
+	private ExploreAlgorithmInterface explorer;
+	private SLAMAlgorithmInterface slam;
 
-	public Algorithm(MovementInterface moi, MeasurementInterface mei) {
-		this.moi = moi;
-		this.mei = mei;
+	public Algorithm(ExploreAlgorithmInterface explore, SLAMAlgorithmInterface slam) {
+		this.explorer = explore;
+		this.slam = slam;
 	}
 
 	public void reset() {
-		moi.reset();
-		mei.reset();
+		explorer.reset();
+		slam.reset();
 	}
 
 	public void run(Brains b) {
@@ -34,12 +34,12 @@ public class Algorithm {
 
 	public void doStep(Brains b) {
 		MapStructure map = b.getMap();
-		int[] u = moi.move(map);
+		int[] u = explorer.explore(map);
 		b.moveEmulator(u);
 		
 		List<Particle> particles = b.getParticles();
 		int[] z = b.getSensorData();
-		List<Particle> newParticles = mei.measure(particles, u, z);
+		List<Particle> newParticles = slam.execute(particles, u, z);
 		b.setParticles(newParticles);
 		
 		b.setMap(newParticles.get(0).getMap());

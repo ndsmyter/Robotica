@@ -35,6 +35,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	private TextArea logArea;
 	private Emulator emulator;
 	private JButton startStopButton;
+	
+	// Note, als je hier een compileerfout hebt, update naar Java 7
 	private JComboBox<Object> mapBox;
 
 	private static final String CLEAR_MAP = "<Clear map>";

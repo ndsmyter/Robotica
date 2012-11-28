@@ -5,10 +5,10 @@ import java.util.List;
 import brains.Brains;
 import brains.MapStructure;
 import brains.Particle;
-import brains.algorithmsnew.explore.BugMovement;
+import brains.algorithmsnew.explore.BugExplore;
 import brains.algorithmsnew.explore.ExploreAlgorithmInterface;
-import brains.algorithmsnew.explore.RandomMovement;
-import brains.algorithmsnew.slam.FastSlamMeasurement;
+import brains.algorithmsnew.explore.RandomExplore;
+import brains.algorithmsnew.slam.FastSLAM;
 import brains.algorithmsnew.slam.SLAMAlgorithmInterface;
 
 public class Algorithm {
@@ -46,12 +46,12 @@ public class Algorithm {
 	}
 
 	public static Algorithm getFastSlamRandom() {
-		return new Algorithm(new RandomMovement(), new FastSlamMeasurement());
+		return new Algorithm(new RandomExplore(), new FastSLAM());
 	}
 	
 	public static Algorithm getFastSlamBug(Brains b) {
 		Stopper stopper = new Stopper(b);
-		return new Algorithm(new BugMovement(stopper), new FastSlamMeasurement());
+		return new Algorithm(new BugExplore(stopper), new FastSLAM());
 	}
 
 }

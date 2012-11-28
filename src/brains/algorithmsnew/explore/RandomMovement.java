@@ -1,4 +1,4 @@
-package brains.algorithmsnew.movement;
+package brains.algorithmsnew.explore;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import brains.MapStructure;
 
 import common.Utils;
 
-public class RandomMovement extends MovementInterface {
+public class RandomMovement extends ExploreAlgorithmInterface {
 	private Random random = new Random();
 	private static final int STEP = 50;
 	private static final int TURN = 2;
@@ -28,7 +28,7 @@ public class RandomMovement extends MovementInterface {
 	}
 
 	@Override
-	public int[] move(MapStructure map) {
+	public int[] explore(MapStructure map) {
 		// if kate is doing a pirouette, continue doing it until it's done
 		if (pirouette > 0) {
 			pirouette--;

@@ -1,4 +1,4 @@
-package brains.algorithmsnew.movement;
+package brains.algorithmsnew.explore;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import brains.algorithmsnew.Stopper;
 import common.RobotState;
 import common.Utils;
 
-public class BugMovement extends MovementInterface {
+public class BugMovement extends ExploreAlgorithmInterface {
 	// Step length in mm, turn in degrees
 
     private static final int STEP = 10;
@@ -60,7 +60,7 @@ public class BugMovement extends MovementInterface {
     }
 
 	@Override
-	public int[] move(MapStructure map) {
+	public int[] explore(MapStructure map) {
 		RobotState robotState = map.getPosition();
 		if (internalState == -1) {
 	        straightDir = Utils.angle(new Point(robotState.x, robotState.y), goals.get(goalIndex));

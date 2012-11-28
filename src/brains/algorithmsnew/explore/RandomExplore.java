@@ -9,7 +9,7 @@ import brains.MapStructure;
 
 import common.Utils;
 
-public class RandomMovement extends ExploreAlgorithmInterface {
+public class RandomExplore extends ExploreAlgorithmInterface {
 	private Random random = new Random();
 	private static final int STEP = 50;
 	private static final int TURN = 2;

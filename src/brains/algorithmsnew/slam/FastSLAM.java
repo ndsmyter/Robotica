@@ -14,10 +14,10 @@ import common.RobotState;
 import common.Sensor;
 import common.Utils;
 
-public class FastSlamMeasurement implements SLAMAlgorithmInterface {
+public class FastSLAM implements SLAMAlgorithmInterface {
 	private RouletteWheelSelection roulette;
 	
-	public FastSlamMeasurement() {
+	public FastSLAM() {
 		roulette = new RouletteWheelSelection();
 	}
 	

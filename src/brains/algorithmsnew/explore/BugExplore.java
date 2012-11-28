@@ -11,7 +11,7 @@ import brains.algorithmsnew.Stopper;
 import common.RobotState;
 import common.Utils;
 
-public class BugMovement extends ExploreAlgorithmInterface {
+public class BugExplore extends ExploreAlgorithmInterface {
 	// Step length in mm, turn in degrees
 
     private static final int STEP = 10;
@@ -31,7 +31,7 @@ public class BugMovement extends ExploreAlgorithmInterface {
     private boolean free = true;
     private int totalTurn = 0;
     
-    public BugMovement(Stopper stopper) {
+    public BugExplore(Stopper stopper) {
     	this.stopper = stopper;
     }
     

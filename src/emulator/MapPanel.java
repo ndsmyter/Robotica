@@ -177,7 +177,7 @@ public class MapPanel extends JPanel {
 		try {
 			g.setColor(MAP_COLOR);
 			int gridSize = scale(Config.GRID_CELL_SIZE);
-			int halfGridSize = 0; //(int) (0.5 * Config.GRID_CELL_SIZE);
+			int halfGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Point p : emulator.getBackground()) {
 				g.fillRect(scale(p.x - halfGridSize),
 						scale(p.y - halfGridSize), gridSize, gridSize);
@@ -289,7 +289,7 @@ public class MapPanel extends JPanel {
 			Set<Entry<Point, Double>> points = brains.getMap().getCells()
 					.entrySet();
 			int scaledGridSize = scale(Config.GRID_CELL_SIZE);
-			int halfScaledGridSize = 0; // (int) (0.5 * Config.GRID_CELL_SIZE);
+			int halfScaledGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Entry<Point, Double> entry : points) {
 				Point key = entry.getKey();
 				double value = entry.getValue();

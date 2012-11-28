@@ -81,18 +81,22 @@ public class Utils {
 	// When uncommenting, it will map to the middle of the grids,
 	// but this isn't yet shown in the view (which makes it more confusing)
 	public static Point pointToGrid(Point p) {
-		// p.x += Config.GRID_CELL_SIZE / 2;
-		p.x = p.x - (p.x % Config.GRID_CELL_SIZE);
-		// p.y += Config.GRID_CELL_SIZE / 2;
-		p.y = p.y - (p.y % Config.GRID_CELL_SIZE);
+		p.x += Config.GRID_CELL_SIZE / 2;
+		p.x = p.x - (p.x % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
+				% Config.GRID_CELL_SIZE;
+		p.y += Config.GRID_CELL_SIZE / 2;
+		p.y = p.y - (p.y % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
+				% Config.GRID_CELL_SIZE;
 		return p;
 	}
 
 	public static RobotState stateToGrid(RobotState p) {
-		// p.x += Config.GRID_CELL_SIZE / 2;
-		p.x = p.x - (p.x % Config.GRID_CELL_SIZE);
-		// p.y += Config.GRID_CELL_SIZE / 2;
-		p.y = p.y - (p.y % Config.GRID_CELL_SIZE);
+		p.x += Config.GRID_CELL_SIZE / 2;
+		p.x = p.x - (p.x % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
+				% Config.GRID_CELL_SIZE;
+		p.y += Config.GRID_CELL_SIZE / 2;
+		p.y = p.y - (p.y % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
+				% Config.GRID_CELL_SIZE;
 		return p;
 	}
 }

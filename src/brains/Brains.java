@@ -1,11 +1,11 @@
 package brains;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import roomba.RoombaConfig;
-import brains.algorithms.AlgorithmInterface;
 import brains.algorithms.DummyAlgorithm;
-import brains.algorithms.DummyBugAlgorithm;
+import brains.algorithmsnew.Algorithm;
 
 import common.Utils;
 
@@ -32,11 +32,14 @@ public class Brains implements ListenerInterface {
 	private static final byte RIGHT = 1;
 	private static final byte LEFT = 2;
 	private final static int SLEEP_TIME = 100;
-	private AlgorithmInterface algorithm;
+//	private AlgorithmInterface algorithm;
+	private Algorithm algorithm;
 	private boolean stopped;
 
 	public Brains() {
-		algorithm = new DummyBugAlgorithm(this);
+//		algorithm = new DummyBugAlgorithm(this);
+//		algorithm = Algorithm.getFastSlamRandom();
+		algorithm = Algorithm.getFastSlamBug(this);
 		reset();
 		emulator = new Emulator(this);
 		emulator.log("===============================================================================");
@@ -61,6 +64,8 @@ public class Brains implements ListenerInterface {
 
 	public void reset() {
 		mapStructure = new MapStructure();
+		particles = new ArrayList<Particle>();
+		particles.add(new Particle(mapStructure, 1.0));
 		algorithm.reset();
 		stop(false);
 	}
@@ -130,6 +135,22 @@ public class Brains implements ListenerInterface {
 	@Override
 	public void stateChanged(Event event) {
 		// An event happened to the robot which has to be parsed
+	}
+	
+	public void move(int[] u) {
+		if (u[0] != 0)
+			drive(u[0]);
+		if (u[1] != 0)
+			turn(u[1], false);
+	}
+	
+	public void moveEmulator(int[] u) {
+		if (u[0] != 0)
+			emulator.drive(u[0], RoombaConfig.DRIVE_MODE_MED);
+		if (u[1] != 0)
+			emulator.turn(u[1], false, 
+					RoombaConfig.TURN_RADIUS_SPOT,
+					RoombaConfig.DRIVE_MODE_MED);
 	}
 
 	public void turn(int degrees, boolean isTurnRight) {

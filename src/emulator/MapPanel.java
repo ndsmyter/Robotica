@@ -46,7 +46,7 @@ public class MapPanel extends JPanel {
 	private final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
 	private final static int LINE_LENGTH = 100;
 	private final static int ARROW_MOVEMENT = 5;
-	private final static int GRID_LEGEND = (CELLS_IN_GRID * Config.GRID_SIZE) / 10;
+	private final static int GRID_LEGEND = (CELLS_IN_GRID * Config.GRID_CELL_SIZE) / 10;
 
 	// Scaling parameters
 	private final static double ZOOM_FACTOR = 0.05;
@@ -128,6 +128,10 @@ public class MapPanel extends JPanel {
 		winPos = new Point(getWidth() / 2, getHeight() / 2);
 	}
 
+	/**
+	 * Paint all the elements on the screen. In this method it is decided which
+	 * element is painted over another
+	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
@@ -172,9 +176,11 @@ public class MapPanel extends JPanel {
 	private void drawMap(Graphics g) {
 		try {
 			g.setColor(MAP_COLOR);
-			int gridSize = scale(Config.GRID_SIZE);
+			int gridSize = scale(Config.GRID_CELL_SIZE);
+			int halfGridSize = 0; //(int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Point p : emulator.getBackground()) {
-				g.fillRect(scale(p.x), scale(p.y), gridSize, gridSize);
+				g.fillRect(scale(p.x - halfGridSize),
+						scale(p.y - halfGridSize), gridSize, gridSize);
 			}
 		} catch (Exception e) {
 		}
@@ -207,7 +213,7 @@ public class MapPanel extends JPanel {
 		int xMax = clip.width + clip.x;
 		int yMax = clip.height + clip.y;
 		g.setColor(GRID_COLOR);
-		int line = scale(CELLS_IN_GRID * Config.GRID_SIZE);
+		int line = scale(CELLS_IN_GRID * Config.GRID_CELL_SIZE);
 		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
 		for (int i = firstLine; i < xMax; i += line)
 			g.drawLine(i, clip.y, i, yMax);
@@ -282,14 +288,15 @@ public class MapPanel extends JPanel {
 		try {
 			Set<Entry<Point, Double>> points = brains.getMap().getCells()
 					.entrySet();
-			int scaledGridSize = scale(Config.GRID_SIZE);
+			int scaledGridSize = scale(Config.GRID_CELL_SIZE);
+			int halfScaledGridSize = 0; // (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Entry<Point, Double> entry : points) {
 				Point key = entry.getKey();
 				double value = entry.getValue();
 				float c = (float) (1.0 - value);
 				g.setColor(new Color(c, c, c));
-				g.fillRect(scale(key.x), scale(key.y), scaledGridSize,
-						scaledGridSize);
+				g.fillRect(scale(key.x - halfScaledGridSize), scale(key.y
+						- halfScaledGridSize), scaledGridSize, scaledGridSize);
 			}
 		} catch (ConcurrentModificationException e) {
 		}

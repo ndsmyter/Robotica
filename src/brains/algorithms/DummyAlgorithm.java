@@ -143,7 +143,7 @@ public class DummyAlgorithm implements AlgorithmInterface {
 		double result = 0;
 		int r = Utils.euclideanDistance(
 				new Point(sensorState.x, sensorState.y), p);
-		if (r > Math.min(s.zMax, z) + Config.GRID_SIZE) {
+		if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
 			result = 0;
 		} else if (z < s.zMax && p.equals(measurement)) {
 			result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6

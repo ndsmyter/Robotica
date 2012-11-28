@@ -56,7 +56,7 @@ public class Utils {
 		return getPath(currentState, distance, 0);
 	}
 
-        // Values returned by this method are points on the grid!
+	// Values returned by this method are points on the grid!
 	public static ArrayList<Point> getPath(RobotState currentState,
 			int distance, int width) {
 		ArrayList<Point> path = new ArrayList<Point>();
@@ -65,35 +65,34 @@ public class Utils {
 		current = driveForward(current, width / 2);
 		current.dir = currentState.dir;
 		RobotState intermediate;
-		for (int w = 0; w <= width; w += Config.GRID_SIZE) {
-			for (int d = 0; d < distance; d += Config.GRID_SIZE) {
+		for (int w = 0; w <= width; w += Config.GRID_CELL_SIZE) {
+			for (int d = 0; d < distance; d += Config.GRID_CELL_SIZE) {
 				intermediate = driveForward(current, d);
 				path.add(pointToGrid(new Point(intermediate.x, intermediate.y)));
 			}
 			current.dir += 90;
-			current = driveForward(current, Config.GRID_SIZE);
+			current = driveForward(current, Config.GRID_CELL_SIZE);
 			current.dir -= 90;
 		}
 		return path;
 	}
 
-        
-        // Currently the grids are mapped to the left under corner. 
-        // When uncommenting, it will map to the middle of the grids,
-        // but this isn't yet shown in the view (which makes it more confusing)
+	// Currently the grids are mapped to the left under corner.
+	// When uncommenting, it will map to the middle of the grids,
+	// but this isn't yet shown in the view (which makes it more confusing)
 	public static Point pointToGrid(Point p) {
-//                p.x += Config.GRID_SIZE/2;
-		p.x = p.x - (p.x % Config.GRID_SIZE + Config.GRID_SIZE)% Config.GRID_SIZE;
-//                p.y += Config.GRID_SIZE/2;
-		p.y = p.y - (p.y % Config.GRID_SIZE + Config.GRID_SIZE)% Config.GRID_SIZE;
+		// p.x += Config.GRID_CELL_SIZE / 2;
+		p.x = p.x - (p.x % Config.GRID_CELL_SIZE);
+		// p.y += Config.GRID_CELL_SIZE / 2;
+		p.y = p.y - (p.y % Config.GRID_CELL_SIZE);
 		return p;
 	}
 
 	public static RobotState stateToGrid(RobotState p) {
-//                p.x += Config.GRID_SIZE/2;
-		p.x = p.x - (p.x % Config.GRID_SIZE + Config.GRID_SIZE)% Config.GRID_SIZE;
-//                p.y += Config.GRID_SIZE/2;
-		p.y = p.y - (p.y % Config.GRID_SIZE + Config.GRID_SIZE)% Config.GRID_SIZE;
+		// p.x += Config.GRID_CELL_SIZE / 2;
+		p.x = p.x - (p.x % Config.GRID_CELL_SIZE);
+		// p.y += Config.GRID_CELL_SIZE / 2;
+		p.y = p.y - (p.y % Config.GRID_CELL_SIZE);
 		return p;
 	}
 }

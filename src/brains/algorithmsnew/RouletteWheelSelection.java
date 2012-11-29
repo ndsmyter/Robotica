@@ -23,7 +23,7 @@ public class RouletteWheelSelection {
 			i++;
 			normProb = particles.get(i).getWeight() / sumWeight;
 		}
-		return particles.get(i);
+		return particles.get(i).clone();
 	}
 	
 	private double calculateSumWeight(List<Particle> particles) {

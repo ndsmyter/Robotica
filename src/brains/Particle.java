@@ -25,4 +25,8 @@ public class Particle {
     public void setWeight(double weight) {
         this.weight = weight;
     }
+    
+    public Particle clone() {
+    	return new Particle(map.clone(), weight);
+    }
 }

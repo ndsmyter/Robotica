@@ -33,7 +33,6 @@ public class Algorithm {
 	}
 
 	public void doStep(Brains b) {
-		//MapStructure map = b.getMap();
 		List<Particle> particles = b.getParticles();
 		
 		int[] u = explorer.explore(particles.get(0).getMap());
@@ -42,8 +41,6 @@ public class Algorithm {
 		int[] z = b.getSensorData();
 		List<Particle> newParticles = slam.execute(particles, u, z);
 		b.setParticles(newParticles);
-		
-		//b.setMap(newParticles.get(0).getMap());
 	}
 
 	public static Algorithm getFastSlamRandom() {

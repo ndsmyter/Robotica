@@ -7,6 +7,7 @@ import roomba.RoombaConfig;
 import brains.algorithms.DummyAlgorithm;
 import brains.algorithmsnew.Algorithm;
 
+import common.Config;
 import common.Utils;
 
 import emulator.Emulator;
@@ -22,7 +23,6 @@ import emulator.interfaces.ListenerInterface;
  * 
  */
 public class Brains implements ListenerInterface {
-
 	private final Emulator emulator;
 	private MapStructure mapStructure;
 
@@ -75,7 +75,8 @@ public class Brains implements ListenerInterface {
 	public void reset() {
 		mapStructure = new MapStructure();
 		particles = new ArrayList<Particle>();
-		particles.add(new Particle(new MapStructure(), 1.0));
+		for (int i = 0; i < Config.NUMBER_OF_PARTICLES; i++) 
+		  particles.add(new Particle(new MapStructure(), 1.0));
 		algorithm.reset();
 		stop(false);
 	}

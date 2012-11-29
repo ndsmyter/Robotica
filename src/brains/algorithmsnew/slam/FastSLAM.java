@@ -50,12 +50,16 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 
 	/**
 	 * TODO Stef
-	 * @param u
-	 * @param x
+	 * @param u de bewegingsvector u_t. u[0] → voorwaarts bewegen, u[1] → draaien
+	 * @param x de state van de robot
 	 * @return
 	 */
 	public RobotState sampleMotionModel(int[] u, RobotState x) {
-		// poging tot implementatie
+		// Note van Robrecht: Ik heb hier tijdelijk al iets ingestoken 
+		// zodanig dat onze simulatie al werkt. Het geen ik hier doe gaat 
+		// geen rekening houden met de variantie op onze metingen, wat 
+		// wel de bedoelig is. Dit stukje code veronderstelt dus dat
+		// onze meting 100% juist is.
 		RobotState tmp = new RobotState(x.x, x.y, x.dir);
 		
 		if (u[0] != 0)

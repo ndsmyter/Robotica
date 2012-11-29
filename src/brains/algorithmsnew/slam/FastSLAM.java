@@ -79,7 +79,28 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 	 * @return
 	 */
 	public double measurementModelMap(int[] z, MapStructure m) {
-		return 1.0;
+		RobotState robotState = m.getPosition();
+		
+		double sum = 0.0; 
+		
+        for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
+            Sensor s = RoombaConfig.SENSORS[i];
+            RobotState sensorState = Utils.getSensorState(robotState, s);
+            Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(robotState, z[i], s));
+            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
+            for (Point p : path) {
+            	double x = m.get(p);
+            	// need to find a better value for y
+            	double y;
+            	if (measurement.equals(p)) {
+            		y = 1.0;
+            	} else {
+            		y = 0.0;
+            	}
+            	sum += x * y;
+            }
+        }
+		return sum;
 	}
 	
 	public MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {

@@ -35,7 +35,9 @@ public class Algorithm {
 	public void doStep(Brains b) {
 		List<Particle> particles = b.getParticles();
 		
-		int[] u = explorer.explore(particles.get(0).getMap());
+		MapStructure bestMap = b.getBestParticleMap();
+		
+		int[] u = explorer.explore(bestMap);
 		b.moveEmulator(u);
 		
 		int[] z = b.getSensorData();

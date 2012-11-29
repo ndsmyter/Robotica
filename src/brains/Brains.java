@@ -190,6 +190,23 @@ public class Brains implements ListenerInterface {
 		return particles.get(i).getMap();
 	}
 	
+	// need to take the density in account, not simply the 
+	// particle with the largest weight
+	public MapStructure getBestParticleMap() {
+		MapStructure m = particles.get(0).getMap();
+		double max = particles.get(0).getWeight();
+		
+		for (int i = 1; i < particles.size(); i++) {
+			Particle p = particles.get(i);
+			if (max < p.getWeight()) {
+				max = p.getWeight();
+				m = p.getMap();
+			}
+		}
+		
+		return m;
+	}
+	
 
 	public void setMap(MapStructure m) {
 		mapStructure.useNewMap(m);

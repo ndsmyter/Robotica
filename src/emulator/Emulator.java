@@ -181,7 +181,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		for (int i = 0; i < 5; i++) {
 			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
 		}
-		// System.out.println(sensordata[0]+" "+sensordata[1]+" "+sensordata[2]+" "+sensordata[3]+" "+sensordata[4]);
+//		System.out.println(sensordata[0]+" "+sensordata[1]+" "+sensordata[2]+" "+sensordata[3]+" "+sensordata[4]);
 		return sensordata;
 	}
 

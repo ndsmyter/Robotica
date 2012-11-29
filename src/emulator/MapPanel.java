@@ -231,7 +231,7 @@ public class MapPanel extends JPanel {
 	private void drawPreviousPoints(Graphics g) {
 		try {
 			g.setColor(PATH_COLOR);
-			ArrayList<Point> historyOfPoints = brains.getMap().getPath();
+			ArrayList<Point> historyOfPoints = brains.getParticleMap(0).getPath();
 			for (Point state : historyOfPoints) {
 				g.drawRect(scale(state.x), scale(state.y), 1, 1);
 			}
@@ -252,7 +252,7 @@ public class MapPanel extends JPanel {
 	 *            The Graphics used to draw the robot on
 	 */
 	private void drawRobot(Graphics g) {
-		RobotState position = brains.getMap().getPosition();
+		RobotState position = brains.getParticleMap(0).getPosition();
 		// Draw a dot to represent the robot
 		g.setColor(ROBOT_COLOR);
 		double scaledRobotSize = 0.5 * scale(ROBOT_SIZE);
@@ -286,7 +286,7 @@ public class MapPanel extends JPanel {
 	 */
 	private void drawObstacles(Graphics g) {
 		try {
-			Set<Entry<Point, Double>> points = brains.getMap().getCells()
+			Set<Entry<Point, Double>> points = brains.getParticleMap(0).getCells()
 					.entrySet();
 			int scaledGridSize = scale(Config.GRID_CELL_SIZE);
 			int halfScaledGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);

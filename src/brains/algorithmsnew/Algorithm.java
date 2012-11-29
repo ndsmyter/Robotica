@@ -26,23 +26,24 @@ public class Algorithm {
 	}
 
 	public void run(Brains b) {
-		reset();
+		//reset();
 		while (!b.isStopped()) {
 			doStep(b);
 		}
 	}
 
 	public void doStep(Brains b) {
-		MapStructure map = b.getMap();
-		int[] u = explorer.explore(map);
+		//MapStructure map = b.getMap();
+		List<Particle> particles = b.getParticles();
+		
+		int[] u = explorer.explore(particles.get(0).getMap());
 		b.moveEmulator(u);
 		
-		List<Particle> particles = b.getParticles();
 		int[] z = b.getSensorData();
 		List<Particle> newParticles = slam.execute(particles, u, z);
 		b.setParticles(newParticles);
 		
-		b.setMap(newParticles.get(0).getMap());
+		//b.setMap(newParticles.get(0).getMap());
 	}
 
 	public static Algorithm getFastSlamRandom() {

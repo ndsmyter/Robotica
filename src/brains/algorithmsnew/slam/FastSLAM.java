@@ -59,12 +59,13 @@ public class FastSLAM implements SLAMAlgorithmInterface {
      */
     public RobotState sampleMotionModel(int[] u, RobotState x) {
         RobotState tmp = new RobotState(x.x, x.y, x.dir);
-        tmp = Utils.driveForward(tmp, u[0] + u[0]*sample(Config.ALPHA1));
-        tmp.dir = (tmp.dir + u[1] + u[1]*sample(Config.ALPHA2) + 360) % 360;
+        tmp = Utils.driveForward(tmp, u[0] + (int)(u[0]*sample(Config.ALPHA1)));
+        int noise = (int) (u[1]*sample(Config.ALPHA2));
+        tmp.dir = (tmp.dir + u[1] + noise + 360) % 360;
         return tmp;
     }
 
-    public int sample(double b2) {
+    public double sample(double b2) {
         double result = 0;
         double r = Math.sqrt(b2);
         Random rand = new Random();
@@ -73,7 +74,7 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         }
         result /= 2;
 //		Math.sqrt(6)/2 * (-r + rand.nextDouble() * r);
-        return (int) result;
+        return result;
     }
 
     /**
@@ -95,11 +96,18 @@ public class FastSLAM implements SLAMAlgorithmInterface {
             Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(robotState, z[i], s));
             ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
             for (Point p : path) {
-                double x = m.getLogOdds(p);//m.get(p);
+//                double x = m.getLogOdds(p);//m.get(p);
+//
+//                double y = inverseSensorModel(p, measurement, sensorState, z[i], s);
+//
+//                sum += x + y;
+            	
+            	double x = m.get(p);
 
                 double y = inverseSensorModel(p, measurement, sensorState, z[i], s);
+                y = 1 - (1 / (1 + Math.exp(y)));
 
-                sum += x + y;
+                sum += x * y;
             }
         }
         return sum;

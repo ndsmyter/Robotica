@@ -51,9 +51,8 @@ public class MapStructure implements MapInterface {
 	 * @param position
 	 *            the position to set
 	 */
-	public void move(RobotState position) {
+	public void logMovement() {
 		path.add(new Point(position.x, position.y));
-		this.position = position;
 	}
 	
 	/**

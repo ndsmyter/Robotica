@@ -36,8 +36,9 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         for (Particle p : particles) {
             MapStructure map = p.getMap();
 
+            map.logMovement();
             sampleMotionModel(u, map.getPosition());
-            map.move(map.getPosition());
+            
             double weight = measurementModelMap(z, map);
             updatedOccupancyGrid(z, map);
 

@@ -79,14 +79,6 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         return result;
     }
 
-    /**
-     * TODO Robrecht
-     *
-     * @param z
-     * @param x
-     * @param m
-     * @return
-     */
     public double measurementModelMap(int[] z, MapStructure m) {
         RobotState robotState = m.getPosition();
 

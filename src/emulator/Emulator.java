@@ -46,6 +46,26 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private static final String DEFAULT_MAP_FILE = "default.txt";
 
 	private ParticleViewer particleViewer = null;
+	private boolean mapShowing = true;
+
+	// The colors which you can change to the color you like
+	public final static Color ZERO_COLOR = Color.BLACK;
+	public final static Color ROBOT_COLOR = new Color(210, 250, 255);
+	public final static Color SENSOR_COLOR = new Color(5, 80, 90);
+	public final static Color TEXT_COLOR = Color.BLACK;
+	public final static Color GRID_COLOR = Color.DARK_GRAY;
+	public final static Color PATH_COLOR = Color.ORANGE;
+	public final static Color MAP_COLOR = Color.YELLOW;
+	public final static Color BACKGROUND_COLOR = Color.GRAY;
+
+	// Scaling parameters
+	public final static int LINE_LENGTH = 100;
+	public final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
+	public final static double ZOOM_FACTOR = 0.05;
+	public final static double ORIGINAL_ZOOM = 0.2;
+	public final static int ARROW_MOVEMENT = 5;
+
+	public final static int CELLS_IN_GRID = 10;
 
 	// Logs
 	private ArrayList<String> logs = new ArrayList<String>();
@@ -57,7 +77,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
 		new EmulatorWindow(this);
-		// particleViewer = new ParticleViewer(this);
+		particleViewer = new ParticleViewer(this);
 	}
 
 	public void updateParticleViewer() {
@@ -89,6 +109,17 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	public String getMap() {
 		return currentMap;
+	}
+
+	public void setMapShowing(boolean showing) {
+		if (this.mapShowing != showing) {
+			this.mapShowing = showing;
+			particleViewer.viewUpdated();
+		}
+	}
+
+	public boolean isMapShowing() {
+		return this.mapShowing;
 	}
 
 	public void setMap(String map) {
@@ -181,7 +212,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		for (int i = 0; i < 5; i++) {
 			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
 		}
-//		System.out.println(sensordata[0]+" "+sensordata[1]+" "+sensordata[2]+" "+sensordata[3]+" "+sensordata[4]);
+		// System.out.println(sensordata[0]+" "+sensordata[1]+" "+sensordata[2]+" "+sensordata[3]+" "+sensordata[4]);
 		return sensordata;
 	}
 

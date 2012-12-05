@@ -13,7 +13,7 @@ public class Config {
 	public static final double ALPHA2 = 0.2;
 	
 
-	public static final boolean SIMULATED_NOISE = false;
+	public static final boolean SIMULATED_NOISE = true;
 	public static final double SIMULATED_NOISE_PCT = 0.1;
 
 }

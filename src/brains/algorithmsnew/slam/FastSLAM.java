@@ -43,6 +43,11 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 
 			updatedParticles.add(new Particle(newMap, weight));
 		}
+		
+		for (Particle p : updatedParticles) {
+			System.out.print(p.getWeight() + " ");
+		}
+		System.out.println();
 
 		List<Particle> resampledParticles = roulette.nextRandomParticles(
 				updatedParticles, particles.size());

@@ -23,7 +23,6 @@ import emulator.interfaces.ListenerInterface;
  */
 public class Brains implements ListenerInterface {
 	private final Emulator emulator;
-	private MapStructure mapStructure;
 
 	private List<Particle> particles;
 
@@ -72,7 +71,6 @@ public class Brains implements ListenerInterface {
 	}
 
 	public void reset() {
-		mapStructure = new MapStructure();
 		particles = new ArrayList<Particle>();
 		for (int i = 0; i < Config.NUMBER_OF_PARTICLES; i++) 
 		  particles.add(new Particle(new MapStructure(), 1.0));
@@ -114,10 +112,10 @@ public class Brains implements ListenerInterface {
 					drive(150);
 					break;
 				case RIGHT:
-					turn(140, true);
+					turn(-140);
 					break;
 				case LEFT:
-					turn(25, false);
+					turn(25);
 					break;
 				}
 				Thread.sleep(SLEEP_TIME);
@@ -133,7 +131,7 @@ public class Brains implements ListenerInterface {
 		try {
 			Thread.sleep(SLEEP_TIME);
 			for (int i = 0; i < 36; i++) {
-				turn(10, false);
+				turn(10);
 //				DummyAlgorithm.processSensorData(this);
 				Thread.sleep(SLEEP_TIME);
 			}
@@ -151,7 +149,7 @@ public class Brains implements ListenerInterface {
 		if (u[0] != 0)
 			drive(u[0]);
 		if (u[1] != 0)
-			turn(u[1], false);
+			turn(u[1]);
 	}
 
 	public void moveEmulator(int[] u) {
@@ -163,26 +161,17 @@ public class Brains implements ListenerInterface {
 		move(u);
 	}
 
-	public void turn(int degrees, boolean isTurnRight) {
-		int angle = (isTurnRight ? -degrees : degrees);
-		mapStructure.getPosition().dir = (mapStructure.getPosition().dir
-				+ angle + 360) % 360;
-		emulator.turn(degrees, isTurnRight, RoombaConfig.TURN_RADIUS_SPOT,
+	public void turn(int degrees) {
+		emulator.turn(degrees, RoombaConfig.TURN_RADIUS_SPOT,
 				RoombaConfig.DRIVE_MODE_MED);
 	}
 
 	public void drive(int distance) {
-		mapStructure.setPosition(Utils.driveForward(mapStructure.getPosition(),
-				distance));
 		emulator.drive(distance, RoombaConfig.DRIVE_MODE_MED);
 	}
 
 	public int[] getSensorData() {
 		return emulator.getSensorData();
-	}
-
-	public MapStructure getMap() {
-		return mapStructure;
 	}
 	
 	public MapStructure getParticleMap(int i) {
@@ -204,11 +193,6 @@ public class Brains implements ListenerInterface {
 		}
 		
 		return m;
-	}
-	
-
-	public void setMap(MapStructure m) {
-		mapStructure.useNewMap(m);
 	}
 
 	/**

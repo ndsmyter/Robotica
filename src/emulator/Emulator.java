@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import roomba.Roomba;
 import roomba.RoombaConfig;
 import brains.Brains;
+import brains.MapStructure;
 
 import common.RobotState;
 import common.Sensor;
@@ -39,6 +40,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Roomba roomba;
 	private Brains brains;
 
+	private MapStructure mapStructure;
+	
 	private String currentMap = ""; // No map by default
 	private ArrayList<Point> background = new ArrayList<Point>();
 	private ArrayList<String> backgroundFiles = new ArrayList<String>();
@@ -73,6 +76,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private static final String LOG_FILENAME = "log.txt";
 
 	public Emulator(Brains brains) {
+		mapStructure = new MapStructure();
 		this.brains = brains;
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
@@ -171,6 +175,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public void reset() {
+		mapStructure = new MapStructure();
 		brains.reset();
 	}
 
@@ -193,13 +198,18 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	@Override
 	public void drive(int millimeters, int driveMode) {
 		log("E: DRIVE (" + millimeters + ")");
+		mapStructure.setPosition(Utils.driveForward(mapStructure.getPosition(),
+				millimeters));
 		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
 				driveMode));
 		roomba.drive(millimeters, driveMode);
 	}
 
 	@Override
-	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode) {
+	public void turn(int degrees, int turnMode, int driveMode) {
+		mapStructure.getPosition().dir = (mapStructure.getPosition().dir
+				+ degrees + 360) % 360;
+		boolean turnRight = degrees < 0;
 		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
@@ -217,8 +227,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public int emulateSensor(Sensor sensor) {
-		RobotState sensorState = Utils.getSensorState(brains.getMap()
-				.getPosition(), sensor);
+		RobotState sensorState = Utils.getSensorState(mapStructure.getPosition(), sensor);
 		ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
 		boolean stop = false;
 		int dist = sensor.zMax;

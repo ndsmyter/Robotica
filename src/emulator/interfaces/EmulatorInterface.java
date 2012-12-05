@@ -16,12 +16,10 @@ public interface EmulatorInterface {
 	 * 
 	 * @param degrees
 	 *            number of degrees to turn
-	 * @param turnRight
-	 *            true to turn right (clockwise), false to turn left
 	 * @param turnMode
 	 *            turning modi (spot, sharp, wide, verywide)
 	 */
-	public void turn(int degrees, boolean turnRight, int turnMode, int driveMode);
+	public void turn(int degrees, int turnMode, int driveMode);
 
 	/**
 	 * This method will accept all log messages, which will be shown on the

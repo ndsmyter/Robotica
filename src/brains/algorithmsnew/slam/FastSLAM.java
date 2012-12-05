@@ -16,11 +16,12 @@ import common.Sensor;
 import common.Utils;
 
 public class FastSLAM implements SLAMAlgorithmInterface {
-
+	private Random rand;
     private RouletteWheelSelection roulette;
 
     public FastSLAM() {
         roulette = new RouletteWheelSelection();
+        rand = new Random();
     }
 
     @Override
@@ -70,7 +71,6 @@ public class FastSLAM implements SLAMAlgorithmInterface {
     public double sample(double b2) {
         double result = 0;
         double r = Math.sqrt(b2);
-        Random rand = new Random();
         for (int i = 0; i < 12; i++) {
             result += (-r + rand.nextDouble() * 2 * r);
         }

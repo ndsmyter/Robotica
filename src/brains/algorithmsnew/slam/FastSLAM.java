@@ -38,7 +38,7 @@ public class FastSLAM implements SLAMAlgorithmInterface {
             MapStructure map = p.getMap();
 
             RobotState newPosition = sampleMotionModel(u, map.getPosition());
-            map.setPosition(newPosition);
+            map.move(newPosition);
             double weight = measurementModelMap(z, map);
             MapStructure newMap = updatedOccupancyGrid(z, map);
 
@@ -58,11 +58,13 @@ public class FastSLAM implements SLAMAlgorithmInterface {
      * @return
      */
     public RobotState sampleMotionModel(int[] u, RobotState x) {
-        RobotState tmp = new RobotState(x.x, x.y, x.dir);
-        tmp = Utils.driveForward(tmp, u[0] + (int)(u[0]*sample(Config.ALPHA1)));
-        int noise = (int) (u[1]*sample(Config.ALPHA2));
-        tmp.dir = (tmp.dir + u[1] + noise + 360) % 360;
-        return tmp;
+    	int noisyu0 = u[0] + (int) (u[0]*sample(Config.ALPHA1));
+    	int noisyu1 = u[1] + (int) (u[1]*sample(Config.ALPHA2));
+    	
+    	Utils.driveStateful(x, noisyu0);
+    	Utils.turnStateful(x, noisyu1);
+    	
+    	return x;
     }
 
     public double sample(double b2) {

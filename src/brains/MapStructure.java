@@ -44,10 +44,18 @@ public class MapStructure implements MapInterface {
 	 *            the position to set
 	 */
 	public void setPosition(RobotState position) {
-		path.add(new Point(position.x, position.y));
 		this.position = position;
 	}
 
+	/**
+	 * @param position
+	 *            the position to set
+	 */
+	public void move(RobotState position) {
+		path.add(new Point(position.x, position.y));
+		this.position = position;
+	}
+	
 	/**
 	 * @return the path
 	 */
@@ -106,7 +114,7 @@ public class MapStructure implements MapInterface {
 		MapStructure newMap = new MapStructure();
 		newMap.setCells(getCells());
 		newMap.setLogOdds(getLogOdds());
-		newMap.setPosition(getPosition());
+		newMap.setPosition(position.clone());
 		newMap.setPath(getPath());
 		return newMap;
 	}
@@ -114,7 +122,7 @@ public class MapStructure implements MapInterface {
 	public void useNewMap(MapStructure newMap) {
 		setCells(newMap.getCells());
 		setLogOdds(newMap.getLogOdds());
-		setPosition(newMap.getPosition());
+		setPosition(newMap.getPosition().clone());
 		setPath(newMap.getPath());
 	}
 }

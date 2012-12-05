@@ -44,4 +44,8 @@ public class RobotState {
 	public String toString() {
 		return "RobotState [x=" + x + ", y=" + y + ", dir=" + dir + "]";
 	}
+	
+	public RobotState clone() {
+		return new RobotState(x, y, dir);
+	}
 }

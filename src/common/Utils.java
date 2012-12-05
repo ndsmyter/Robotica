@@ -37,7 +37,16 @@ public class Utils {
 		int x = currentState.x + (int) (distance * Math.cos(theta));
 		int y = currentState.y + (int) (distance * Math.sin(theta));
 		return new RobotState(x, y, currentState.dir);
-
+	}
+	
+	public static void driveStateful(RobotState state, int distance) {
+		double theta = Math.toRadians(state.dir);
+		state.x += (int) (distance * Math.cos(theta));
+		state.y += (int) (distance * Math.sin(theta));
+	}
+	
+	public static void turnStateful(RobotState state, int degrees) {
+		state.dir = (state.dir + degrees + 360) % 360;
 	}
 
 	public static ArrayList<Point> getPath(RobotState currentState,

@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -50,7 +51,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private static final String MAPS_DIRECTORY = "maps";
 	private static final String DEFAULT_MAP_FILE = "default.txt";
 
-	private ParticleViewer particleViewer = null;
+	private List<ParticleViewer> particleViewers = new ArrayList<ParticleViewer>();
 	private boolean mapShowing = true;
 	private boolean roombaShowing = true;
 
@@ -83,13 +84,24 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		this.brains = brains;
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
-		particleViewer = new ParticleViewer(this);
 		new EmulatorWindow(this);
 	}
 
 	public void updateParticleViewer() {
-		if (particleViewer != null)
+		for (ParticleViewer particleViewer : particleViewers)
 			particleViewer.setParticles(brains.getParticles());
+	}
+
+	public void addParticleViewer(ParticleViewer particleViewer) {
+		particleViewers.add(particleViewer);
+	}
+
+	public void removeParticleViewer(ParticleViewer particleViewer) {
+		particleViewers.remove(particleViewer);
+	}
+
+	public void makeParticleViewer() {
+		new ParticleViewer(this);
 	}
 
 	private void loadBackgroundFiles() {
@@ -121,6 +133,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setMapShowing(boolean showing) {
 		if (this.mapShowing != showing) {
 			this.mapShowing = showing;
+			updateAllParticleViewers();
+		}
+	}
+
+	private void updateAllParticleViewers() {
+		for (ParticleViewer particleViewer : particleViewers) {
 			particleViewer.viewUpdated();
 		}
 	}
@@ -132,7 +150,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setRoombaShowing(boolean showing) {
 		if (this.roombaShowing != showing) {
 			this.roombaShowing = showing;
-			particleViewer.viewUpdated();
+			updateAllParticleViewers();
 		}
 	}
 

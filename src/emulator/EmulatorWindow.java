@@ -116,6 +116,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				repaint();
 			}
 		};
+		Action addParticleViewerAction = new AbstractAction(
+				"Add ParticleViewer") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				emulator.makeParticleViewer();
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -133,6 +140,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				"Show map or not");
 		showRoombaAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Show roomba or not");
+		addParticleViewerAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Open a new Particle Viewer");
 		buttonPanel.add(mapBox);
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
@@ -140,6 +149,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		buttonPanel.add(new JButton(resetAction));
 		buttonPanel.add(startStopButton);
 		buttonPanel.add(new JButton(stepAction));
+		buttonPanel.add(new JButton(addParticleViewerAction));
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
 		mapShowingButton.setSelected(emulator.isMapShowing());
 		buttonPanel.add(mapShowingButton);

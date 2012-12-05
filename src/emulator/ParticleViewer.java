@@ -45,13 +45,14 @@ public class ParticleViewer extends JFrame implements ActionListener {
 	}
 
 	public void setParticles(List<Particle> particles) {
+		int index = particleBox.getSelectedIndex();
 		particleBox.removeActionListener(this);
 		particleBox.removeAllItems();
 		for (Particle particle : particles)
 			particleBox.addItem(particle);
 		particleBox.addActionListener(this);
 		if (!particles.isEmpty())
-			particleBox.setSelectedItem(particles.get(0));
+			particleBox.setSelectedItem(particles.get(index >= 0 ? index : 0));
 	}
 
 	public void viewUpdated() {

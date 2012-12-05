@@ -69,29 +69,41 @@ public class MapPanel extends JPanel {
 		this.addMouseWheelListener(l);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
+		final JPanel myself = this;
 		KeyEventDispatcher myKeyEventDispatcher = new KeyEventDispatcher() {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
-				boolean found = true;
+				boolean found = false;
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					movePanel(new Point(winPos.x + Emulator.ARROW_MOVEMENT,
-							winPos.y));
+					if (getParent().hasFocus()) {
+						movePanel(new Point(winPos.x + Emulator.ARROW_MOVEMENT,
+								winPos.y));
+						found = true;
+					}
 					break;
 				case KeyEvent.VK_RIGHT:
-					movePanel(new Point(winPos.x - Emulator.ARROW_MOVEMENT,
-							winPos.y));
+					if (getParent().hasFocus()) {
+						movePanel(new Point(winPos.x - Emulator.ARROW_MOVEMENT,
+								winPos.y));
+						found = true;
+					}
 					break;
 				case KeyEvent.VK_UP:
-					movePanel(new Point(winPos.x, winPos.y
-							+ Emulator.ARROW_MOVEMENT));
+					if (getParent().hasFocus()) {
+						movePanel(new Point(winPos.x, winPos.y
+								+ Emulator.ARROW_MOVEMENT));
+						found = true;
+					}
 					break;
 				case KeyEvent.VK_DOWN:
-					movePanel(new Point(winPos.x, winPos.y
-							- Emulator.ARROW_MOVEMENT));
+					if (getParent().hasFocus()) {
+						movePanel(new Point(winPos.x, winPos.y
+								- Emulator.ARROW_MOVEMENT));
+						found = true;
+					}
 					break;
 				default:
-					found = false;
 					break;
 				}
 				return found;

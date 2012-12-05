@@ -50,37 +50,6 @@ public class ParticlePanel extends JPanel {
 		this.addMouseMotionListener(l);
 		this.addMouseWheelListener(l);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-
-		KeyEventDispatcher myKeyEventDispatcher = new KeyEventDispatcher() {
-			@Override
-			public boolean dispatchKeyEvent(KeyEvent e) {
-				boolean found = true;
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_LEFT:
-					movePanel(new Point(winPos.x + Emulator.ARROW_MOVEMENT,
-							winPos.y));
-					break;
-				case KeyEvent.VK_RIGHT:
-					movePanel(new Point(winPos.x - Emulator.ARROW_MOVEMENT,
-							winPos.y));
-					break;
-				case KeyEvent.VK_UP:
-					movePanel(new Point(winPos.x, winPos.y
-							+ Emulator.ARROW_MOVEMENT));
-					break;
-				case KeyEvent.VK_DOWN:
-					movePanel(new Point(winPos.x, winPos.y
-							- Emulator.ARROW_MOVEMENT));
-					break;
-				default:
-					found = false;
-					break;
-				}
-				return found;
-			}
-		};
-		KeyboardFocusManager.getCurrentKeyboardFocusManager()
-				.addKeyEventDispatcher(myKeyEventDispatcher);
 	}
 
 	public void setParticle(Particle particle) {

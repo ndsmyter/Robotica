@@ -76,8 +76,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		this.brains = brains;
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
-		new EmulatorWindow(this);
 		particleViewer = new ParticleViewer(this);
+		new EmulatorWindow(this);
 	}
 
 	public void updateParticleViewer() {

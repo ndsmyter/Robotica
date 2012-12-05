@@ -3,6 +3,7 @@ package brains.algorithmsnew.slam;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import roomba.RoombaConfig;
 import brains.MapStructure;
@@ -62,6 +63,8 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 		// onze meting 100% juist is.
 		RobotState tmp = new RobotState(x.x, x.y, x.dir);
 		
+		
+		
 		if (u[0] != 0)
 			tmp = Utils.driveForward(tmp, u[0]);
 		
@@ -69,6 +72,17 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 			tmp.dir = (tmp.dir + u[1] + 360) % 360;
 		
 		return tmp;
+	}
+	
+	public int sample(int b2) {
+		double result = 0;
+		int r = (int)Math.round(Math.sqrt(b2));
+		Random rand = new Random();
+		for ( int i= 0 ; i < 12 ; i++){
+			result += (-r + rand.nextInt(2 * r) );
+		}
+		result /= 2;
+		return (int)Math.round(result);
 	}
 
 	/**

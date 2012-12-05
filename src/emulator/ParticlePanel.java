@@ -90,7 +90,8 @@ public class ParticlePanel extends JPanel {
 		drawGrid(g);
 
 		// Draw robot
-		drawRobot(g2);
+		if (emulator.isRoombaShowing())
+			drawRobot(g2);
 
 		// Draw previous points
 		drawPreviousPoints(g);

@@ -109,6 +109,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				repaint();
 			}
 		};
+		Action showRoombaAction = new AbstractAction("Show roomba") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				emulator.setRoombaShowing(!emulator.isRoombaShowing());
+				repaint();
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -124,6 +131,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
 		showMapAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Show map or not");
+		showRoombaAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Show roomba or not");
 		buttonPanel.add(mapBox);
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
@@ -134,6 +143,9 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
 		mapShowingButton.setSelected(emulator.isMapShowing());
 		buttonPanel.add(mapShowingButton);
+		JToggleButton roombaShowingButton = new JToggleButton(showRoombaAction);
+		roombaShowingButton.setSelected(emulator.isRoombaShowing());
+		buttonPanel.add(roombaShowingButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);

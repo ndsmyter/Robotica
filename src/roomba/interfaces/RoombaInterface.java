@@ -64,5 +64,11 @@ public interface RoombaInterface {
 	 * Sends stop command to roomba
 	 */
 	public void stop();
+	
+	/**
+	 * Get sensor data from range sensors
+	 * @param ids - byte[] with id's
+	 */
+	public void getSensorData(byte[] ids);
 
 }

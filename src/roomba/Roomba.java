@@ -18,8 +18,21 @@ public class Roomba implements RoombaInterface {
 	public static void main(String[] args) {
 		Roomba r = new Roomba(null);
 		r.setDebug(true);
-		r.getBumberSensors();
-		r.waitFor(1000);
+		//r.getBumberSensors();
+		//r.waitFor(1000);
+
+		//r.setSongs();
+		//r.waitFor(1000);
+		//r.singSong(1);
+		do{
+			r.getSensorData(new byte[]{0,1,2,3,4});
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} while (true);
 
 		/*
 		 * for(int i=0; i<5; i++){ r.turnAtSpot(180, RoombaConfig.TURN_RIGHT);
@@ -282,7 +295,7 @@ public class Roomba implements RoombaInterface {
 
 	private void getBumberSensors() {
 		try {
-			serial.sendCommand((byte) 148, new byte[] { 1, 7 });
+			serial.sendCommand((byte) 149, new byte[] { 1, 7 });
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
@@ -290,4 +303,23 @@ public class Roomba implements RoombaInterface {
 		}
 	}
 
+	public void getSensorData(byte[] ids){
+		byte[] get = new byte[ids.length + 1];
+		get[0] = (byte) ids.length;
+		for(int i=0; i<ids.length; i++){
+			get[i+1] = ids[i];
+		}
+		try {
+			serial.sendCommand((byte)120, get);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		byte[] input = serial.getResponds();
+		System.out.println("length: " + input.length);
+		for(byte b: input){
+			System.out.println(b);
+		}
+	}
 }

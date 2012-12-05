@@ -61,28 +61,36 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 		// geen rekening houden met de variantie op onze metingen, wat 
 		// wel de bedoelig is. Dit stukje code veronderstelt dus dat
 		// onze meting 100% juist is.
-		RobotState tmp = new RobotState(x.x, x.y, x.dir);
+		//RobotState tmp = new RobotState(x.x, x.y, x.dir);
+		double theta = Math.toRadians(x.dir);
 		
+		int v = u[0] + sample((int)Math.pow(u[0], 2) + (int)Math.pow(u[1], 2));
+		int omega = u[1] + sample((int)Math.pow(u[0], 2) + (int)Math.pow(u[1], 2));
+		int gamma = sample((int)Math.pow(u[0], 2) + (int)Math.pow(u[1], 2));
 		
+		int newx = x.x + (int)(v/omega * Math.sin(theta) + v/omega * Math.sin(theta + omega));
+		int newy = x.y + (int)(v/omega * Math.cos(theta) + v/omega * Math.cos(theta + omega));
+		int newtheta = (int)theta + omega + gamma;
 		
-		if (u[0] != 0)
-			tmp = Utils.driveForward(tmp, u[0]);
+		//if (u[0] != 0)
+			//tmp = Utils.driveForward(tmp, u[0]);
 		
-		if (u[1] != 0)
-			tmp.dir = (tmp.dir + u[1] + 360) % 360;
+		//if (u[1] != 0)
+			//tmp.dir = (tmp.dir + u[1] + 360) % 360;
 		
-		return tmp;
+		//return tmp;
+		return new RobotState(newx, newy, (int)Math.toDegrees(newtheta));
 	}
 	
 	public int sample(int b2) {
 		double result = 0;
-		int r = (int)Math.round(Math.sqrt(b2));
+		int r = (int) Math.sqrt(b2);
 		Random rand = new Random();
 		for ( int i= 0 ; i < 12 ; i++){
 			result += (-r + rand.nextInt(2 * r) );
 		}
 		result /= 2;
-		return (int)Math.round(result);
+		return (int) result;
 	}
 
 	/**

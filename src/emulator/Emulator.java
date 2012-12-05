@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -20,7 +21,6 @@ import javax.imageio.ImageIO;
 import roomba.Roomba;
 import roomba.RoombaConfig;
 import brains.Brains;
-import brains.MapStructure;
 
 import common.RobotState;
 import common.Sensor;
@@ -41,6 +41,9 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Brains brains;
 
 	private RobotState simulatedRobotState;
+	private boolean simulateWithNoise = true;
+	private double simulatedNoisePct = 0.1;
+	private Random simRandom = new Random();
 	
 	private String currentMap = ""; // No map by default
 	private ArrayList<Point> background = new ArrayList<Point>();
@@ -198,6 +201,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	@Override
 	public void drive(int millimeters, int driveMode) {
 		log("E: DRIVE (" + millimeters + ")");
+		
+		if (simulateWithNoise) {
+			int x = (int) (simulatedNoisePct * millimeters);
+			millimeters = millimeters + simRandom.nextInt(x*2) - x;
+		}
+		
 		simulatedRobotState = Utils.driveForward(simulatedRobotState, millimeters);
 		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
 				driveMode));
@@ -206,9 +215,15 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void turn(int degrees, int turnMode, int driveMode) {
-		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
 		boolean turnRight = degrees < 0;
 		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
+		
+		if (simulateWithNoise) {
+			int x = (int) (simulatedNoisePct * degrees);
+			degrees = degrees + simRandom.nextInt(x*2) - x;
+		}
+		
+		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
 		roomba.turn(degrees, turnRight, turnMode, driveMode);

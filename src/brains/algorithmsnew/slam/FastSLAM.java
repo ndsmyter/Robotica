@@ -52,38 +52,16 @@ public class FastSLAM implements SLAMAlgorithmInterface {
     }
 
     /**
-     * TODO Stef
-     *
-     * @param u de bewegingsvector u_t. u[0] → voorwaarts bewegen, u[1] →
-     * draaien
+     * @param u de bewegingsvector u_t. u[0] → voorwaarts bewegen (afstand in mm), u[1] →
+     * draaien (hoek in graden)
      * @param x de state van de robot
      * @return
      */
     public RobotState sampleMotionModel(int[] u, RobotState x) {
-        // Note van Robrecht: Ik heb hier tijdelijk al iets ingestoken 
-        // zodanig dat onze simulatie al werkt. Het geen ik hier doe gaat 
-        // geen rekening houden met de variantie op onze metingen, wat 
-        // wel de bedoelig is. Dit stukje code veronderstelt dus dat
-        // onze meting 100% juist is.
         RobotState tmp = new RobotState(x.x, x.y, x.dir);
-        /*double theta = Math.toRadians(x.dir);
-				
-         double v = (u[0] + sample(Config.ALPHA1 * Math.pow(u[0], 2) + Config.ALPHA2 * Math.pow(u[1], 2)));
-         double omega = (u[1] + sample(Config.ALPHA3 * Math.pow(u[0], 2) + Config.ALPHA4 * Math.pow(u[1], 2)));
-         double gamma = (sample( Config.ALPHA5 * Math.pow(u[0], 2) + Config.ALPHA6 * Math.pow(u[1], 2)));
-				
-         int newx = x.x + (int)(v/omega * Math.sin(theta) + v/omega * Math.sin(theta + omega));
-         int newy = x.y + (int)(v/omega * Math.cos(theta) + v/omega * Math.cos(theta + omega));
-         double newtheta = theta + omega + gamma;
-         */
-
-        tmp = Utils.driveForward(tmp, u[0] + sample(Config.ALPHA1));
-
-
-        tmp.dir = (tmp.dir + u[1] + sample(Config.ALPHA2) + 360) % 360;
-
+        tmp = Utils.driveForward(tmp, u[0] + u[0]*sample(Config.ALPHA1));
+        tmp.dir = (tmp.dir + u[1] + u[1]*sample(Config.ALPHA2) + 360) % 360;
         return tmp;
-        //return new RobotState(newx, newy, (int)Math.toDegrees(newtheta));
     }
 
     public int sample(double b2) {

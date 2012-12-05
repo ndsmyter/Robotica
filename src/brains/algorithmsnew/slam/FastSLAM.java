@@ -33,21 +33,19 @@ public class FastSLAM implements SLAMAlgorithmInterface {
      */
     @Override
     public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
-        List<Particle> updatedParticles = new ArrayList<Particle>();
-
         for (Particle p : particles) {
             MapStructure map = p.getMap();
 
-            RobotState newPosition = sampleMotionModel(u, map.getPosition());
-            map.move(newPosition);
+            sampleMotionModel(u, map.getPosition());
+            map.move(map.getPosition());
             double weight = measurementModelMap(z, map);
-            MapStructure newMap = updatedOccupancyGrid(z, map);
+            updatedOccupancyGrid(z, map);
 
-            updatedParticles.add(new Particle(newMap, weight));
+            p.setWeight(weight);
         }
 
         List<Particle> resampledParticles = roulette.nextRandomParticles(
-                updatedParticles, particles.size());
+                particles, particles.size());
 
         return resampledParticles;
     }
@@ -58,14 +56,12 @@ public class FastSLAM implements SLAMAlgorithmInterface {
      * @param x de state van de robot
      * @return
      */
-    public RobotState sampleMotionModel(int[] u, RobotState x) {
+    public void sampleMotionModel(int[] u, RobotState x) {
     	int noisyu0 = u[0] + (int) (u[0]*sample(Config.ALPHA1));
     	int noisyu1 = u[1] + (int) (u[1]*sample(Config.ALPHA2));
     	
     	Utils.driveStateful(x, noisyu0);
     	Utils.turnStateful(x, noisyu1);
-    	
-    	return x;
     }
 
     public double sample(double b2) {
@@ -106,8 +102,7 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         return sum;
     }
 
-    public MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {
-        MapStructure mapNew = m.clone();
+    public void updatedOccupancyGrid(int[] z, MapStructure m) {
         RobotState robotState = m.getPosition();
         for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
             Sensor s = RoombaConfig.SENSORS[i];
@@ -119,10 +114,9 @@ public class FastSLAM implements SLAMAlgorithmInterface {
                 double logOdds = m.getLogOdds(p)
                         + inverseSensorModel(p, measurement, sensorState, z[i],
                         s);
-                mapNew.putLogOdds(p, logOdds);
+                m.putLogOdds(p, logOdds);
             }
         }
-        return mapNew;
     }
 
     public static double inverseSensorModel(Point p, Point measurement,

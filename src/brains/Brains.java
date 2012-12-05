@@ -1,5 +1,6 @@
 package brains;
 
+import common.RobotState;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import common.Utils;
 import emulator.Emulator;
 import emulator.Event;
 import emulator.interfaces.ListenerInterface;
+import java.util.Collections;
 
 /**
  * This class will start everything up, and will eventually control everything
@@ -181,19 +183,58 @@ public class Brains implements ListenerInterface {
 	// need to take the density in account, not simply the 
 	// particle with the largest weight
 	public MapStructure getBestParticleMap() {
-		MapStructure m = particles.get(0).getMap();
-		double max = particles.get(0).getWeight();
-		
-		for (int i = 1; i < particles.size(); i++) {
-			Particle p = particles.get(i);
-			if (max < p.getWeight()) {
-				max = p.getWeight();
-				m = p.getMap();
-			}
-		}
-		
-		return m;
+//		MapStructure m = particles.get(0).getMap();
+//		double max = particles.get(0).getWeight();
+//		
+//		for (int i = 1; i < particles.size(); i++) {
+//			Particle p = particles.get(i);
+//			if (max < p.getWeight()) {
+//				max = p.getWeight();
+//				m = p.getMap();
+//			}
+//		}
+//		
+//		return m;
+            return getMedian();
 	}
+        
+        
+        public MapStructure getMedian(){
+            ArrayList<Integer> xs = new ArrayList<Integer>();
+            ArrayList<Integer> ys = new ArrayList<Integer>();
+            ArrayList<Integer> dirs = new ArrayList<Integer>();
+            for (int i = 0; i < particles.size(); i++) {
+                Particle p = particles.get(i);
+                RobotState state = p.getMap().getPosition();
+                xs.add(state.x);
+                ys.add(state.y);
+                dirs.add(state.dir);                
+            }
+            Collections.sort(xs);
+            Integer medianx = xs.get(xs.size()/2);
+            Collections.sort(ys);
+            Integer mediany = ys.get(ys.size()/2);
+            Collections.sort(dirs);
+            Integer mediandir = dirs.get(dirs.size()/2);
+            
+            double dist = Integer.MAX_VALUE;
+            Particle selected = particles.get(0); 
+            for (int i = 0; i < particles.size(); i++) {
+                Particle p = particles.get(i);
+                RobotState state = p.getMap().getPosition();
+                int xPart = (medianx - state.x)*(medianx - state.x);
+                int yPart = (mediany - state.y)*(mediany - state.y);
+                int dirPart = (mediandir - state.dir)*(mediandir - state.dir);                
+                double tmpdist = Math.sqrt(xPart + yPart + dirPart);
+                if(tmpdist < dist){
+                    dist = tmpdist;
+                    selected = p;
+                }
+            }
+            
+            return selected.getMap();
+        }
+        
 
 	/**
 	 * @param args

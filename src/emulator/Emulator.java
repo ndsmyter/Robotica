@@ -202,7 +202,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		log("E: DRIVE (" + millimeters + ")");
 		
 		if (Config.SIMULATED_NOISE) {
-			int x = Math.abs((int) (Config.SIMULATED_NOISE_PCT * millimeters));
+			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * millimeters) + 0.5);
 			millimeters = millimeters + simRandom.nextInt(x*2) - x;
 		}
 		
@@ -218,7 +218,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
 		
 		if (Config.SIMULATED_NOISE) {
-			int x = Math.abs((int) (Config.SIMULATED_NOISE_PCT * degrees));
+			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * degrees) + 0.5);
 			degrees = degrees + simRandom.nextInt(x*2) - x;
 		}
 		

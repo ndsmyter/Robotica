@@ -29,4 +29,9 @@ public class Particle {
     public Particle clone() {
     	return new Particle(map.clone(), weight);
     }
+
+	@Override
+	public String toString() {
+		return "Particle [map=" + map + ", weight=" + weight + "]";
+	}
 }

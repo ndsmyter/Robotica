@@ -19,7 +19,7 @@ public class ParticleViewer extends JFrame implements ActionListener {
 	private JComboBox<Particle> particleBox;
 
 	public ParticleViewer(Emulator emulator) {
-		super("Particle Vierwer");
+		super("Particle Viewer");
 
 		particlePanel = new ParticlePanel(emulator);
 		particleBox = new JComboBox<Particle>();

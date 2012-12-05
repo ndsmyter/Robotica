@@ -9,12 +9,14 @@ public class Sensor {
 	public int yOffset;
 	public int dir;
 	public int zMax;
+	public int id;
 
-	public Sensor(int xOffset, int yOffset, int dir, int zMax) {
+	public Sensor(int xOffset, int yOffset, int dir, int zMax, int id) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
 		this.dir = dir;
 		this.zMax = zMax;
+		this.id = id;
 	}
 
 	/*
@@ -41,6 +43,6 @@ public class Sensor {
 	 */
 	@Override
 	public String toString() {
-		return "Sensor [x=" + xOffset + ", y=" + yOffset + ", dir=" + dir + "]";
+		return "Sensor [id=" + id + ", x=" + xOffset + ", y=" + yOffset + ", dir=" + dir + "]";
 	}
 }

@@ -144,9 +144,8 @@ public class MapPanel extends JPanel {
 		g.fillArc(-2, -2, 4, 4, 0, 360);
 
 		// Draw map
-		if (emulator.isMapShowing()) {
+		if (emulator.isMapShowing())
 			drawMap(g);
-		}
 
 		// Draw the obstacles
 		drawObstacles(g);
@@ -158,7 +157,8 @@ public class MapPanel extends JPanel {
 		drawPreviousPoints(g);
 
 		// Draw robot
-		drawRobot(g2);
+		if (emulator.isRoombaShowing())
+			drawRobot(g2);
 
 		// Draw the scale
 		drawScale(g2);

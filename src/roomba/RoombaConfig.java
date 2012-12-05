@@ -27,7 +27,7 @@ public final class RoombaConfig {
 	public static final int ROOMBA_MODE_SAFE = 0;
 	public static final int ROOMBA_MODE_FULL = 1;
 
-	public static final String IO_PORT = "COM9";
+	public static final String IO_PORT = "COM12";
 	public static final byte ROOMBA_COMMAND_DRIVE = (byte) 137;
 	public static final byte ROOMBA_COMMAND_START = (byte) 128;
 	public static final byte ROOMBA_COMMAND_SAFE = (byte) 131;
@@ -39,8 +39,8 @@ public final class RoombaConfig {
 	public static final int ROOMBA_WHEEL_DISTANCE = 240;
 
 	// Sensor placement
-	public static final Sensor[] SENSORS = { new Sensor(100, -100, -45, 1000),
-			new Sensor(120, -50, 0, 1000), new Sensor(120, 0, 0, 1000),
-			new Sensor(120, 50, 0, 1000), new Sensor(100, 100, 45, 1000) };
+	public static final Sensor[] SENSORS = { new Sensor(100, -100, -45, 1000, 0),
+			new Sensor(120, -50, 0, 1000, 1), new Sensor(120, 0, 0, 1000, 2),
+			new Sensor(120, 50, 0, 1000, 3), new Sensor(100, 100, 45, 1000, 4) };
 
 }

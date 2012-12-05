@@ -3,6 +3,7 @@ package emulator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.TextArea;
@@ -64,7 +65,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		mapBox.addActionListener(this);
 
 		// Init button bar
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		startStopButton = new JButton();
 		Action zoomInAction = new ZoomAction(true);
 		Action zoomOutAction = new ZoomAction(false);

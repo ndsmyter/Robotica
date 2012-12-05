@@ -3,6 +3,7 @@ package brains.algorithms;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import roomba.RoombaConfig;
 import brains.Brains;
@@ -71,6 +72,18 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 	public RobotState sampleMotionModel(int[] u, RobotState x) {
 		return x;
 	}
+	
+	//sampling with normal distribution; p124
+	public int sample(int b2) {
+		double result = 0;
+		int r = (int)Math.round(Math.sqrt(b2));
+		Random rand = new Random();
+		for ( int i= 0 ; i < 12 ; i++){
+			result += (-r + rand.nextInt(2 * r) );
+		}
+		result /= 2;
+		return (int)Math.round(result);
+	}
 
 	/**
 	 * TODO Robrecht
@@ -80,7 +93,7 @@ public class FastSlamOccupancyGrid implements AlgorithmInterface {
 	 * @return
 	 */
 	public double measurementModelMap(int[] z, RobotState x, MapStructure m) {
-
+		
 		return 1.0;
 	}
 

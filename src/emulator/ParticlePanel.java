@@ -1,31 +1,99 @@
 package emulator;
 
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.Random;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JPanel;
+
+import roomba.RoombaConfig;
 
 import brains.Particle;
 
 import common.Config;
+import common.RobotState;
+import common.Sensor;
+import common.Utils;
 
+@SuppressWarnings("serial")
 public class ParticlePanel extends JPanel {
 	private Particle particle = null;
-	private double scale = 0.2;
 	private final Emulator emulator;
+	private Point winPos;
+	private double scale = Emulator.ORIGINAL_ZOOM;
 
 	public ParticlePanel(Emulator emulator) {
 		this.emulator = emulator;
+
+		int w = 500, h = 500;
+		this.setPreferredSize(new Dimension(w, h));
+		winPos = new Point(w / 2, h / 2);
+
+		this.setBackground(Emulator.BACKGROUND_COLOR);
+
+		PanelListener l = new PanelListener();
+		this.addMouseMotionListener(l);
+		this.addMouseWheelListener(l);
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+		KeyEventDispatcher myKeyEventDispatcher = new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				boolean found = true;
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_LEFT:
+					movePanel(new Point(winPos.x + Emulator.ARROW_MOVEMENT,
+							winPos.y));
+					break;
+				case KeyEvent.VK_RIGHT:
+					movePanel(new Point(winPos.x - Emulator.ARROW_MOVEMENT,
+							winPos.y));
+					break;
+				case KeyEvent.VK_UP:
+					movePanel(new Point(winPos.x, winPos.y
+							+ Emulator.ARROW_MOVEMENT));
+					break;
+				case KeyEvent.VK_DOWN:
+					movePanel(new Point(winPos.x, winPos.y
+							- Emulator.ARROW_MOVEMENT));
+					break;
+				default:
+					found = false;
+					break;
+				}
+				return found;
+			}
+		};
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addKeyEventDispatcher(myKeyEventDispatcher);
 	}
 
 	public void setParticle(Particle particle) {
 		this.particle = particle;
 		repaint();
+	}
+
+	/**
+	 * Reset the view
+	 */
+	public void reset() {
+		scale = Emulator.ORIGINAL_ZOOM;
+		winPos = new Point(getWidth() / 2, getHeight() / 2);
 	}
 
 	/*
@@ -43,19 +111,63 @@ public class ParticlePanel extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 
 		// Move the (0,0) point to middle of screen
-		g.translate(getWidth() / 2, getHeight() / 2);
+		g.translate(winPos.x, winPos.y);
 		g2.scale(1, -1);
 
 		// Draw map
-		drawMap(g2);
+		if (emulator.isMapShowing())
+			drawMap(g2);
+
+		// Draw the obstacles
+		drawObstacles(g);
+
+		// Draw grid
+		drawGrid(g);
+
+		// Draw robot
+		drawRobot(g2);
 
 		// Draw previous points
 		drawPreviousPoints(g);
 	}
 
+	/**
+	 * Draw robot on the panel
+	 * 
+	 * @param g
+	 *            The Graphics used to draw the robot on
+	 */
+	private void drawRobot(Graphics g) {
+		RobotState position = particle.getMap().getPosition();
+		// Draw a dot to represent the robot
+		g.setColor(Emulator.ROBOT_COLOR);
+		double scaledRobotSize = 0.5 * scale(Emulator.ROBOT_SIZE);
+		double scaledX = scale2(position.x) + 0.5;
+		double scaledY = scale2(position.y) + 0.5;
+		g.fillArc((int) (scaledX - scaledRobotSize),
+				(int) (scaledY - scaledRobotSize), scale(Emulator.ROBOT_SIZE),
+				scale(Emulator.ROBOT_SIZE), 0, 360);
+
+		// Draw the sensors of the robot
+		g.setColor(Emulator.SENSOR_COLOR);
+		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
+			Sensor sensor = RoombaConfig.SENSORS[i];
+			Point pos = Utils.sensorDataToPoint(position, 0, sensor);
+			g.fillRect(scale(pos.x - 2), scale(pos.y - 2), 4, 4);
+		}
+		// Draw a line to show the direction of the robot
+		RobotState endpoint = Utils
+				.driveForward(position, Emulator.LINE_LENGTH);
+		int x = (int) scaledX;
+		int y = (int) scaledY;
+		int endX = scale(endpoint.x);
+		int endY = scale(endpoint.y);
+		g.drawLine(x, y, endX, endY);
+	}
+
 	private void drawMap(Graphics g) {
 		try {
-			g.setColor(MapPanel.MAP_COLOR);
+			g.setColor(Emulator.MAP_COLOR);
 			int gridSize = scale(Config.GRID_CELL_SIZE);
 			int halfGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Point p : emulator.getBackground()) {
@@ -66,9 +178,53 @@ public class ParticlePanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Draw a grid on the screen
+	 * 
+	 * @param g
+	 *            The Graphics to be used for painting
+	 */
+	private void drawGrid(Graphics g) {
+		Rectangle clip = g.getClipBounds();
+		int xMax = clip.width + clip.x;
+		int yMax = clip.height + clip.y;
+		g.setColor(Emulator.GRID_COLOR);
+		int line = scale(Emulator.CELLS_IN_GRID * Config.GRID_CELL_SIZE);
+		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
+		for (int i = firstLine; i < xMax; i += line)
+			g.drawLine(i, clip.y, i, yMax);
+		firstLine = (int) Math.ceil(1.0 * clip.y / line) * line;
+		for (int i = firstLine; i < yMax; i += line)
+			g.drawLine(clip.x, i, xMax, i);
+	}
+
+	/**
+	 * Draw obstacles on the panel
+	 * 
+	 * @param g
+	 *            The Graphics used to draw the robot on
+	 */
+	private void drawObstacles(Graphics g) {
+		try {
+			Set<Entry<Point, Double>> points = particle.getMap().getCells()
+					.entrySet();
+			int scaledGridSize = scale(Config.GRID_CELL_SIZE);
+			int halfScaledGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
+			for (Entry<Point, Double> entry : points) {
+				Point key = entry.getKey();
+				double value = entry.getValue();
+				float c = (float) (1.0 - value);
+				g.setColor(new Color(c, c, c));
+				g.fillRect(scale(key.x - halfScaledGridSize), scale(key.y
+						- halfScaledGridSize), scaledGridSize, scaledGridSize);
+			}
+		} catch (ConcurrentModificationException e) {
+		}
+	}
+
 	private void drawPreviousPoints(Graphics g) {
 		try {
-			g.setColor(MapPanel.PATH_COLOR);
+			g.setColor(Emulator.PATH_COLOR);
 			ArrayList<Point> historyOfPoints = particle.getMap().getPath();
 			for (Point state : historyOfPoints) {
 				g.drawRect(scale(state.x), scale(state.y), 1, 1);
@@ -97,5 +253,55 @@ public class ParticlePanel extends JPanel {
 
 	private double descale2(double value) {
 		return value / scale;
+	}
+
+	/**
+	 * Zoom in or out
+	 * 
+	 * @param zoomIn
+	 *            If true zoom in, otherwise zoom out
+	 */
+	public void zoom(boolean zoomIn) {
+
+		Point middle = new Point(getWidth() / 2, getHeight() / 2);
+		int xDist = descale(middle.x - winPos.x);
+		int yDist = descale(middle.y - winPos.y);
+		scale = zoomIn ? scale + Emulator.ZOOM_FACTOR : Math.max(scale
+				- Emulator.ZOOM_FACTOR, Emulator.ZOOM_FACTOR);
+		xDist = scale(xDist);
+		yDist = scale(yDist);
+		winPos = new Point(middle.x - xDist, middle.y - yDist);
+		repaint();
+	}
+
+	public void movePanel(Point newPosition) {
+		if (!newPosition.equals(winPos)) {
+			winPos = newPosition;
+			repaint();
+		}
+	}
+
+	private class PanelListener implements MouseMotionListener,
+			MouseWheelListener {
+
+		private Point previousPosition;
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			e.translatePoint(-winPos.x, -winPos.y);
+			movePanel(new Point(winPos.x + e.getX() - previousPosition.x,
+					winPos.y + e.getY() - previousPosition.y));
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			e.translatePoint(-winPos.x, -winPos.y);
+			previousPosition = new Point(e.getX(), e.getY());
+		}
+
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			zoom(e.getWheelRotation() < 0);
+		}
 	}
 }

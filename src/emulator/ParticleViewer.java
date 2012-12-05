@@ -47,6 +47,10 @@ public class ParticleViewer extends JFrame implements ActionListener {
 			particleBox.setSelectedItem(particles.get(0));
 	}
 
+	public void viewUpdated() {
+		particlePanel.repaint();
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		particlePanel.setParticle((Particle) particleBox.getSelectedItem());

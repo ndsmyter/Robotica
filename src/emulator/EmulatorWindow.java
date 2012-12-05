@@ -34,7 +34,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	private TextArea logArea;
 	private Emulator emulator;
 	private JButton startStopButton;
-	
+
 	// Note, als je hier een compileerfout hebt, update naar Java 7
 	private JComboBox<Object> mapBox;
 
@@ -105,7 +105,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		Action showMapAction = new AbstractAction("Show map") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.mapShowing = !mapPanel.mapShowing;
+				emulator.setMapShowing(!emulator.isMapShowing());
 				repaint();
 			}
 		};
@@ -132,7 +132,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		buttonPanel.add(startStopButton);
 		buttonPanel.add(new JButton(stepAction));
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
-		mapShowingButton.setSelected(mapPanel.mapShowing);
+		mapShowingButton.setSelected(emulator.isMapShowing());
 		buttonPanel.add(mapShowingButton);
 
 		JPanel panel = new JPanel(new BorderLayout());

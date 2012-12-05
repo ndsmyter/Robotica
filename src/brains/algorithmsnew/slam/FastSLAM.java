@@ -16,150 +16,150 @@ import common.Sensor;
 import common.Utils;
 
 public class FastSLAM implements SLAMAlgorithmInterface {
-	private RouletteWheelSelection roulette;
 
-	public FastSLAM() {
-		roulette = new RouletteWheelSelection();
-	}
+    private RouletteWheelSelection roulette;
 
-	@Override
-	public void reset() {
-	}
+    public FastSLAM() {
+        roulette = new RouletteWheelSelection();
+    }
 
-	/*
-	 * For quick reference: pg 478
-	 */
-	@Override
-	public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
-		List<Particle> updatedParticles = new ArrayList<Particle>();
+    @Override
+    public void reset() {
+    }
 
-		for (Particle p : particles) {
-			MapStructure map = p.getMap();
+    /*
+     * For quick reference: pg 478
+     */
+    @Override
+    public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
+        List<Particle> updatedParticles = new ArrayList<Particle>();
 
-			RobotState newPosition = sampleMotionModel(u, map.getPosition());
-			map.setPosition(newPosition);
-			double weight = measurementModelMap(z, map);
-			MapStructure newMap = updatedOccupancyGrid(z, map);
+        for (Particle p : particles) {
+            MapStructure map = p.getMap();
 
-			updatedParticles.add(new Particle(newMap, weight));
-		}
+            RobotState newPosition = sampleMotionModel(u, map.getPosition());
+            map.setPosition(newPosition);
+            double weight = measurementModelMap(z, map);
+            MapStructure newMap = updatedOccupancyGrid(z, map);
 
-		List<Particle> resampledParticles = roulette.nextRandomParticles(
-				updatedParticles, particles.size());
+            updatedParticles.add(new Particle(newMap, weight));
+        }
 
-		return resampledParticles;
-	}
+        List<Particle> resampledParticles = roulette.nextRandomParticles(
+                updatedParticles, particles.size());
 
-	/**
-	 * TODO Stef
-	 * 
-	 * @param u
-	 *            de bewegingsvector u_t. u[0] → voorwaarts bewegen, u[1] →
-	 *            draaien
-	 * @param x
-	 *            de state van de robot
-	 * @return
-	 */
-	public RobotState sampleMotionModel(int[] u, RobotState x) {
-		// Note van Robrecht: Ik heb hier tijdelijk al iets ingestoken 
-				// zodanig dat onze simulatie al werkt. Het geen ik hier doe gaat 
-				// geen rekening houden met de variantie op onze metingen, wat 
-				// wel de bedoelig is. Dit stukje code veronderstelt dus dat
-				// onze meting 100% juist is.
-				//RobotState tmp = new RobotState(x.x, x.y, x.dir);
-				double theta = Math.toRadians(x.dir);
+        return resampledParticles;
+    }
+
+    /**
+     * TODO Stef
+     *
+     * @param u de bewegingsvector u_t. u[0] → voorwaarts bewegen, u[1] →
+     * draaien
+     * @param x de state van de robot
+     * @return
+     */
+    public RobotState sampleMotionModel(int[] u, RobotState x) {
+        // Note van Robrecht: Ik heb hier tijdelijk al iets ingestoken 
+        // zodanig dat onze simulatie al werkt. Het geen ik hier doe gaat 
+        // geen rekening houden met de variantie op onze metingen, wat 
+        // wel de bedoelig is. Dit stukje code veronderstelt dus dat
+        // onze meting 100% juist is.
+        RobotState tmp = new RobotState(x.x, x.y, x.dir);
+        /*double theta = Math.toRadians(x.dir);
 				
-				int v = u[0] + sample((int)Math.pow(u[0], 2) + (int)Math.pow(u[1], 2));
-				int omega = u[1] + sample((int)Math.pow(u[0], 2) + (int)Math.pow(u[1], 2));
-				int gamma = sample((int)Math.pow(u[0], 2) + (int)Math.pow(u[1], 2));
+         double v = (u[0] + sample(Config.ALPHA1 * Math.pow(u[0], 2) + Config.ALPHA2 * Math.pow(u[1], 2)));
+         double omega = (u[1] + sample(Config.ALPHA3 * Math.pow(u[0], 2) + Config.ALPHA4 * Math.pow(u[1], 2)));
+         double gamma = (sample( Config.ALPHA5 * Math.pow(u[0], 2) + Config.ALPHA6 * Math.pow(u[1], 2)));
 				
-				int newx = x.x + (int)(v/omega * Math.sin(theta) + v/omega * Math.sin(theta + omega));
-				int newy = x.y + (int)(v/omega * Math.cos(theta) + v/omega * Math.cos(theta + omega));
-				int newtheta = (int)theta + omega + gamma;
-				
-				//if (u[0] != 0)
-					//tmp = Utils.driveForward(tmp, u[0]);
-				
-				//if (u[1] != 0)
-					//tmp.dir = (tmp.dir + u[1] + 360) % 360;
-				
-				//return tmp;
-				return new RobotState(newx, newy, (int)Math.toDegrees(newtheta));
-	}
+         int newx = x.x + (int)(v/omega * Math.sin(theta) + v/omega * Math.sin(theta + omega));
+         int newy = x.y + (int)(v/omega * Math.cos(theta) + v/omega * Math.cos(theta + omega));
+         double newtheta = theta + omega + gamma;
+         */
 
-	public int sample(int b2) {
-		double result = 0;
-		int r = (int) Math.sqrt(b2);
-		Random rand = new Random();
-		for ( int i= 0 ; i < 12 ; i++){
-			result += (-r + rand.nextInt(2 * r) );
-		}
-		result /= 2;
-		return (int) result;
-	}
+        tmp = Utils.driveForward(tmp, u[0] + sample(Config.ALPHA1));
 
-	/**
-	 * TODO Robrecht
-	 * 
-	 * @param z
-	 * @param x
-	 * @param m
-	 * @return
-	 */
-	public double measurementModelMap(int[] z, MapStructure m) {
-		RobotState robotState = m.getPosition();
-		
-		double sum = 0.0; 
-		
+
+        tmp.dir = (tmp.dir + u[1] + sample(Config.ALPHA2) + 360) % 360;
+
+        return tmp;
+        //return new RobotState(newx, newy, (int)Math.toDegrees(newtheta));
+    }
+
+    public int sample(double b2) {
+        double result = 0;
+        double r = Math.sqrt(b2);
+        Random rand = new Random();
+        for (int i = 0; i < 12; i++) {
+            result += (-r + rand.nextDouble() * 2 * r);
+        }
+        result /= 2;
+//		Math.sqrt(6)/2 * (-r + rand.nextDouble() * r);
+        return (int) result;
+    }
+
+    /**
+     * TODO Robrecht
+     *
+     * @param z
+     * @param x
+     * @param m
+     * @return
+     */
+    public double measurementModelMap(int[] z, MapStructure m) {
+        RobotState robotState = m.getPosition();
+
+        double sum = 0.0;
+
         for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
             Sensor s = RoombaConfig.SENSORS[i];
             RobotState sensorState = Utils.getSensorState(robotState, s);
             Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(robotState, z[i], s));
             ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
             for (Point p : path) {
-            	double x = m.getLogOdds(p);//m.get(p);
-            	
-            	double y = inverseSensorModel(p, measurement, sensorState, z[i], s);
+                double x = m.getLogOdds(p);//m.get(p);
 
-            	sum += x + y;
+                double y = inverseSensorModel(p, measurement, sensorState, z[i], s);
+
+                sum += x + y;
             }
         }
-    	return sum;
-	}
+        return sum;
+    }
 
-	public MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {
-		MapStructure mapNew = m.clone();
-		RobotState robotState = m.getPosition();
-		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
-			Sensor s = RoombaConfig.SENSORS[i];
-			RobotState sensorState = Utils.getSensorState(robotState, s);
-			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
-					robotState, z[i], s));
-			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
-			for (Point p : path) {
-				double logOdds = m.getLogOdds(p)
-						+ inverseSensorModel(p, measurement, sensorState, z[i],
-								s);
-				mapNew.putLogOdds(p, logOdds);
-			}
-		}
-		return mapNew;
-	}
+    public MapStructure updatedOccupancyGrid(int[] z, MapStructure m) {
+        MapStructure mapNew = m.clone();
+        RobotState robotState = m.getPosition();
+        for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
+            Sensor s = RoombaConfig.SENSORS[i];
+            RobotState sensorState = Utils.getSensorState(robotState, s);
+            Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
+                    robotState, z[i], s));
+            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
+            for (Point p : path) {
+                double logOdds = m.getLogOdds(p)
+                        + inverseSensorModel(p, measurement, sensorState, z[i],
+                        s);
+                mapNew.putLogOdds(p, logOdds);
+            }
+        }
+        return mapNew;
+    }
 
-	public static double inverseSensorModel(Point p, Point measurement,
-			RobotState sensorState, int z, Sensor s) {
-		double result;
-		int r = Utils.euclideanDistance(
-				new Point(sensorState.x, sensorState.y), p);
-		if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
-			result = 0;
-		} else if (z < s.zMax && p.equals(measurement)) {
-			result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
-		} else if (r < z) {
-			result = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
-		} else {
-			result = 0;
-		}
-		return result;
-	}
+    public static double inverseSensorModel(Point p, Point measurement,
+            RobotState sensorState, int z, Sensor s) {
+        double result;
+        int r = Utils.euclideanDistance(
+                new Point(sensorState.x, sensorState.y), p);
+        if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
+            result = 0;
+        } else if (z < s.zMax && p.equals(measurement)) {
+            result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
+        } else if (r < z) {
+            result = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
+        } else {
+            result = 0;
+        }
+        return result;
+    }
 }

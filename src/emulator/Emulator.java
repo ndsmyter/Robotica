@@ -41,7 +41,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Brains brains;
 
 	private RobotState simulatedRobotState;
-	private boolean simulateWithNoise = true;
+	private boolean simulateWithNoise = false;
 	private double simulatedNoisePct = 0.1;
 	private Random simRandom = new Random();
 	

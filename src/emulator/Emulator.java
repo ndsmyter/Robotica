@@ -22,6 +22,7 @@ import roomba.Roomba;
 import roomba.RoombaConfig;
 import brains.Brains;
 
+import common.Config;
 import common.RobotState;
 import common.Sensor;
 import common.Utils;
@@ -41,8 +42,6 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Brains brains;
 
 	private RobotState simulatedRobotState;
-	private boolean simulateWithNoise = false;
-	private double simulatedNoisePct = 0.1;
 	private Random simRandom = new Random();
 	
 	private String currentMap = ""; // No map by default
@@ -202,8 +201,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void drive(int millimeters, int driveMode) {
 		log("E: DRIVE (" + millimeters + ")");
 		
-		if (simulateWithNoise) {
-			int x = (int) (simulatedNoisePct * millimeters);
+		if (Config.SIMULATED_NOISE) {
+			int x = Math.abs((int) (Config.SIMULATED_NOISE_PCT * millimeters));
 			millimeters = millimeters + simRandom.nextInt(x*2) - x;
 		}
 		
@@ -218,8 +217,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		boolean turnRight = degrees < 0;
 		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
 		
-		if (simulateWithNoise) {
-			int x = (int) (simulatedNoisePct * degrees);
+		if (Config.SIMULATED_NOISE) {
+			int x = Math.abs((int) (Config.SIMULATED_NOISE_PCT * degrees));
 			degrees = degrees + simRandom.nextInt(x*2) - x;
 		}
 		

@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -43,15 +44,16 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	private RobotState simulatedRobotState;
 	private Random simRandom = new Random();
-	
+
 	private String currentMap = ""; // No map by default
 	private ArrayList<Point> background = new ArrayList<Point>();
 	private ArrayList<String> backgroundFiles = new ArrayList<String>();
 	private static final String MAPS_DIRECTORY = "maps";
 	private static final String DEFAULT_MAP_FILE = "default.txt";
 
-	private ParticleViewer particleViewer = null;
+	private List<ParticleViewer> particleViewers = new ArrayList<ParticleViewer>();
 	private boolean mapShowing = true;
+	private boolean roombaShowing = true;
 
 	// The colors which you can change to the color you like
 	public final static Color ZERO_COLOR = Color.BLACK;
@@ -82,13 +84,24 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		this.brains = brains;
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
-		particleViewer = new ParticleViewer(this);
 		new EmulatorWindow(this);
 	}
 
 	public void updateParticleViewer() {
-		if (particleViewer != null)
+		for (ParticleViewer particleViewer : particleViewers)
 			particleViewer.setParticles(brains.getParticles());
+	}
+
+	public void addParticleViewer(ParticleViewer particleViewer) {
+		particleViewers.add(particleViewer);
+	}
+
+	public void removeParticleViewer(ParticleViewer particleViewer) {
+		particleViewers.remove(particleViewer);
+	}
+
+	public void makeParticleViewer() {
+		new ParticleViewer(this);
 	}
 
 	private void loadBackgroundFiles() {
@@ -120,12 +133,29 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setMapShowing(boolean showing) {
 		if (this.mapShowing != showing) {
 			this.mapShowing = showing;
+			updateAllParticleViewers();
+		}
+	}
+
+	private void updateAllParticleViewers() {
+		for (ParticleViewer particleViewer : particleViewers) {
 			particleViewer.viewUpdated();
 		}
 	}
 
 	public boolean isMapShowing() {
 		return this.mapShowing;
+	}
+
+	public void setRoombaShowing(boolean showing) {
+		if (this.roombaShowing != showing) {
+			this.roombaShowing = showing;
+			updateAllParticleViewers();
+		}
+	}
+
+	public boolean isRoombaShowing() {
+		return this.roombaShowing;
 	}
 
 	public void setMap(String map) {
@@ -200,13 +230,14 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	@Override
 	public void drive(int millimeters, int driveMode) {
 		log("E: DRIVE (" + millimeters + ")");
-		
+
 		if (Config.SIMULATED_NOISE) {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * millimeters) + 0.5);
-			millimeters = millimeters + simRandom.nextInt(x*2) - x;
+			millimeters = millimeters + simRandom.nextInt(x * 2) - x;
 		}
-		
-		simulatedRobotState = Utils.driveForward(simulatedRobotState, millimeters);
+
+		simulatedRobotState = Utils.driveForward(simulatedRobotState,
+				millimeters);
 		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
 				driveMode));
 		roomba.drive(millimeters, driveMode);
@@ -216,12 +247,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void turn(int degrees, int turnMode, int driveMode) {
 		boolean turnRight = degrees < 0;
 		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
-		
+
 		if (Config.SIMULATED_NOISE) {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * degrees) + 0.5);
-			degrees = degrees + simRandom.nextInt(x*2) - x;
+			degrees = degrees + simRandom.nextInt(x * 2) - x;
 		}
-		
+
 		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
@@ -239,7 +270,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public int emulateSensor(Sensor sensor) {
-		RobotState sensorState = Utils.getSensorState(simulatedRobotState, sensor);
+		RobotState sensorState = Utils.getSensorState(simulatedRobotState,
+				sensor);
 		ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
 		boolean stop = false;
 		int dist = sensor.zMax;

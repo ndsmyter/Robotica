@@ -3,6 +3,7 @@ package emulator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.TextArea;
@@ -64,7 +65,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		mapBox.addActionListener(this);
 
 		// Init button bar
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 0));
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		startStopButton = new JButton();
 		Action zoomInAction = new ZoomAction(true);
 		Action zoomOutAction = new ZoomAction(false);
@@ -109,6 +110,20 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				repaint();
 			}
 		};
+		Action showRoombaAction = new AbstractAction("Show roomba") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				emulator.setRoombaShowing(!emulator.isRoombaShowing());
+				repaint();
+			}
+		};
+		Action addParticleViewerAction = new AbstractAction(
+				"Add ParticleViewer") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				emulator.makeParticleViewer();
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -124,6 +139,10 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				.putValue(AbstractAction.SHORT_DESCRIPTION, "Reset (Ctrl+R)");
 		showMapAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Show map or not");
+		showRoombaAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Show roomba or not");
+		addParticleViewerAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Open a new Particle Viewer");
 		buttonPanel.add(mapBox);
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
@@ -131,9 +150,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		buttonPanel.add(new JButton(resetAction));
 		buttonPanel.add(startStopButton);
 		buttonPanel.add(new JButton(stepAction));
+		buttonPanel.add(new JButton(addParticleViewerAction));
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
 		mapShowingButton.setSelected(emulator.isMapShowing());
 		buttonPanel.add(mapShowingButton);
+		JToggleButton roombaShowingButton = new JToggleButton(showRoombaAction);
+		roombaShowingButton.setSelected(emulator.isRoombaShowing());
+		buttonPanel.add(roombaShowingButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);

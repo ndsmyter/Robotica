@@ -69,7 +69,6 @@ public class MapPanel extends JPanel {
 		this.addMouseWheelListener(l);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
-		final JPanel myself = this;
 		KeyEventDispatcher myKeyEventDispatcher = new KeyEventDispatcher() {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {

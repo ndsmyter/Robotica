@@ -42,40 +42,24 @@ import common.Utils;
 public class MapPanel extends JPanel {
 
 	// Some scaling parameters
-	private final static int CELLS_IN_GRID = 10;
-	private final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
-	private final static int LINE_LENGTH = 100;
-	private final static int ARROW_MOVEMENT = 5;
-	private final static int GRID_LEGEND = (CELLS_IN_GRID * Config.GRID_CELL_SIZE) / 10;
+	private final static int GRID_LEGEND = (Emulator.CELLS_IN_GRID * Config.GRID_CELL_SIZE) / 10;
 
 	// Scaling parameters
-	private final static double ZOOM_FACTOR = 0.05;
-	private final static double ORIGINAL_ZOOM = 0.2;
-	private double scale = ORIGINAL_ZOOM;
+	private double scale = Emulator.ORIGINAL_ZOOM;
 
-	// The colors which you can change to the color you like
-	private final static Color BACKGROUND_COLOR = Color.GRAY;
-	private final static Color ZERO_COLOR = Color.BLACK;
-	private final static Color ROBOT_COLOR = new Color(210, 250, 255);
-	private final static Color GRID_COLOR = Color.DARK_GRAY;
-	public final static Color PATH_COLOR = Color.ORANGE;
-	private final static Color SENSOR_COLOR = new Color(5, 80, 90);
-	private final static Color TEXT_COLOR = Color.BLACK;
-	public final static Color MAP_COLOR = Color.YELLOW;
 	private final static int REFRESH_TIME = 200;
 
 	// Points to draw on the screen (current & previous states, obstacles..)
 	private final Emulator emulator;
 	private Point winPos;
 	private Brains brains;
-	public boolean mapShowing = true;
 
 	public MapPanel(Emulator emulator) {
 		super();
 		this.emulator = emulator;
 		this.brains = emulator.getBrains();
 		int w = 500, h = 500;
-		this.setBackground(BACKGROUND_COLOR);
+		this.setBackground(Emulator.BACKGROUND_COLOR);
 		this.setPreferredSize(new Dimension(w, h));
 
 		winPos = new Point(w / 2, h / 2);
@@ -91,16 +75,20 @@ public class MapPanel extends JPanel {
 				boolean found = true;
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
-					movePanel(new Point(winPos.x + ARROW_MOVEMENT, winPos.y));
+					movePanel(new Point(winPos.x + Emulator.ARROW_MOVEMENT,
+							winPos.y));
 					break;
 				case KeyEvent.VK_RIGHT:
-					movePanel(new Point(winPos.x - ARROW_MOVEMENT, winPos.y));
+					movePanel(new Point(winPos.x - Emulator.ARROW_MOVEMENT,
+							winPos.y));
 					break;
 				case KeyEvent.VK_UP:
-					movePanel(new Point(winPos.x, winPos.y + ARROW_MOVEMENT));
+					movePanel(new Point(winPos.x, winPos.y
+							+ Emulator.ARROW_MOVEMENT));
 					break;
 				case KeyEvent.VK_DOWN:
-					movePanel(new Point(winPos.x, winPos.y - ARROW_MOVEMENT));
+					movePanel(new Point(winPos.x, winPos.y
+							- Emulator.ARROW_MOVEMENT));
 					break;
 				default:
 					found = false;
@@ -124,7 +112,7 @@ public class MapPanel extends JPanel {
 	 * Reset the view
 	 */
 	public void reset() {
-		scale = ORIGINAL_ZOOM;
+		scale = Emulator.ORIGINAL_ZOOM;
 		winPos = new Point(getWidth() / 2, getHeight() / 2);
 	}
 
@@ -141,11 +129,11 @@ public class MapPanel extends JPanel {
 		g2.scale(1, -1);
 
 		// Draw the (0,0) point
-		g.setColor(ZERO_COLOR);
+		g.setColor(Emulator.ZERO_COLOR);
 		g.fillArc(-2, -2, 4, 4, 0, 360);
 
 		// Draw map
-		if (mapShowing) {
+		if (emulator.isMapShowing()) {
 			drawMap(g);
 		}
 
@@ -165,8 +153,28 @@ public class MapPanel extends JPanel {
 		drawScale(g2);
 	}
 
+	/**
+	 * Draw a grid on the screen
+	 * 
+	 * @param g
+	 *            The Graphics to be used for painting
+	 */
+	private void drawGrid(Graphics g) {
+		Rectangle clip = g.getClipBounds();
+		int xMax = clip.width + clip.x;
+		int yMax = clip.height + clip.y;
+		g.setColor(Emulator.GRID_COLOR);
+		int line = scale(Emulator.CELLS_IN_GRID * Config.GRID_CELL_SIZE);
+		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
+		for (int i = firstLine; i < xMax; i += line)
+			g.drawLine(i, clip.y, i, yMax);
+		firstLine = (int) Math.ceil(1.0 * clip.y / line) * line;
+		for (int i = firstLine; i < yMax; i += line)
+			g.drawLine(clip.x, i, xMax, i);
+	}
+
 	private void drawScale(Graphics2D g) {
-		g.setColor(TEXT_COLOR);
+		g.setColor(Emulator.TEXT_COLOR);
 		g.scale(1, -1);
 		g.drawString("1 kotje = " + GRID_LEGEND + " cm", -winPos.x + 5,
 				(getHeight() - winPos.y) - 10);
@@ -175,7 +183,7 @@ public class MapPanel extends JPanel {
 
 	private void drawMap(Graphics g) {
 		try {
-			g.setColor(MAP_COLOR);
+			g.setColor(Emulator.MAP_COLOR);
 			int gridSize = scale(Config.GRID_CELL_SIZE);
 			int halfGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Point p : emulator.getBackground()) {
@@ -203,26 +211,6 @@ public class MapPanel extends JPanel {
 	}
 
 	/**
-	 * Draw a grid on the screen
-	 * 
-	 * @param g
-	 *            The Graphics to be used for painting
-	 */
-	private void drawGrid(Graphics g) {
-		Rectangle clip = g.getClipBounds();
-		int xMax = clip.width + clip.x;
-		int yMax = clip.height + clip.y;
-		g.setColor(GRID_COLOR);
-		int line = scale(CELLS_IN_GRID * Config.GRID_CELL_SIZE);
-		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
-		for (int i = firstLine; i < xMax; i += line)
-			g.drawLine(i, clip.y, i, yMax);
-		firstLine = (int) Math.ceil(1.0 * clip.y / line) * line;
-		for (int i = firstLine; i < yMax; i += line)
-			g.drawLine(clip.x, i, xMax, i);
-	}
-
-	/**
 	 * Draw a path of previous positions
 	 * 
 	 * @param g
@@ -230,8 +218,9 @@ public class MapPanel extends JPanel {
 	 */
 	private void drawPreviousPoints(Graphics g) {
 		try {
-			g.setColor(PATH_COLOR);
-			ArrayList<Point> historyOfPoints = brains.getBestParticleMap().getPath();
+			g.setColor(Emulator.PATH_COLOR);
+			ArrayList<Point> historyOfPoints = brains.getBestParticleMap()
+					.getPath();
 			for (Point state : historyOfPoints) {
 				g.drawRect(scale(state.x), scale(state.y), 1, 1);
 			}
@@ -254,23 +243,24 @@ public class MapPanel extends JPanel {
 	private void drawRobot(Graphics g) {
 		RobotState position = brains.getBestParticleMap().getPosition();
 		// Draw a dot to represent the robot
-		g.setColor(ROBOT_COLOR);
-		double scaledRobotSize = 0.5 * scale(ROBOT_SIZE);
+		g.setColor(Emulator.ROBOT_COLOR);
+		double scaledRobotSize = 0.5 * scale(Emulator.ROBOT_SIZE);
 		double scaledX = scale2(position.x) + 0.5;
 		double scaledY = scale2(position.y) + 0.5;
 		g.fillArc((int) (scaledX - scaledRobotSize),
-				(int) (scaledY - scaledRobotSize), scale(ROBOT_SIZE),
-				scale(ROBOT_SIZE), 0, 360);
+				(int) (scaledY - scaledRobotSize), scale(Emulator.ROBOT_SIZE),
+				scale(Emulator.ROBOT_SIZE), 0, 360);
 
 		// Draw the sensors of the robot
-		g.setColor(SENSOR_COLOR);
+		g.setColor(Emulator.SENSOR_COLOR);
 		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
 			Sensor sensor = RoombaConfig.SENSORS[i];
 			Point pos = Utils.sensorDataToPoint(position, 0, sensor);
 			g.fillRect(scale(pos.x - 2), scale(pos.y - 2), 4, 4);
 		}
 		// Draw a line to show the direction of the robot
-		RobotState endpoint = Utils.driveForward(position, LINE_LENGTH);
+		RobotState endpoint = Utils
+				.driveForward(position, Emulator.LINE_LENGTH);
 		int x = (int) scaledX;
 		int y = (int) scaledY;
 		int endX = scale(endpoint.x);
@@ -286,8 +276,8 @@ public class MapPanel extends JPanel {
 	 */
 	private void drawObstacles(Graphics g) {
 		try {
-			Set<Entry<Point, Double>> points = brains.getBestParticleMap().getCells()
-					.entrySet();
+			Set<Entry<Point, Double>> points = brains.getBestParticleMap()
+					.getCells().entrySet();
 			int scaledGridSize = scale(Config.GRID_CELL_SIZE);
 			int halfScaledGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Entry<Point, Double> entry : points) {
@@ -313,8 +303,8 @@ public class MapPanel extends JPanel {
 		Point middle = new Point(getWidth() / 2, getHeight() / 2);
 		int xDist = descale(middle.x - winPos.x);
 		int yDist = descale(middle.y - winPos.y);
-		scale = zoomIn ? scale + ZOOM_FACTOR : Math.max(scale - ZOOM_FACTOR,
-				ZOOM_FACTOR);
+		scale = zoomIn ? scale + Emulator.ZOOM_FACTOR : Math.max(scale
+				- Emulator.ZOOM_FACTOR, Emulator.ZOOM_FACTOR);
 		xDist = scale(xDist);
 		yDist = scale(yDist);
 		winPos = new Point(middle.x - xDist, middle.y - yDist);

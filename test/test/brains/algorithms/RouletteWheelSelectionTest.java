@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import brains.Particle;
-import brains.algorithms.RouletteWheelSelection;
+import brains.algorithmsnew.RouletteWheelSelection;
 
 public class RouletteWheelSelectionTest {
 	private List<Particle> particles;

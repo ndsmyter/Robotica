@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import roomba.RoombaConfig;
-import brains.algorithms.DummyAlgorithm;
 import brains.algorithmsnew.Algorithm;
 
 import common.Config;
@@ -135,7 +134,7 @@ public class Brains implements ListenerInterface {
 			Thread.sleep(SLEEP_TIME);
 			for (int i = 0; i < 36; i++) {
 				turn(10, false);
-				DummyAlgorithm.processSensorData(this);
+//				DummyAlgorithm.processSensorData(this);
 				Thread.sleep(SLEEP_TIME);
 			}
 		} catch (InterruptedException e) {

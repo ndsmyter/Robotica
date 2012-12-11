@@ -14,13 +14,13 @@ public class RandomExplore extends ExploreAlgorithmInterface {
 	private static final int STEP = 50;
 	private static final int TURN = 2;
 
-	// rotation := the direction of the rotation. 
+	// rotation := the direction of the rotation.
 	// should always be either -1 or 1.
 	private int rotation = 1;
 
 	// pirouette := amount of steps during which kate has to whirl about
 	private int pirouette = 0;
-	
+
 	@Override
 	public void reset() {
 		rotation = 1;
@@ -53,8 +53,8 @@ public class RandomExplore extends ExploreAlgorithmInterface {
 			ArrayList<Point> path = Utils.getPath(map.getPosition(), STEP
 					+ RoombaConfig.ROOMBA_DIAMETER / 2,
 					RoombaConfig.ROOMBA_DIAMETER);
-			for (Point p : path) {
-				free &= (map.get(Utils.pointToGrid(p)) < 0.60);
+			for (int i = 0; i < path.size() && free; i++) {
+				free &= (map.get(Utils.pointToGrid(path.get(i))) < 0.60);
 			}
 
 			// if kate is able to go straight, do so.

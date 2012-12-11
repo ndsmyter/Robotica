@@ -44,7 +44,7 @@ public class MapStructure implements MapInterface {
 	 *            the position to set
 	 */
 	public void setPosition(RobotState position) {
-		this.position = position;
+		this.position = position.clone();
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class MapStructure implements MapInterface {
 	public void logMovement() {
 		path.add(new Point(position.x, position.y));
 	}
-	
+
 	/**
 	 * @return the path
 	 */
@@ -73,21 +73,11 @@ public class MapStructure implements MapInterface {
 
 	@Override
 	public double get(Point point) {
-		double value;
-		if (cells.containsKey(point))
-			value = cells.get(point);
-		else
-			value = 0.5;
-		return value;
+		return cells.containsKey(point) ? cells.get(point) : 0.5;
 	}
 
 	public double getLogOdds(Point point) {
-		double value;
-		if (logOdds.containsKey(point))
-			value = logOdds.get(point);
-		else
-			value = 0;
-		return value;
+		return logOdds.containsKey(point) ? logOdds.get(point) : 0;
 	}
 
 	@Override
@@ -113,7 +103,7 @@ public class MapStructure implements MapInterface {
 		MapStructure newMap = new MapStructure();
 		newMap.setCells(getCells());
 		newMap.setLogOdds(getLogOdds());
-		newMap.setPosition(position.clone());
+		newMap.setPosition(getPosition());
 		newMap.setPath(getPath());
 		return newMap;
 	}
@@ -121,7 +111,7 @@ public class MapStructure implements MapInterface {
 	public void useNewMap(MapStructure newMap) {
 		setCells(newMap.getCells());
 		setLogOdds(newMap.getLogOdds());
-		setPosition(newMap.getPosition().clone());
+		setPosition(newMap.getPosition());
 		setPath(newMap.getPath());
 	}
 }

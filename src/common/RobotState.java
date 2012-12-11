@@ -13,11 +13,13 @@ public class RobotState {
 		this.y = y;
 		this.dir = dir;
 	}
+
 	public RobotState(Point p, int dir) {
 		this.x = p.x;
 		this.y = p.y;
 		this.dir = dir;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -44,7 +46,7 @@ public class RobotState {
 	public String toString() {
 		return "RobotState [x=" + x + ", y=" + y + ", dir=" + dir + "]";
 	}
-	
+
 	public RobotState clone() {
 		return new RobotState(x, y, dir);
 	}

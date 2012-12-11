@@ -1,9 +1,5 @@
 package common;
 
-/**
- * 
- * @author sofie
- */
 public class Sensor {
 	public int xOffset;
 	public int yOffset;
@@ -43,6 +39,7 @@ public class Sensor {
 	 */
 	@Override
 	public String toString() {
-		return "Sensor [id=" + id + ", x=" + xOffset + ", y=" + yOffset + ", dir=" + dir + "]";
+		return "Sensor [id=" + id + ", x=" + xOffset + ", y=" + yOffset
+				+ ", dir=" + dir + "]";
 	}
 }

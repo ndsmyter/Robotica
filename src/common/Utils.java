@@ -38,13 +38,13 @@ public class Utils {
 		int y = currentState.y + (int) (distance * Math.sin(theta));
 		return new RobotState(x, y, currentState.dir);
 	}
-	
+
 	public static void driveStateful(RobotState state, int distance) {
 		double theta = Math.toRadians(state.dir);
 		state.x += (int) (distance * Math.cos(theta));
 		state.y += (int) (distance * Math.sin(theta));
 	}
-	
+
 	public static void turnStateful(RobotState state, int degrees) {
 		state.dir = (state.dir + degrees + 360) % 360;
 	}
@@ -65,7 +65,17 @@ public class Utils {
 		return getPath(currentState, distance, 0);
 	}
 
-	// Values returned by this method are points on the grid!
+	/**
+	 * Values returned by this method are points on the grid!
+	 * 
+	 * @param currentState
+	 *            Current robot state
+	 * @param distance
+	 *            The distance of the path
+	 * @param width
+	 *            Width of the path
+	 * @return
+	 */
 	public static ArrayList<Point> getPath(RobotState currentState,
 			int distance, int width) {
 		ArrayList<Point> path = new ArrayList<Point>();
@@ -86,27 +96,23 @@ public class Utils {
 		return path;
 	}
 
-	// Currently the grids are mapped to the left under corner.
-	// When uncommenting, it will map to the middle of the grids,
-	// but this isn't yet shown in the view (which makes it more confusing)
 	public static Point pointToGrid(Point p) {
-		p.x += Config.GRID_CELL_SIZE / 2;
-		p.x = p.x - (p.x % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
-				% Config.GRID_CELL_SIZE;
-		p.y += Config.GRID_CELL_SIZE / 2;
-		p.y = p.y - (p.y % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
-				% Config.GRID_CELL_SIZE;
+		p.x = formula(p.x);
+		p.y = formula(p.y);
 		return p;
 	}
 
 	public static RobotState stateToGrid(RobotState p) {
-		p.x += Config.GRID_CELL_SIZE / 2;
-		p.x = p.x - (p.x % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
-				% Config.GRID_CELL_SIZE;
-		p.y += Config.GRID_CELL_SIZE / 2;
-		p.y = p.y - (p.y % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
-				% Config.GRID_CELL_SIZE;
+		p.x = formula(p.x);
+		p.y = formula(p.y);
 		return p;
+	}
+
+	// Named formula "Formula", because I don't know what it does (NDS)
+	private static int formula(int x) {
+		x += Config.GRID_CELL_SIZE / 2;
+		return x - (x % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
+				% Config.GRID_CELL_SIZE;
 	}
 
 	public static boolean goalReached(Point robot, Point goal) {

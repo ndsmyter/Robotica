@@ -17,123 +17,128 @@ import common.Utils;
 
 public class FastSLAM implements SLAMAlgorithmInterface {
 	private Random rand;
-    private RouletteWheelSelection roulette;
+	private RouletteWheelSelection roulette;
 
-    public FastSLAM() {
-        roulette = new RouletteWheelSelection();
-        rand = new Random();
-    }
+	public FastSLAM() {
+		roulette = new RouletteWheelSelection();
+		rand = new Random();
+	}
 
-    @Override
-    public void reset() {
-    }
+	@Override
+	public void reset() {
+	}
 
-    /*
-     * For quick reference: pg 478
-     */
-    @Override
-    public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
-        for (Particle p : particles) {
-            MapStructure map = p.getMap();
+	/*
+	 * For quick reference: pg 478
+	 */
+	@Override
+	public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
+		for (Particle p : particles) {
+			MapStructure map = p.getMap();
 
-            map.logMovement();
-            sampleMotionModel(u, map.getPosition());
-            
-            double weight = measurementModelMap(z, map);
-            updatedOccupancyGrid(z, map);
+			map.logMovement();
+			sampleMotionModel(u, map.getPosition());
 
-            p.setWeight(weight);
-        }
+			double weight = measurementModelMap(z, map);
+			updatedOccupancyGrid(z, map);
 
-        List<Particle> resampledParticles = roulette.nextRandomParticles(
-                particles, particles.size());
+			p.setWeight(weight);
+		}
 
-        return resampledParticles;
-    }
+		List<Particle> resampledParticles = roulette.nextRandomParticles(
+				particles, particles.size());
 
-    /**
-     * @param u de bewegingsvector u_t. u[0] → voorwaarts bewegen (afstand in mm), u[1] →
-     * draaien (hoek in graden)
-     * @param x de state van de robot
-     * @return
-     */
-    public void sampleMotionModel(int[] u, RobotState x) {
-    	int noisyu0 = u[0] + (int) (u[0]*sample(Config.ALPHA1));
-    	int noisyu1 = u[1] + (int) (u[1]*sample(Config.ALPHA2));
-    	
-    	Utils.driveStateful(x, noisyu0);
-    	Utils.turnStateful(x, noisyu1);
-    }
+		return resampledParticles;
+	}
 
-    public double sample(double b2) {
-        double result = 0;
-        double r = Math.sqrt(b2);
-        for (int i = 0; i < 12; i++) {
-            result += (-r + rand.nextDouble() * 2 * r);
-        }
-        result /= 2;
-//		Math.sqrt(6)/2 * (-r + rand.nextDouble() * r);
-        return result;
-    }
+	/**
+	 * @param u
+	 *            de bewegingsvector u_t. u[0] → voorwaarts bewegen (afstand
+	 *            in mm), u[1] → draaien (hoek in graden)
+	 * @param x
+	 *            de state van de robot
+	 * @return
+	 */
+	public void sampleMotionModel(int[] u, RobotState x) {
+		int noisyu0 = u[0] + (int) (u[0] * sample(Config.ALPHA1));
+		int noisyu1 = u[1] + (int) (u[1] * sample(Config.ALPHA2));
 
-    public double measurementModelMap(int[] z, MapStructure m) {
-        RobotState robotState = m.getPosition();
+		Utils.driveStateful(x, noisyu0);
+		Utils.turnStateful(x, noisyu1);
+	}
 
-        double sum = 0.0;
+	public double sample(double b2) {
+		double result = 0;
+		double r = Math.sqrt(b2);
+		for (int i = 0; i < 12; i++) {
+			result += (-r + rand.nextDouble() * 2 * r);
+		}
+		result /= 2;
+		// Math.sqrt(6)/2 * (-r + rand.nextDouble() * r);
+		return result;
+	}
 
-        for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
-            Sensor s = RoombaConfig.SENSORS[i];
-            RobotState sensorState = Utils.getSensorState(robotState, s);
-            Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(robotState, z[i], s));
-            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
-            for (Point p : path) {
-//                double x = m.getLogOdds(p);//m.get(p);
-//
-//                double y = inverseSensorModel(p, measurement, sensorState, z[i], s);
-//
-//                sum += x + y;
-            	
-            	double x = m.get(p);
+	public double measurementModelMap(int[] z, MapStructure m) {
+		RobotState robotState = m.getPosition();
 
-                double y = inverseSensorModel(p, measurement, sensorState, z[i], s);
-                y = 1 - (1 / (1 + Math.exp(y)));
-                sum += Math.abs(x + y);
-            }
-        }
-        return sum;
-    }
+		double sum = 0.0;
 
-    public void updatedOccupancyGrid(int[] z, MapStructure m) {
-        RobotState robotState = m.getPosition();
-        for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
-            Sensor s = RoombaConfig.SENSORS[i];
-            RobotState sensorState = Utils.getSensorState(robotState, s);
-            Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
-                    robotState, z[i], s));
-            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
-            for (Point p : path) {
-                double logOdds = m.getLogOdds(p)
-                        + inverseSensorModel(p, measurement, sensorState, z[i],
-                        s);
-                m.putLogOdds(p, logOdds);
-            }
-        }
-    }
+		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
+			Sensor s = RoombaConfig.SENSORS[i];
+			RobotState sensorState = Utils.getSensorState(robotState, s);
+			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
+					robotState, z[i], s));
+			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
+			for (Point p : path) {
+				// double x = m.getLogOdds(p);//m.get(p);
+				//
+				// double y = inverseSensorModel(p, measurement, sensorState,
+				// z[i], s);
+				//
+				// sum += x + y;
 
-    public static double inverseSensorModel(Point p, Point measurement,
-            RobotState sensorState, int z, Sensor s) {
-        double result;
-        int r = Utils.euclideanDistance(
-                new Point(sensorState.x, sensorState.y), p);
-        if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
-            result = 0;
-        } else if (z < s.zMax && p.equals(measurement)) {
-            result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
-        } else if (r < z) {
-            result = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
-        } else {
-            result = 0;
-        }
-        return result;
-    }
+				double x = m.get(p);
+
+				double y = inverseSensorModel(p, measurement, sensorState,
+						z[i], s);
+				y = 1 - (1 / (1 + Math.exp(y)));
+				sum += Math.abs(x + y);
+			}
+		}
+		return sum;
+	}
+
+	public void updatedOccupancyGrid(int[] z, MapStructure m) {
+		RobotState robotState = m.getPosition();
+		for (int i = 0; i < RoombaConfig.SENSORS.length; i++) {
+			Sensor s = RoombaConfig.SENSORS[i];
+			RobotState sensorState = Utils.getSensorState(robotState, s);
+			Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
+					robotState, z[i], s));
+			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
+			for (Point p : path) {
+				double logOdds = m.getLogOdds(p)
+						+ inverseSensorModel(p, measurement, sensorState, z[i],
+								s);
+				m.putLogOdds(p, logOdds);
+			}
+		}
+	}
+
+	public static double inverseSensorModel(Point p, Point measurement,
+			RobotState sensorState, int z, Sensor s) {
+		double result;
+		int r = Utils.euclideanDistance(
+				new Point(sensorState.x, sensorState.y), p);
+		if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
+			result = 0;
+		} else if (z < s.zMax && p.equals(measurement)) {
+			result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
+		} else if (r < z) {
+			result = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
+		} else {
+			result = 0;
+		}
+		return result;
+	}
 }

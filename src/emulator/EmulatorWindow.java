@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +36,9 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	private JButton startStopButton;
 
 	// Note, als je hier een compileerfout hebt, update naar Java 7
+	// If you don't want to update to Java 7 immediately, just remove the
+	// "<Object>" everywhere your compiler crashes. But don't commit this ! We
+	// want to support the latest version of Java of course :-)
 	private JComboBox<Object> mapBox;
 
 	private static final String CLEAR_MAP = "<Clear map>";

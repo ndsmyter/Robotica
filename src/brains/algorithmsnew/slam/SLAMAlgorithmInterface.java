@@ -6,5 +6,6 @@ import brains.Particle;
 
 public interface SLAMAlgorithmInterface {
 	public List<Particle> execute(List<Particle> particles, int[] u, int[] z);
+
 	public void reset();
 }

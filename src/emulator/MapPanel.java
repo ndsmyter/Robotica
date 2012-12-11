@@ -34,9 +34,6 @@ import common.Utils;
 
 /**
  * The panel will draw a grid where the robot can move on
- * 
- * @author Nicolas
- * 
  */
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel {
@@ -73,37 +70,29 @@ public class MapPanel extends JPanel {
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				boolean found = false;
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_LEFT:
-					if (getParent().hasFocus()) {
+				if (getParent().hasFocus()) {
+					found = true;
+					switch (e.getKeyCode()) {
+					case KeyEvent.VK_LEFT:
 						movePanel(new Point(winPos.x + Emulator.ARROW_MOVEMENT,
 								winPos.y));
-						found = true;
-					}
-					break;
-				case KeyEvent.VK_RIGHT:
-					if (getParent().hasFocus()) {
+						break;
+					case KeyEvent.VK_RIGHT:
 						movePanel(new Point(winPos.x - Emulator.ARROW_MOVEMENT,
 								winPos.y));
-						found = true;
-					}
-					break;
-				case KeyEvent.VK_UP:
-					if (getParent().hasFocus()) {
+						break;
+					case KeyEvent.VK_UP:
 						movePanel(new Point(winPos.x, winPos.y
 								+ Emulator.ARROW_MOVEMENT));
-						found = true;
-					}
-					break;
-				case KeyEvent.VK_DOWN:
-					if (getParent().hasFocus()) {
+						break;
+					case KeyEvent.VK_DOWN:
 						movePanel(new Point(winPos.x, winPos.y
 								- Emulator.ARROW_MOVEMENT));
-						found = true;
+						break;
+					default:
+						found = false;
+						break;
 					}
-					break;
-				default:
-					break;
 				}
 				return found;
 			}
@@ -176,9 +165,11 @@ public class MapPanel extends JPanel {
 		int yMax = clip.height + clip.y;
 		g.setColor(Emulator.GRID_COLOR);
 		int line = scale(Emulator.CELLS_IN_GRID * Config.GRID_CELL_SIZE);
+
 		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
 		for (int i = firstLine; i < xMax; i += line)
 			g.drawLine(i, clip.y, i, yMax);
+
 		firstLine = (int) Math.ceil(1.0 * clip.y / line) * line;
 		for (int i = firstLine; i < yMax; i += line)
 			g.drawLine(clip.x, i, xMax, i);
@@ -232,14 +223,17 @@ public class MapPanel extends JPanel {
 			g.setColor(Emulator.PATH_COLOR);
 			ArrayList<Point> historyOfPoints = brains.getBestParticleMap()
 					.getPath();
-			for (Point state : historyOfPoints) {
-				g.drawRect(scale(state.x), scale(state.y), 1, 1);
-			}
 			for (int i = 0; i < historyOfPoints.size() - 1; i++) {
 				Point first = historyOfPoints.get(i);
+				g.drawRect(scale(first.x), scale(first.y), 1, 1);
+
 				Point last = historyOfPoints.get(i + 1);
 				g.drawLine(scale(first.x), scale(first.y), scale(last.x),
 						scale(last.y));
+			}
+			if (!historyOfPoints.isEmpty()) {
+				Point last = historyOfPoints.get(historyOfPoints.size() - 1);
+				g.drawRect(scale(last.x), scale(last.y), 1, 1);
 			}
 		} catch (ConcurrentModificationException e) {
 		}
@@ -310,7 +304,6 @@ public class MapPanel extends JPanel {
 	 *            If true zoom in, otherwise zoom out
 	 */
 	public void zoom(boolean zoomIn) {
-
 		Point middle = new Point(getWidth() / 2, getHeight() / 2);
 		int xDist = descale(middle.x - winPos.x);
 		int yDist = descale(middle.y - winPos.y);

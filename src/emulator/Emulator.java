@@ -87,11 +87,6 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		new EmulatorWindow(this);
 	}
 
-	public void updateParticleViewer() {
-		for (ParticleViewer particleViewer : particleViewers)
-			particleViewer.setParticles(brains.getParticles());
-	}
-
 	public void addParticleViewer(ParticleViewer particleViewer) {
 		particleViewers.add(particleViewer);
 	}
@@ -133,11 +128,16 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setMapShowing(boolean showing) {
 		if (this.mapShowing != showing) {
 			this.mapShowing = showing;
-			updateAllParticleViewers();
+			updateViewOfParticleViewers();
 		}
 	}
 
-	private void updateAllParticleViewers() {
+	public void updateParticlesOfViewers() {
+		for (ParticleViewer particleViewer : particleViewers)
+			particleViewer.setParticles(brains.getParticles());
+	}
+
+	private void updateViewOfParticleViewers() {
 		for (ParticleViewer particleViewer : particleViewers) {
 			particleViewer.viewUpdated();
 		}
@@ -150,7 +150,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setRoombaShowing(boolean showing) {
 		if (this.roombaShowing != showing) {
 			this.roombaShowing = showing;
-			updateAllParticleViewers();
+			updateViewOfParticleViewers();
 		}
 	}
 

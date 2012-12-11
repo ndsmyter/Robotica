@@ -33,6 +33,14 @@ public class ParticlePanel extends JPanel {
 	private Point winPos;
 	private double scale = Emulator.ORIGINAL_ZOOM;
 
+	/**
+	 * If you've looked at the code from MapPanel, you will see a lot of
+	 * duplicated code here. You can blame this on me (Nicolas), because I was
+	 * too lazy to make an upper class/method for this
+	 * 
+	 * @param emulator
+	 *            The emulator
+	 */
 	public ParticlePanel(Emulator emulator) {
 		this.emulator = emulator;
 
@@ -156,9 +164,11 @@ public class ParticlePanel extends JPanel {
 		int yMax = clip.height + clip.y;
 		g.setColor(Emulator.GRID_COLOR);
 		int line = scale(Emulator.CELLS_IN_GRID * Config.GRID_CELL_SIZE);
+
 		int firstLine = (int) Math.ceil(1.0 * clip.x / line) * line;
 		for (int i = firstLine; i < xMax; i += line)
 			g.drawLine(i, clip.y, i, yMax);
+
 		firstLine = (int) Math.ceil(1.0 * clip.y / line) * line;
 		for (int i = firstLine; i < yMax; i += line)
 			g.drawLine(clip.x, i, xMax, i);
@@ -192,14 +202,17 @@ public class ParticlePanel extends JPanel {
 		try {
 			g.setColor(Emulator.PATH_COLOR);
 			ArrayList<Point> historyOfPoints = particle.getMap().getPath();
-			for (Point state : historyOfPoints) {
-				g.drawRect(scale(state.x), scale(state.y), 1, 1);
-			}
 			for (int i = 0; i < historyOfPoints.size() - 1; i++) {
 				Point first = historyOfPoints.get(i);
+				g.drawRect(scale(first.x), scale(first.y), 1, 1);
+
 				Point last = historyOfPoints.get(i + 1);
 				g.drawLine(scale(first.x), scale(first.y), scale(last.x),
 						scale(last.y));
+			}
+			if (!historyOfPoints.isEmpty()) {
+				Point last = historyOfPoints.get(historyOfPoints.size() - 1);
+				g.drawRect(scale(last.x), scale(last.y), 1, 1);
 			}
 		} catch (ConcurrentModificationException e) {
 		}
@@ -228,7 +241,6 @@ public class ParticlePanel extends JPanel {
 	 *            If true zoom in, otherwise zoom out
 	 */
 	public void zoom(boolean zoomIn) {
-
 		Point middle = new Point(getWidth() / 2, getHeight() / 2);
 		int xDist = descale(middle.x - winPos.x);
 		int yDist = descale(middle.y - winPos.y);

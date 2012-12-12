@@ -16,7 +16,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	// Step length in mm, turn in degrees
 	private static final int STEP = 50;
 	private static final int TURN = 10;
-	private static final int SPIRAL = 50;
+	private static final int SPIRAL = 20;
+	private static final int NROFGOALS = 5;
 
 	private ArrayList<Point> goals;
 	private int goalIndex;
@@ -30,21 +31,21 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private boolean free = true;
 	private int totalTurn = 0;
 	
-	private Point spiralPoint;
+	private Point goal;
 	private int dir;
 
 	public BugExplore(Stopper stopper) {
 		this.stopper = stopper;
 	}
 
-	public int[] setGoal(RobotState robotState, Point goal) {
+	public int[] setGoal(RobotState robotState) {
 		followingObstacle = false;
 		obstaclePositions.clear();
 		straightDir = Utils.angle(new Point(robotState.x, robotState.y),
-				goals.get(goalIndex));
+				goal);
 		System.out.println("Dir: " + straightDir);
 		straightPath = Utils.getPath(robotState,
-				new RobotState(goals.get(goalIndex), 0));
+				new RobotState(goal, 0));
 		return turn(straightDir - robotState.dir);
 	}
 
@@ -62,7 +63,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		
 		//initialise spiral
 		dir = 0;
-		spiralPoint = new Point(0, -SPIRAL);
+		goal = new Point(0, 0);
+		goalIndex = 0;
 		
 		followingObstacle = false;
 		obstaclePositions = new ArrayList<Point>();
@@ -73,10 +75,10 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		RobotState robotState = map.getPosition();
 		if (internalState == -1) {
 			straightDir = Utils.angle(new Point(robotState.x, robotState.y),
-					goals.get(goalIndex));
+					goal);
 			System.out.println("Dir: " + straightDir);
 			straightPath = Utils.getPath(robotState,
-					new RobotState(goals.get(goalIndex), 0));
+					new RobotState(goal, 0));
 			System.out.println("Path: ");
 			for (Point p : straightPath) {
 				System.out.print("point(" + p.x + ", " + p.y + "), ");
@@ -91,14 +93,15 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			System.out.println("Current : " + robotState + " (=> "
 					+ currentOnGrid + ")");
 
-			if (currentOnGrid.equals(goals.get(goalIndex))) {
+			if (currentOnGrid.equals(goal)) {
 				System.out.println("Goal " + goalIndex + " reached! :D");
 				goalIndex++;
-				if (goalIndex >= goals.size()) {
+				getNextGoal();
+				if (goalIndex >= NROFGOALS) {
 					stopper.execute();
 					return dontMove();
 				} else {
-					return setGoal(robotState, goals.get(goalIndex));
+					return setGoal(robotState);
 				}
 			} else if (followingObstacle) {
 				int c = obstaclePositions.indexOf(currentOnGrid);
@@ -106,22 +109,23 @@ public class BugExplore extends ExploreAlgorithmInterface {
 					System.out.println("Goal " + goalIndex
 							+ " is unreachable! D:");
 					goalIndex++;
-					if (goalIndex >= goals.size()) {
+					getNextGoal();
+					if (goalIndex >= NROFGOALS) {
 						stopper.execute();
 						return dontMove();
 					} else {
-						return setGoal(robotState, goals.get(goalIndex));
+						return setGoal(robotState);
 					}
 				} else {
 					obstaclePositions.add(currentOnGrid);
 					// Following an obstacle
 					if (straightPath.contains(currentOnGrid)
 							&& Utils.euclideanDistance(lastPosition,
-									goals.get(goalIndex)) > Utils
+									goal) > Utils
 									.euclideanDistance(currentOnGrid,
-											goals.get(goalIndex))) {
+											goal)) {
 						System.out.println("Found the path again! ^^");
-						return setGoal(robotState, goals.get(goalIndex));
+						return setGoal(robotState);
 					} else {
 						// Turn right until she finds the obstacle, to follow
 						// the obstacle
@@ -200,25 +204,27 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		return freeTmp;
 	}
 	
-	private Point getNextSpiralPoint() {
+	private Point getNextGoal() {
 		if ( dir == 0 ){
-			spiralPoint.y = spiralPoint.y + SPIRAL;
-			if (spiralPoint.y > spiralPoint.x)
+			goal.y = goal.y + SPIRAL;
+			if (goal.y > goal.x)
 				dir = 1;
 		}else if ( dir == 1 ){
-			spiralPoint.x = spiralPoint.x + SPIRAL;
-			if (spiralPoint.x == spiralPoint.y)
+			goal.x = goal.x + SPIRAL;
+			if (goal.x == goal.y)
 				dir = 2;
 		}else if ( dir == 2 ){
-			spiralPoint.y = spiralPoint.y - SPIRAL;
-			if (Math.abs(spiralPoint.y) == spiralPoint.x)
+			goal.y = goal.y - SPIRAL;
+			if (Math.abs(goal.y) == goal.x)
 				dir = 3;
 		}else if ( dir == 3 ){
-			spiralPoint.x = spiralPoint.x - SPIRAL;
-			if ( spiralPoint.y == spiralPoint.x)
+			goal.x = goal.x - SPIRAL;
+			if ( goal.y == goal.x)
 				dir = 0;
 		}
 		
-		return spiralPoint;
+		System.out.println("Next goal: " + goal.x + " : " + goal.y);
+		
+		return goal;
 	}
 }

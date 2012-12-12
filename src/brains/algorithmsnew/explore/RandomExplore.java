@@ -49,13 +49,7 @@ public class RandomExplore extends ExploreAlgorithmInterface {
 				rotation = -rotation;
 
 			// check whether kate is able to go straight or not
-			boolean free = true;
-			ArrayList<Point> path = Utils.getPath(map.getPosition(), STEP
-					+ RoombaConfig.ROOMBA_DIAMETER / 2,
-					RoombaConfig.ROOMBA_DIAMETER);
-			for (int i = 0; i < path.size() && free; i++) {
-				free &= (map.get(Utils.pointToGrid(path.get(i))) < 0.60);
-			}
+			boolean free = Utils.isPathFree(map.getPosition(), STEP, map);
 
 			// if kate is able to go straight, do so.
 			// else, rotate 2 degrees to the left or the right

@@ -143,8 +143,8 @@ public class Utils {
 	public static boolean isPathFree(RobotState robotState, int step, MapStructure map) {
 		ArrayList<Point> path = Utils.getPath(
 				robotState,
-				step + RoombaConfig.ROOMBA_DIAMETER / 2,
-				RoombaConfig.ROOMBA_DIAMETER
+				step + RoombaConfig.ROOMBA_DIAMETER,
+				RoombaConfig.ROOMBA_DIAMETER * 2
 			);
 		boolean freeTmp = true;
 		int points = path.size();

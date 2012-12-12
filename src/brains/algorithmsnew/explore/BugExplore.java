@@ -2,22 +2,20 @@ package brains.algorithmsnew.explore;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.List;
 
-import roomba.RoombaConfig;
 import brains.MapStructure;
 import brains.algorithmsnew.Stopper;
-import common.Config;
 
+import common.Config;
 import common.RobotState;
 import common.Utils;
 
 public class BugExplore extends ExploreAlgorithmInterface {
 
 	// Step length in mm, turn in degrees
-	private static final int STEP = 50;
+	private static final int STEP = 20;
 	private static final int TURN = 10;
-	private static final int SPIRAL = 50;
+	private static final int SPIRAL = 1000;
 	
 	private int goalIndex;
 	private ArrayList<Point> straightPath;

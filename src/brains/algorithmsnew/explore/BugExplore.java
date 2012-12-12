@@ -11,12 +11,6 @@ import common.RobotState;
 import common.Utils;
 
 public class BugExplore extends ExploreAlgorithmInterface {
-
-	// Step length in mm, turn in degrees
-	private static final int STEP = 20;
-	private static final int TURN = 10;
-	private static final int SPIRAL = 1000;
-	
 	private int goalIndex;
 	private ArrayList<Point> straightPath;
 	private int straightDir;
@@ -122,17 +116,17 @@ public class BugExplore extends ExploreAlgorithmInterface {
 						// the obstacle
 						internalState = 1;
 
-						totalTurn = TURN;
-						return turn(-TURN);
+						totalTurn = Config.BUG_TURN;
+						return turn(-Config.BUG_TURN);
 					}
 				}
 			} else {
 				// On the straight line
-				boolean free = Utils.isPathFree(robotState, STEP, map);
+				boolean free = Utils.isPathFree(robotState, Config.BUG_STEP, map);
 
 				if (free) {
 					// Stay on the straight line
-					return drive(STEP);
+					return drive(Config.BUG_STEP);
 				} else {
 					// Reached an obstacle
 					System.out.println("Encountered an obstacle! :(");
@@ -143,31 +137,31 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				}
 			}
 		} else if (internalState == 1) {
-			boolean free = Utils.isPathFree(robotState, STEP, map);
+			boolean free = Utils.isPathFree(robotState, Config.BUG_STEP, map);
 
 			if (free && totalTurn <= 360) {
-				totalTurn += TURN;
-				return turn(-TURN);
+				totalTurn += Config.BUG_TURN;
+				return turn(-Config.BUG_TURN);
 			} else if (!free) {
 				// Then turn left again until she can move forward
 				internalState = 2;
-				totalTurn = TURN;
-				return turn(TURN);
+				totalTurn = Config.BUG_TURN;
+				return turn(Config.BUG_TURN);
 			} else {
 				// where did the obstacle go?
 				internalState = 0;
 				totalTurn = 0;
-				return drive(STEP);
+				return drive(Config.BUG_STEP);
 			}
 		} else if (internalState == 2) {
-			boolean free = Utils.isPathFree(robotState, STEP, map);
+			boolean free = Utils.isPathFree(robotState, Config.BUG_STEP, map);
 
 			if (!free && totalTurn <= 360) {
-				totalTurn += TURN;
-				return turn(TURN);
+				totalTurn += Config.BUG_TURN;
+				return turn(Config.BUG_TURN);
 			} else {
 				internalState = 0;
-				return drive(STEP);
+				return drive(Config.BUG_STEP);
 			}
 		} else {
 			System.err.println("BugMovement.java: NO SUCH INTERNAL STATE!");
@@ -177,22 +171,22 @@ public class BugExplore extends ExploreAlgorithmInterface {
  
     private Point getNextGoalTMP() {
         if (dir == 0) { // UP
-            goal.y = goal.y + SPIRAL;
+            goal.y = goal.y + Config.BUG_SPIRAL;
             if (goal.y > Math.abs(goal.x)) {
                 dir = 1;
             }
         } else if (dir == 1) { // RIGHT
-            goal.x = goal.x + SPIRAL;
+            goal.x = goal.x + Config.BUG_SPIRAL;
             if (goal.x == goal.y) {
                 dir = 2;
             }
         } else if (dir == 2) { // DOWN
-            goal.y = goal.y - SPIRAL;
+            goal.y = goal.y - Config.BUG_SPIRAL;
             if (Math.abs(goal.y) == goal.x) {
                 dir = 3;
             }
         } else if (dir == 3) { // LEFT
-            goal.x = goal.x - SPIRAL;
+            goal.x = goal.x - Config.BUG_SPIRAL;
             if (goal.y == goal.x) {
                 dir = 0;
             }
@@ -205,7 +199,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 
     private Point getNextGoal() {
         if (dir == 0) { // UP
-            goal.y = Math.abs(goal.x) + SPIRAL;
+            goal.y = Math.abs(goal.x) + Config.BUG_SPIRAL;
             dir = 1;
         } else if (dir == 1) { // RIGHT
             goal.x = goal.y;

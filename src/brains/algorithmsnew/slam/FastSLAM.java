@@ -17,13 +17,16 @@ import common.Utils;
 
 public class FastSLAM implements SLAMAlgorithmInterface {
 	private RouletteWheelSelection roulette;
+	private int iterations;
 
 	public FastSLAM() {
 		roulette = new RouletteWheelSelection();
+		iterations = 0;
 	}
 
 	@Override
 	public void reset() {
+		iterations = 0;
 	}
 
 	/*
@@ -42,9 +45,16 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 
 			p.setWeight(weight);
 		}
-
-		List<Particle> resampledParticles = roulette.nextRandomParticles(
+		
+		List<Particle> resampledParticles;
+		if (iterations % Config.ITERATIONS_PER_RESAMPLE == 0) {
+			resampledParticles = roulette.nextRandomParticles(
 				particles, particles.size());
+		} else {
+			resampledParticles = particles;
+		}
+		
+		iterations++;
 
 		return resampledParticles;
 	}

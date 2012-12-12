@@ -246,11 +246,9 @@ public class MapPanel extends JPanel {
 		g.setColor(Emulator.CURRENT_STATE_COLOR);
 
 		RobotState currentState = emulator.getSimulatedRobotState();
-		int halfSize = Config.GRID_CELL_SIZE / 2;
 		int x = scale(currentState.x);
 		int y = scale(currentState.y);
-		g.fillRect(x - halfSize, y - halfSize, Config.GRID_CELL_SIZE,
-				Config.GRID_CELL_SIZE);
+		g.fillRect(x - 5, y - 5, 10, 10);
 
 		// Draw a line to show the direction of the robot
 		RobotState endpoint = Utils.driveForward(currentState,

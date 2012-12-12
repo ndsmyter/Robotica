@@ -74,6 +74,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	public final static int CELLS_IN_GRID = 10;
 
+	private int iteration = 0;
+
 	// Logs
 	private ArrayList<String> logs = new ArrayList<String>();
 
@@ -207,6 +209,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public void reset() {
+		iteration = 0;
 		simulatedRobotState = new RobotState(0, 0, 0);
 		brains.reset();
 	}
@@ -229,7 +232,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void drive(int millimeters, int driveMode) {
-		log("E: DRIVE (" + millimeters + ")");
+		iteration++;
+		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
 
 		if (Config.SIMULATED_NOISE) {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * millimeters) + 0.5);
@@ -245,8 +249,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	@Override
 	public void turn(int degrees, int turnMode, int driveMode) {
+		iteration++;
 		boolean turnRight = degrees < 0;
-		log("E: " + (turnRight ? "RIGHT" : "LEFT") + " (" + degrees + ")");
+		log("E(" + iteration + "): " + (turnRight ? "RIGHT" : "LEFT") + " ("
+				+ degrees + ")");
 
 		if (Config.SIMULATED_NOISE) {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * degrees) + 0.5);
@@ -295,6 +301,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
 		logs.add(sdf.format(Calendar.getInstance().getTime()) + "  " + message
 				+ "\n");
+		if (iteration % 20 == 0) {
+			saveLogToFile();
+			logs.clear();
+		}
 		fireStateChanged(true, new Event(EventType.LOG, message));
 	}
 

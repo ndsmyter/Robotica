@@ -16,12 +16,10 @@ import common.Sensor;
 import common.Utils;
 
 public class FastSLAM implements SLAMAlgorithmInterface {
-	private Random rand;
 	private RouletteWheelSelection roulette;
 
 	public FastSLAM() {
 		roulette = new RouletteWheelSelection();
-		rand = new Random();
 	}
 
 	@Override
@@ -60,22 +58,11 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 	 * @return
 	 */
 	public void sampleMotionModel(int[] u, RobotState x) {
-		int noisyu0 = u[0] + (int) (u[0] * sample(Config.ALPHA1));
-		int noisyu1 = u[1] + (int) (u[1] * sample(Config.ALPHA2));
+		int noisyu0 = u[0] + (int) (u[0] * Utils.gaussSample(Config.ALPHA1));
+		int noisyu1 = u[1] + (int) (u[1] * Utils.gaussSample(Config.ALPHA2));
 
 		Utils.driveStateful(x, noisyu0);
 		Utils.turnStateful(x, noisyu1);
-	}
-
-	public double sample(double b2) {
-		double result = 0;
-		double r = Math.sqrt(b2);
-		for (int i = 0; i < 12; i++) {
-			result += (-r + rand.nextDouble() * 2 * r);
-		}
-		result /= 2;
-		// Math.sqrt(6)/2 * (-r + rand.nextDouble() * r);
-		return result;
 	}
 
 	public double measurementModelMap(int[] z, MapStructure m) {

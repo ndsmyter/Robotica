@@ -43,7 +43,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Brains brains;
 
 	private RobotState simulatedRobotState;
-	private Random simRandom = new Random();
+//	private Random simRandom = new Random();
 
 	private String currentMap = ""; // No map by default
 	private ArrayList<Point> background = new ArrayList<Point>();
@@ -239,10 +239,15 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		iteration++;
 		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
 
-		// Simulate noise start
-		int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT * millimeters) + 0.5);
-        if(x > 0)
-            millimeters = millimeters + simRandom.nextInt(x * 2) - x;
+//		// Simulate noise start
+//		int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT * millimeters) + 0.5);
+//        if(x > 0)
+//            millimeters = millimeters + simRandom.nextInt(x * 2) - x;
+		
+		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
+			double b = Config.SIMULATED_ROTATION_NOISE_PCT*millimeters;
+			millimeters = (int) Utils.gaussSample(b, millimeters);
+		}
 		
 		// driving with steps SIMULATED_STEP_SIZEs
 		while (millimeters > 0) {
@@ -275,9 +280,14 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 				+ degrees + ")");
 
 		// Simulate noise
-		int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT * degrees) + 0.5);
-        if(x > 0)
-            degrees = degrees + simRandom.nextInt(x * 2) - x;
+//		int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT * degrees) + 0.5);
+//        if(x > 0)
+//            degrees = degrees + simRandom.nextInt(x * 2) - x;
+		
+		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
+			double b = Config.SIMULATED_ROTATION_NOISE_PCT*degrees;
+			degrees = (int) Utils.gaussSample(b, degrees);
+		}
 
 		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
@@ -308,9 +318,14 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 						sensorState.x, sensorState.y));
 				
 				// Ruis simuleren
-				int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT * dist2) + 0.5);
-		        if(x > 0)
-		        	dist2 = dist2 + simRandom.nextInt(x * 2) - x;
+//				int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT * dist2) + 0.5);
+//		        if(x > 0)
+//		        	dist2 = dist2 + simRandom.nextInt(x * 2) - x;
+		        
+				if (Config.SIMULATED_SENSOR_NOISE_PCT > 0) {
+					double b = Config.SIMULATED_SENSOR_NOISE_PCT*dist2;
+					dist2 = (int) Utils.gaussSample(b, dist2);
+				}
 				
 				if (dist2 < dist) {
 					dist = dist2;

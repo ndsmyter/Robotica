@@ -2,8 +2,10 @@ package common;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Utils {
+	private static Random rand = new Random();
 
 	public static Point sensorDataToPoint(RobotState currentState,
 			int distance, Sensor sensor) {
@@ -117,5 +119,21 @@ public class Utils {
 
 	public static boolean goalReached(Point robot, Point goal) {
 		return euclideanDistance(robot, goal) < Config.GOAL_REACHED_TRESHOLD;
+	}
+	
+	// gaussian sample
+	public static double gaussSample(double b2) {
+		double result = 0;
+		double r = Math.sqrt(b2);
+		for (int i = 0; i < 12; i++) {
+			result += (-r + rand.nextDouble() * 2 * r);
+		}
+		result /= 2;
+		// Math.sqrt(6)/2 * (-r + rand.nextDouble() * r);
+		return result;
+	}
+	
+	public static double gaussSample(double b2, double o) {
+		return gaussSample(b2) + o;
 	}
 }

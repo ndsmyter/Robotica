@@ -4,6 +4,9 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import roomba.RoombaConfig;
+import brains.MapStructure;
+
 public class Utils {
 	private static Random rand = new Random();
 
@@ -135,5 +138,18 @@ public class Utils {
 	
 	public static double gaussSample(double b2, double o) {
 		return gaussSample(b2) + o;
+	}
+	
+	public static boolean isPathFree(RobotState robotState, int step, MapStructure map) {
+		ArrayList<Point> path = Utils.getPath(
+				robotState,
+				step + RoombaConfig.ROOMBA_DIAMETER,
+				RoombaConfig.ROOMBA_DIAMETER * 2
+			);
+		boolean freeTmp = true;
+		int points = path.size();
+		for (int i = 0; i < points && freeTmp; i++)
+			freeTmp &= (map.get(path.get(i)) <= 0.51);
+		return freeTmp;
 	}
 }

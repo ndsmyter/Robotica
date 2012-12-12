@@ -35,7 +35,7 @@ public class Brains implements ListenerInterface {
 
 	public Brains() {
 		particles = new ArrayList<Particle>();
-		// algorithm = Algorithm.getFastSlamRandom();
+//		 algorithm = Algorithm.getFastSlamRandom();
 		algorithm = Algorithm.getFastSlamBug(this);
 		reset();
 		emulator = new Emulator(this);

@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -22,6 +21,7 @@ import javax.imageio.ImageIO;
 import roomba.Roomba;
 import roomba.RoombaConfig;
 import brains.Brains;
+import brains.MapStructure;
 
 import common.Config;
 import common.RobotState;
@@ -43,7 +43,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private Brains brains;
 
 	private RobotState simulatedRobotState;
-//	private Random simRandom = new Random();
+	// private Random simRandom = new Random();
 
 	private String currentMap = ""; // No map by default
 	private ArrayList<Point> background = new ArrayList<Point>();
@@ -54,6 +54,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private List<ParticleViewer> particleViewers = new ArrayList<ParticleViewer>();
 	private boolean mapShowing = true;
 	private boolean roombaShowing = true;
+	private boolean currentStateShowing = false;
 
 	// The colors which you can change to the color you like
 	public final static Color ZERO_COLOR = Color.BLACK;
@@ -64,6 +65,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public final static Color PATH_COLOR = Color.ORANGE;
 	public final static Color MAP_COLOR = Color.YELLOW;
 	public final static Color BACKGROUND_COLOR = Color.GRAY;
+	public final static Color CURRENT_STATE_COLOR = Color.RED;
 
 	// Scaling parameters
 	public final static int LINE_LENGTH = 100;
@@ -88,6 +90,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		roomba = new Roomba(this);
 		loadBackgroundFiles();
 		new EmulatorWindow(this);
+	}
+
+	public RobotState getSimulatedRobotState() {
+		return simulatedRobotState;
 	}
 
 	public void addParticleViewer(ParticleViewer particleViewer) {
@@ -131,6 +137,17 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void setMapShowing(boolean showing) {
 		if (this.mapShowing != showing) {
 			this.mapShowing = showing;
+			updateViewOfParticleViewers();
+		}
+	}
+
+	public boolean isCurrentStateShowing() {
+		return currentStateShowing;
+	}
+
+	public void setCurrentStateShowing(boolean currentStateShowing) {
+		if (this.currentStateShowing != currentStateShowing) {
+			this.currentStateShowing = currentStateShowing;
 			updateViewOfParticleViewers();
 		}
 	}
@@ -239,36 +256,38 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		iteration++;
 		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
 
-//		// Simulate noise start
-//		int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT * millimeters) + 0.5);
-//        if(x > 0)
-//            millimeters = millimeters + simRandom.nextInt(x * 2) - x;
-		
+		// // Simulate noise start
+		// int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT *
+		// millimeters) + 0.5);
+		// if(x > 0)
+		// millimeters = millimeters + simRandom.nextInt(x * 2) - x;
+
 		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
-			double b = Config.SIMULATED_ROTATION_NOISE_PCT*millimeters;
+			double b = Config.SIMULATED_ROTATION_NOISE_PCT * millimeters;
 			millimeters = (int) Utils.gaussSample(b, millimeters);
 		}
-		
+
 		// driving with steps SIMULATED_STEP_SIZEs
 		while (millimeters > 0) {
-			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters : Config.SIMULATED_STEP_SIZE;
-			ArrayList<Point> path = Utils.getPath(simulatedRobotState, toDrive, RoombaConfig.ROOMBA_DIAMETER);
-			
-			int i = 0;
-			while (i < path.size() && !background.contains(path.get(i))) {
-				i++;
-			}
-			if (i == path.size()) {
+			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
+					: Config.SIMULATED_STEP_SIZE;
+
+			boolean isFree = isPathFree(simulatedRobotState, toDrive,
+					background);
+
+			if (isFree) {
 				millimeters -= toDrive;
-				simulatedRobotState = Utils.driveForward(simulatedRobotState, toDrive);
+				simulatedRobotState = Utils.driveForward(simulatedRobotState,
+						toDrive);
 			} else {
 				// PANIEK! Kate rijdt tegen een muur :/
 				log("PANIEK! Kate rijdt tegen een muur :/");
 				millimeters = 0;
 			}
 		}
-		
-		fireStateChanged(true, new Event(EventType.DRIVE, millimeters, driveMode));
+
+		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
+				driveMode));
 		roomba.drive(millimeters, driveMode);
 	}
 
@@ -280,12 +299,14 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 				+ degrees + ")");
 
 		// Simulate noise
-//		int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT * degrees) + 0.5);
-//        if(x > 0)
-//            degrees = degrees + simRandom.nextInt(x * 2) - x;
-		
+		// int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT *
+		// degrees) + 0.5);
+		// if(x > 0)
+		// degrees = degrees + simRandom.nextInt(x * 2) - x;
+
 		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
-			double b = Config.SIMULATED_ROTATION_NOISE_PCT*degrees;
+			degrees = (degrees + 360) % 360;
+			double b = Config.SIMULATED_ROTATION_NOISE_PCT * degrees;
 			degrees = (int) Utils.gaussSample(b, degrees);
 		}
 
@@ -316,17 +337,18 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			if (background.contains(sensorP)) {
 				int dist2 = Utils.euclideanDistance(sensorP, new Point(
 						sensorState.x, sensorState.y));
-				
+
 				// Ruis simuleren
-//				int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT * dist2) + 0.5);
-//		        if(x > 0)
-//		        	dist2 = dist2 + simRandom.nextInt(x * 2) - x;
-		        
+				// int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT *
+				// dist2) + 0.5);
+				// if(x > 0)
+				// dist2 = dist2 + simRandom.nextInt(x * 2) - x;
+
 				if (Config.SIMULATED_SENSOR_NOISE_PCT > 0) {
-					double b = Config.SIMULATED_SENSOR_NOISE_PCT*dist2;
+					double b = Config.SIMULATED_SENSOR_NOISE_PCT * dist2;
 					dist2 = (int) Utils.gaussSample(b, dist2);
 				}
-				
+
 				if (dist2 < dist) {
 					dist = dist2;
 					stop = true;
@@ -334,6 +356,18 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			}
 		}
 		return dist;
+	}
+
+	private boolean isPathFree(RobotState robotState, int step,
+			ArrayList<Point> background) {
+		ArrayList<Point> path = Utils.getPath(robotState, step
+				+ RoombaConfig.ROOMBA_DIAMETER / 2,
+				RoombaConfig.ROOMBA_DIAMETER);
+		boolean freeTmp = true;
+		int points = path.size();
+		for (int i = 0; i < points && freeTmp; i++)
+			freeTmp &= !background.contains(path.get(i));
+		return freeTmp;
 	}
 
 	@Override

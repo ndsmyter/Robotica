@@ -305,6 +305,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		// degrees = degrees + simRandom.nextInt(x * 2) - x;
 
 		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
+			degrees = (degrees + 360) % 360;
 			double b = Config.SIMULATED_ROTATION_NOISE_PCT * degrees;
 			degrees = (int) Utils.gaussSample(b, degrees);
 		}

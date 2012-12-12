@@ -241,7 +241,9 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 		if (Config.SIMULATED_NOISE) {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * millimeters) + 0.5);
-			millimeters = millimeters + simRandom.nextInt(x * 2) - x;
+                        System.out.println(x);
+                        if(x > 0)
+                            millimeters = millimeters + simRandom.nextInt(x * 2) - x;
 		}
 
 		simulatedRobotState = Utils.driveForward(simulatedRobotState,
@@ -260,7 +262,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 		if (Config.SIMULATED_NOISE) {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * degrees) + 0.5);
-			degrees = degrees + simRandom.nextInt(x * 2) - x;
+                        if(x > 0)
+                            degrees = degrees + simRandom.nextInt(x * 2) - x;
 		}
 
 		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;

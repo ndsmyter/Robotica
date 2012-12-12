@@ -4,8 +4,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
-
 import roomba.RoombaConfig;
 import brains.MapStructure;
 import brains.algorithmsnew.Stopper;
@@ -19,7 +17,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private static final int STEP = 50;
 	private static final int TURN = 10;
 	private static final int SPIRAL = 50;
-	private static final int NROFGOALS = 5;
+	private static final int NROFGOALS = 10000;
 
 	private ArrayList<Point> goals;
 	private int goalIndex;

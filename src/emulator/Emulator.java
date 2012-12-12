@@ -54,6 +54,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	private List<ParticleViewer> particleViewers = new ArrayList<ParticleViewer>();
 	private boolean mapShowing = true;
 	private boolean roombaShowing = true;
+	private boolean currentStateShowing = false;
 
 	// The colors which you can change to the color you like
 	public final static Color ZERO_COLOR = Color.BLACK;
@@ -138,6 +139,14 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			this.mapShowing = showing;
 			updateViewOfParticleViewers();
 		}
+	}
+
+	public boolean isCurrentStateShowing() {
+		return currentStateShowing;
+	}
+
+	public void setCurrentStateShowing(boolean currentStateShowing) {
+		this.currentStateShowing = currentStateShowing;
 	}
 
 	public void updateParticlesOfViewers() {

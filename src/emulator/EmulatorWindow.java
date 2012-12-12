@@ -119,6 +119,14 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				repaint();
 			}
 		};
+		Action showCurrentStateAction = new AbstractAction("Show current") {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				emulator.setCurrentStateShowing(!emulator
+						.isCurrentStateShowing());
+				repaint();
+			}
+		};
 		Action addParticleViewerAction = new AbstractAction(
 				"Add ParticleViewer") {
 			@Override
@@ -143,6 +151,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				"Show map or not");
 		showRoombaAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Show roomba or not");
+		showCurrentStateAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Show Current State or not");
 		addParticleViewerAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Open a new Particle Viewer");
 		buttonPanel.add(mapBox);
@@ -159,6 +169,10 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		JToggleButton roombaShowingButton = new JToggleButton(showRoombaAction);
 		roombaShowingButton.setSelected(emulator.isRoombaShowing());
 		buttonPanel.add(roombaShowingButton);
+		JToggleButton currentStateShowingButton = new JToggleButton(
+				showCurrentStateAction);
+		currentStateShowingButton.setSelected(emulator.isCurrentStateShowing());
+		buttonPanel.add(currentStateShowingButton);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(mapPanel, BorderLayout.CENTER);

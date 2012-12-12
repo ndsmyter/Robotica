@@ -149,7 +149,8 @@ public class MapPanel extends JPanel {
 		if (emulator.isRoombaShowing())
 			drawRobot(g2);
 
-		drawCurrentState(g2);
+		if (emulator.isCurrentStateShowing())
+			drawCurrentState(g2);
 
 		// Draw the scale
 		drawScale(g2);
@@ -245,8 +246,18 @@ public class MapPanel extends JPanel {
 		g.setColor(Emulator.CURRENT_STATE_COLOR);
 
 		RobotState currentState = emulator.getSimulatedRobotState();
-		g.fillRect(scale(currentState.x), scale(currentState.y),
-				Config.GRID_CELL_SIZE, Config.GRID_CELL_SIZE);
+		int halfSize = Config.GRID_CELL_SIZE / 2;
+		int x = scale(currentState.x);
+		int y = scale(currentState.y);
+		g.fillRect(x - halfSize, y - halfSize, Config.GRID_CELL_SIZE,
+				Config.GRID_CELL_SIZE);
+
+		// Draw a line to show the direction of the robot
+		RobotState endpoint = Utils.driveForward(currentState,
+				Emulator.LINE_LENGTH);
+		int endX = scale(endpoint.x);
+		int endY = scale(endpoint.y);
+		g.drawLine(x, y, endX, endY);
 	}
 
 	/**

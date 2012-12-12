@@ -149,6 +149,7 @@ public class MapPanel extends JPanel {
 		if (emulator.isRoombaShowing())
 			drawRobot(g2);
 
+		// Draw current state
 		if (emulator.isCurrentStateShowing())
 			drawCurrentState(g2);
 

@@ -146,7 +146,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	}
 
 	public void setCurrentStateShowing(boolean currentStateShowing) {
-		this.currentStateShowing = currentStateShowing;
+		if (this.currentStateShowing != currentStateShowing) {
+			this.currentStateShowing = currentStateShowing;
+			updateViewOfParticleViewers();
+		}
 	}
 
 	public void updateParticlesOfViewers() {
@@ -268,9 +271,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		while (millimeters > 0) {
 			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
 					: Config.SIMULATED_STEP_SIZE;
-			
-			boolean isFree = isPathFree(simulatedRobotState, toDrive, background);
-			
+
+			boolean isFree = isPathFree(simulatedRobotState, toDrive,
+					background);
+
 			if (isFree) {
 				millimeters -= toDrive;
 				simulatedRobotState = Utils.driveForward(simulatedRobotState,
@@ -352,13 +356,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		}
 		return dist;
 	}
-	
-	private boolean isPathFree(RobotState robotState, int step, ArrayList<Point> background) {
-		ArrayList<Point> path = Utils.getPath(
-				robotState,
-				step + RoombaConfig.ROOMBA_DIAMETER / 2,
-				RoombaConfig.ROOMBA_DIAMETER
-			);
+
+	private boolean isPathFree(RobotState robotState, int step,
+			ArrayList<Point> background) {
+		ArrayList<Point> path = Utils.getPath(robotState, step
+				+ RoombaConfig.ROOMBA_DIAMETER / 2,
+				RoombaConfig.ROOMBA_DIAMETER);
 		boolean freeTmp = true;
 		int points = path.size();
 		for (int i = 0; i < points && freeTmp; i++)

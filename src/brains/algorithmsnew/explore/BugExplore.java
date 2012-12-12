@@ -15,45 +15,43 @@ import common.Utils;
 
 public class BugExplore extends ExploreAlgorithmInterface {
 
-	// Step length in mm, turn in degrees
-	private static final int STEP = 50;
-	private static final int TURN = 10;
-	private static final int SPIRAL = 50;
+    // Step length in mm, turn in degrees
+    private static final int STEP = 50;
+    private static final int TURN = 10;
+    private static final int SPIRAL = 50;
+    private ArrayList<Point> goals;
+    private int goalIndex;
+    private ArrayList<Point> straightPath;
+    private int straightDir;
+    private Point lastPosition;
+    private ArrayList<Point> obstaclePositions;
+    private boolean followingObstacle;
+    private Stopper stopper;
+    private int internalState;
+    private boolean free = true;
+    private int totalTurn = 0;
+    private Point goal;
+    private int dir;
 
-	private ArrayList<Point> goals;
-	private int goalIndex;
-	private ArrayList<Point> straightPath;
-	private int straightDir;
-	private Point lastPosition;
-	private ArrayList<Point> obstaclePositions;
-	private boolean followingObstacle;
-	private Stopper stopper;
-	private int internalState;
-	private boolean free = true;
-	private int totalTurn = 0;
-	
-	private Point goal;
-	private int dir;
+    public BugExplore(Stopper stopper) {
+        this.stopper = stopper;
+    }
 
-	public BugExplore(Stopper stopper) {
-		this.stopper = stopper;
-	}
+    public int[] setGoal(RobotState robotState) {
+        followingObstacle = false;
+        obstaclePositions.clear();
+        straightDir = Utils.angle(new Point(robotState.x, robotState.y),
+                goal);
+        System.out.println("Dir: " + straightDir);
+        straightPath = Utils.getPath(robotState,
+                new RobotState(goal, 0));
+        return turn(straightDir - robotState.dir);
+    }
 
-	public int[] setGoal(RobotState robotState) {
-		followingObstacle = false;
-		obstaclePositions.clear();
-		straightDir = Utils.angle(new Point(robotState.x, robotState.y),
-				goal);
-		System.out.println("Dir: " + straightDir);
-		straightPath = Utils.getPath(robotState,
-				new RobotState(goal, 0));
-		return turn(straightDir - robotState.dir);
-	}
-
-	@Override
-	public void reset() {
-		internalState = -1;
-		goalIndex = 0;
+    @Override
+    public void reset() {
+        internalState = -1;
+        goalIndex = 0;
 //		goals = new ArrayList<Point>();
 //		goals.add(new Point(1000, 0));
 //		goals.add(new Point(1000, 1000));
@@ -61,171 +59,196 @@ public class BugExplore extends ExploreAlgorithmInterface {
 //		goals.add(new Point(-300, -300));
 //		goals.add(new Point(-200, -200));
 //		goals.add(new Point(0, 0));
-		
-		//initialise spiral
-		dir = 0;
-		goal = new Point(0, 0);
-		goalIndex = 0;
-		
-		followingObstacle = false;
-		obstaclePositions = new ArrayList<Point>();
-	}
 
-	@Override
-	public int[] explore(MapStructure map) {
-		RobotState robotState = map.getPosition();
-		if (internalState == -1) {
-			straightDir = Utils.angle(new Point(robotState.x, robotState.y),
-					goal);
-			System.out.println("Dir: " + straightDir);
-			straightPath = Utils.getPath(robotState,
-					new RobotState(goal, 0));
-			System.out.println("Path: ");
-			for (Point p : straightPath) {
-				System.out.print("point(" + p.x + ", " + p.y + "), ");
-			}
-			System.out.println("");
-			internalState = 0;
+        //initialise spiral
+        dir = 0;
+        goal = new Point(0, 0);
+        goalIndex = 0;
 
-			return turn(straightDir);
-		} else if (internalState == 0) {
-			Point currentOnGrid = Utils.pointToGrid(new Point(robotState.x,
-					robotState.y));
-			System.out.println("Current : " + robotState + " (=> "
-					+ currentOnGrid + ")");
+        followingObstacle = false;
+        obstaclePositions = new ArrayList<Point>();
+    }
 
-			if (Utils.goalReached(currentOnGrid, Utils.pointToGrid(goal))) {
-				System.out.println("Goal " + goalIndex + " reached! :D");
-				goalIndex++;
-				getNextGoal();
-				if (goalIndex >= Config.NROFGOALS) {
-					stopper.execute();
-					return dontMove();
-				} else {
-					return setGoal(robotState);
-				}
-			} else if (followingObstacle) {
-				int c = obstaclePositions.indexOf(currentOnGrid);
-				if (c > 0 && c < obstaclePositions.size() - 5) {
-					System.out.println("Goal " + goalIndex
-							+ " is unreachable! D:");
-					goalIndex++;
-					getNextGoal();
-					if (goalIndex >= Config.NROFGOALS) {
-						stopper.execute();
-						return dontMove();
-					} else {
-						return setGoal(robotState);
-					}
-				} else {
-					obstaclePositions.add(currentOnGrid);
-					// Following an obstacle
-					if (straightPath.contains(currentOnGrid)
-							&& Utils.euclideanDistance(lastPosition,
-									goal) > Utils
-									.euclideanDistance(currentOnGrid,
-											goal)) {
-						System.out.println("Found the path again! ^^");
-						return setGoal(robotState);
-					} else {
-						// Turn right until she finds the obstacle, to follow
-						// the obstacle
-						internalState = 1;
+    @Override
+    public int[] explore(MapStructure map) {
+        RobotState robotState = map.getPosition();
+        if (internalState == -1) {
+            straightDir = Utils.angle(new Point(robotState.x, robotState.y),
+                    goal);
+            System.out.println("Dir: " + straightDir);
+            straightPath = Utils.getPath(robotState,
+                    new RobotState(goal, 0));
+            System.out.println("Path: ");
+            for (Point p : straightPath) {
+                System.out.print("point(" + p.x + ", " + p.y + "), ");
+            }
+            System.out.println("");
+            internalState = 0;
 
-						free = true;
-						totalTurn = TURN;
-						return turn(-TURN);
-					}
-				}
-			} else {
-				// On the straight line
-				ArrayList<Point> path = Utils.getPath(robotState, STEP
-						+ RoombaConfig.ROOMBA_DIAMETER / 2,
-						RoombaConfig.ROOMBA_DIAMETER);
-				free = isPathFree(path, map);
+            return turn(straightDir);
+        } else if (internalState == 0) {
+            Point currentOnGrid = Utils.pointToGrid(new Point(robotState.x,
+                    robotState.y));
+            System.out.println("Current : " + robotState + " (=> "
+                    + currentOnGrid + ")");
 
-				if (free) {
-					// Stay on the straight line
-					return drive(STEP);
-				} else {
-					// Reached an obstacle
-					System.out.println("Encountered an obstacle! :(");
-					lastPosition = Utils.pointToGrid(new Point(robotState.x,
-							robotState.y));
-					followingObstacle = true;
-					return dontMove();
-				}
-			}
-		} else if (internalState == 1) {
-			List<Point> path = Utils.getPath(robotState, STEP
-					+ RoombaConfig.ROOMBA_DIAMETER / 2,
-					RoombaConfig.ROOMBA_DIAMETER);
-			free = isPathFree(path, map);
+            if (Utils.goalReached(currentOnGrid, Utils.pointToGrid(goal))) {
+                System.out.println("Goal " + goalIndex + " reached! :D");
+                goalIndex++;
+                getNextGoal();
+                if (goalIndex >= Config.NROFGOALS) {
+                    stopper.execute();
+                    return dontMove();
+                } else {
+                    return setGoal(robotState);
+                }
+            } else if (followingObstacle) {
+                int c = obstaclePositions.indexOf(currentOnGrid);
+                if (c > 0 && c < obstaclePositions.size() - 5) {
+                    System.out.println("Goal " + goalIndex
+                            + " is unreachable! D:");
+                    goalIndex++;
+                    getNextGoal();
+                    if (goalIndex >= Config.NROFGOALS) {
+                        stopper.execute();
+                        return dontMove();
+                    } else {
+                        return setGoal(robotState);
+                    }
+                } else {
+                    obstaclePositions.add(currentOnGrid);
+                    // Following an obstacle
+                    if (straightPath.contains(currentOnGrid)
+                            && Utils.euclideanDistance(lastPosition,
+                            goal) > Utils
+                            .euclideanDistance(currentOnGrid,
+                            goal)) {
+                        System.out.println("Found the path again! ^^");
+                        return setGoal(robotState);
+                    } else {
+                        // Turn right until she finds the obstacle, to follow
+                        // the obstacle
+                        internalState = 1;
 
-			if (free && totalTurn <= 360) {
-				totalTurn += TURN;
-				return turn(-TURN);
-			} else {
-				if (!free) {
-					// Then turn left again until she can move forward
-					internalState = 2;
-					totalTurn = TURN;
-					return turn(TURN);
-				} else {
-					// where did the obstacle go?
-					internalState = 0;
-					totalTurn = 0;
-					return drive(STEP);
-				}
-			}
-		} else if (internalState == 2) {
-			List<Point> path = Utils.getPath(robotState, STEP
-					+ RoombaConfig.ROOMBA_DIAMETER / 2,
-					RoombaConfig.ROOMBA_DIAMETER);
-			free = isPathFree(path, map);
+                        free = true;
+                        totalTurn = TURN;
+                        return turn(-TURN);
+                    }
+                }
+            } else {
+                // On the straight line
+                ArrayList<Point> path = Utils.getPath(robotState, STEP
+                        + RoombaConfig.ROOMBA_DIAMETER / 2,
+                        RoombaConfig.ROOMBA_DIAMETER);
+                free = isPathFree(path, map);
 
-			if (!free && totalTurn <= 360) {
-				totalTurn += TURN;
-				return turn(TURN);
-			} else {
-				internalState = 0;
-				return drive(STEP);
-			}
-		} else {
-			System.err.println("BugMovement.java: NO SUCH INTERNAL STATE!");
-			return dontMove();
-		}
-	}
+                if (free) {
+                    // Stay on the straight line
+                    return drive(STEP);
+                } else {
+                    // Reached an obstacle
+                    System.out.println("Encountered an obstacle! :(");
+                    lastPosition = Utils.pointToGrid(new Point(robotState.x,
+                            robotState.y));
+                    followingObstacle = true;
+                    return dontMove();
+                }
+            }
+        } else if (internalState == 1) {
+            List<Point> path = Utils.getPath(robotState, STEP
+                    + RoombaConfig.ROOMBA_DIAMETER / 2,
+                    RoombaConfig.ROOMBA_DIAMETER);
+            free = isPathFree(path, map);
 
-	private boolean isPathFree(List<Point> path, MapStructure map) {
-		boolean freeTmp = true;
-		int points = path.size();
-		for (int i = 0; i < points && freeTmp; i++)
-			freeTmp &= (map.get(path.get(i)) < 0.60);
-		return freeTmp;
-	}
-	
-	private Point getNextGoal() {
-		if ( dir == 0 ){
-			goal.y = goal.y + SPIRAL;
-			if (goal.y > goal.x)
-				dir = 1;
-		}else if ( dir == 1 ){
-			goal.x = goal.x + SPIRAL;
-			if (goal.x == goal.y)
-				dir = 2;
-		}else if ( dir == 2 ){
-			goal.y = goal.y - SPIRAL;
-			if (Math.abs(goal.y) == goal.x)
-				dir = 3;
-		}else if ( dir == 3 ){
-			goal.x = goal.x - SPIRAL;
-			if ( goal.y == goal.x)
-				dir = 0;
-		}
-		
-		System.out.println("Next goal: " + goal.x + " : " + goal.y);
-		
-		return goal;
-	}
+            if (free && totalTurn <= 360) {
+                totalTurn += TURN;
+                return turn(-TURN);
+            } else {
+                if (!free) {
+                    // Then turn left again until she can move forward
+                    internalState = 2;
+                    totalTurn = TURN;
+                    return turn(TURN);
+                } else {
+                    // where did the obstacle go?
+                    internalState = 0;
+                    totalTurn = 0;
+                    return drive(STEP);
+                }
+            }
+        } else if (internalState == 2) {
+            List<Point> path = Utils.getPath(robotState, STEP
+                    + RoombaConfig.ROOMBA_DIAMETER / 2,
+                    RoombaConfig.ROOMBA_DIAMETER);
+            free = isPathFree(path, map);
+
+            if (!free && totalTurn <= 360) {
+                totalTurn += TURN;
+                return turn(TURN);
+            } else {
+                internalState = 0;
+                return drive(STEP);
+            }
+        } else {
+            System.err.println("BugMovement.java: NO SUCH INTERNAL STATE!");
+            return dontMove();
+        }
+    }
+
+    private boolean isPathFree(List<Point> path, MapStructure map) {
+        boolean freeTmp = true;
+        int points = path.size();
+        for (int i = 0; i < points && freeTmp; i++) {
+            freeTmp &= (map.get(path.get(i)) < 0.60);
+        }
+        return freeTmp;
+    }
+
+    private Point getNextGoalTMP() {
+        if (dir == 0) { // UP
+            goal.y = goal.y + SPIRAL;
+            if (goal.y > Math.abs(goal.x)) {
+                dir = 1;
+            }
+        } else if (dir == 1) { // RIGHT
+            goal.x = goal.x + SPIRAL;
+            if (goal.x == goal.y) {
+                dir = 2;
+            }
+        } else if (dir == 2) { // DOWN
+            goal.y = goal.y - SPIRAL;
+            if (Math.abs(goal.y) == goal.x) {
+                dir = 3;
+            }
+        } else if (dir == 3) { // LEFT
+            goal.x = goal.x - SPIRAL;
+            if (goal.y == goal.x) {
+                dir = 0;
+            }
+        }
+
+        System.out.println("Next goal: " + goal.x + " : " + goal.y);
+
+        return goal;
+    }
+
+    private Point getNextGoal() {
+        if (dir == 0) { // UP
+            goal.y = Math.abs(goal.x) + SPIRAL;
+            dir = 1;
+        } else if (dir == 1) { // RIGHT
+            goal.x = goal.y;
+            dir = 2;
+        } else if (dir == 2) { // DOWN
+            goal.y = -goal.x;
+            dir = 3;
+        } else if (dir == 3) { // LEFT
+            goal.x = goal.y;
+            dir = 0;
+        }
+
+        System.out.println("Next goal: " + goal.x + " : " + goal.y);
+
+        return goal;
+    }
 }

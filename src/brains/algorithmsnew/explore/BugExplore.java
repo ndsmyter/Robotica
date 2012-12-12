@@ -19,9 +19,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private static final int STEP = 50;
 	private static final int TURN = 10;
 	private static final int SPIRAL = 50;
-	private static final int NROFGOALS = 10000;
-
-	private ArrayList<Point> goals;
+	
 	private int goalIndex;
 	private ArrayList<Point> straightPath;
 	private int straightDir;
@@ -30,7 +28,6 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private boolean followingObstacle;
 	private Stopper stopper;
 	private int internalState;
-	private boolean free = true;
 	private int totalTurn = 0;
 	
 	private Point goal;
@@ -133,17 +130,13 @@ public class BugExplore extends ExploreAlgorithmInterface {
 						// the obstacle
 						internalState = 1;
 
-						free = true;
 						totalTurn = TURN;
 						return turn(-TURN);
 					}
 				}
 			} else {
 				// On the straight line
-				ArrayList<Point> path = Utils.getPath(robotState, STEP
-						+ RoombaConfig.ROOMBA_DIAMETER / 2,
-						RoombaConfig.ROOMBA_DIAMETER);
-				free = isPathFree(path, map);
+				boolean free = isPathFree(robotState, STEP, map);
 
 				if (free) {
 					// Stay on the straight line
@@ -158,32 +151,24 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				}
 			}
 		} else if (internalState == 1) {
-			List<Point> path = Utils.getPath(robotState, STEP
-					+ RoombaConfig.ROOMBA_DIAMETER / 2,
-					RoombaConfig.ROOMBA_DIAMETER);
-			free = isPathFree(path, map);
+			boolean free = isPathFree(robotState, STEP, map);
 
 			if (free && totalTurn <= 360) {
 				totalTurn += TURN;
 				return turn(-TURN);
+			} else if (!free) {
+				// Then turn left again until she can move forward
+				internalState = 2;
+				totalTurn = TURN;
+				return turn(TURN);
 			} else {
-				if (!free) {
-					// Then turn left again until she can move forward
-					internalState = 2;
-					totalTurn = TURN;
-					return turn(TURN);
-				} else {
-					// where did the obstacle go?
-					internalState = 0;
-					totalTurn = 0;
-					return drive(STEP);
-				}
+				// where did the obstacle go?
+				internalState = 0;
+				totalTurn = 0;
+				return drive(STEP);
 			}
 		} else if (internalState == 2) {
-			List<Point> path = Utils.getPath(robotState, STEP
-					+ RoombaConfig.ROOMBA_DIAMETER / 2,
-					RoombaConfig.ROOMBA_DIAMETER);
-			free = isPathFree(path, map);
+			boolean free = isPathFree(robotState, STEP, map);
 
 			if (!free && totalTurn <= 360) {
 				totalTurn += TURN;
@@ -197,8 +182,13 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			return dontMove();
 		}
 	}
-
-	private boolean isPathFree(List<Point> path, MapStructure map) {
+	
+	private boolean isPathFree(RobotState robotState, int step, MapStructure map) {
+		ArrayList<Point> path = Utils.getPath(
+				robotState,
+				step + RoombaConfig.ROOMBA_DIAMETER / 2,
+				RoombaConfig.ROOMBA_DIAMETER
+			);
 		boolean freeTmp = true;
 		int points = path.size();
 		for (int i = 0; i < points && freeTmp; i++)

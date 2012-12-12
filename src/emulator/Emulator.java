@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -22,6 +21,7 @@ import javax.imageio.ImageIO;
 import roomba.Roomba;
 import roomba.RoombaConfig;
 import brains.Brains;
+import brains.MapStructure;
 
 import common.Config;
 import common.RobotState;
@@ -259,14 +259,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		while (millimeters > 0) {
 			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
 					: Config.SIMULATED_STEP_SIZE;
-			ArrayList<Point> path = Utils.getPath(simulatedRobotState, toDrive,
-					RoombaConfig.ROOMBA_DIAMETER);
-
-			int i = 0;
-			while (i < path.size() && !background.contains(path.get(i))) {
-				i++;
-			}
-			if (i == path.size()) {
+			
+			boolean isFree = isPathFree(simulatedRobotState, toDrive, background);
+			
+			if (isFree) {
 				millimeters -= toDrive;
 				simulatedRobotState = Utils.driveForward(simulatedRobotState,
 						toDrive);
@@ -346,6 +342,19 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			}
 		}
 		return dist;
+	}
+	
+	private boolean isPathFree(RobotState robotState, int step, ArrayList<Point> background) {
+		ArrayList<Point> path = Utils.getPath(
+				robotState,
+				step + RoombaConfig.ROOMBA_DIAMETER / 2,
+				RoombaConfig.ROOMBA_DIAMETER
+			);
+		boolean freeTmp = true;
+		int points = path.size();
+		for (int i = 0; i < points && freeTmp; i++)
+			freeTmp &= !background.contains(path.get(i));
+		return freeTmp;
 	}
 
 	@Override

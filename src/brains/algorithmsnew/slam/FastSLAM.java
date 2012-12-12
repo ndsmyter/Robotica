@@ -90,20 +90,13 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 					robotState, z[i], s));
 			ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
 			for (Point p : path) {
-				// double x = m.getLogOdds(p);//m.get(p);
-				//
-				// double y = inverseSensorModel(p, measurement, sensorState,
-				// z[i], s);
-				//
-				// sum += x + y;
-
 				double x = m.get(p);
-
-				double y = inverseSensorModel(p, measurement, sensorState,
-						z[i], s);
-				y = 1 - (1 / (1 + Math.exp(y)));
+				double logy = inverseSensorModel(p, measurement, sensorState, z[i], s);
+				double y = 1 - (1 / (1 + Math.exp(logy)));
+				
 				//sum += Math.abs(x + y);
 				sum += 1 - Math.abs(x - y);
+				// sum += x * y;
 			}
 		}
 		return sum;

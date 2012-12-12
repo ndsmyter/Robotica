@@ -239,12 +239,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		iteration++;
 		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
 
-		if (Config.SIMULATED_NOISE) {
-			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * millimeters) + 0.5);
-                        System.out.println(x);
-                        if(x > 0)
-                            millimeters = millimeters + simRandom.nextInt(x * 2) - x;
-		}
+		// Simulate noise start
+		int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT * millimeters) + 0.5);
+        if(x > 0)
+            millimeters = millimeters + simRandom.nextInt(x * 2) - x;
 		
 		// driving with steps SIMULATED_STEP_SIZEs
 		while (millimeters > 0) {
@@ -276,11 +274,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		log("E(" + iteration + "): " + (turnRight ? "RIGHT" : "LEFT") + " ("
 				+ degrees + ")");
 
-		if (Config.SIMULATED_NOISE) {
-			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * degrees) + 0.5);
-                        if(x > 0)
-                            degrees = degrees + simRandom.nextInt(x * 2) - x;
-		}
+		// Simulate noise
+		int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT * degrees) + 0.5);
+        if(x > 0)
+            degrees = degrees + simRandom.nextInt(x * 2) - x;
 
 		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
@@ -294,7 +291,6 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		for (int i = 0; i < 5; i++) {
 			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
 		}
-		// System.out.println(sensordata[0]+" "+sensordata[1]+" "+sensordata[2]+" "+sensordata[3]+" "+sensordata[4]);
 		return sensordata;
 	}
 
@@ -310,6 +306,12 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			if (background.contains(sensorP)) {
 				int dist2 = Utils.euclideanDistance(sensorP, new Point(
 						sensorState.x, sensorState.y));
+				
+				// Ruis simuleren
+				int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT * dist2) + 0.5);
+		        if(x > 0)
+		        	dist2 = dist2 + simRandom.nextInt(x * 2) - x;
+				
 				if (dist2 < dist) {
 					dist = dist2;
 					stop = true;

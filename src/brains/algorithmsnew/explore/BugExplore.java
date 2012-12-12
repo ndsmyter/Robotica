@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+
 import roomba.RoombaConfig;
 import brains.MapStructure;
 import brains.algorithmsnew.Stopper;
@@ -16,7 +18,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	// Step length in mm, turn in degrees
 	private static final int STEP = 50;
 	private static final int TURN = 10;
-	private static final int SPIRAL = 20;
+	private static final int SPIRAL = 50;
 	private static final int NROFGOALS = 5;
 
 	private ArrayList<Point> goals;
@@ -53,13 +55,13 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	public void reset() {
 		internalState = -1;
 		goalIndex = 0;
-		goals = new ArrayList<Point>();
-		goals.add(new Point(1000, 0));
-		goals.add(new Point(1000, 1000));
-		goals.add(new Point(-300, 300));
-		goals.add(new Point(-300, -300));
-		goals.add(new Point(-200, -200));
-		goals.add(new Point(0, 0));
+//		goals = new ArrayList<Point>();
+//		goals.add(new Point(1000, 0));
+//		goals.add(new Point(1000, 1000));
+//		goals.add(new Point(-300, 300));
+//		goals.add(new Point(-300, -300));
+//		goals.add(new Point(-200, -200));
+//		goals.add(new Point(0, 0));
 		
 		//initialise spiral
 		dir = 0;
@@ -93,7 +95,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			System.out.println("Current : " + robotState + " (=> "
 					+ currentOnGrid + ")");
 
-			if (currentOnGrid.equals(goal)) {
+			if (Utils.goalReached(currentOnGrid, Utils.pointToGrid(goal))) {
 				System.out.println("Goal " + goalIndex + " reached! :D");
 				goalIndex++;
 				getNextGoal();

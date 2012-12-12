@@ -30,13 +30,11 @@ public class Brains implements ListenerInterface {
 	private static final byte RIGHT = 1;
 	private static final byte LEFT = 2;
 	private final static int SLEEP_TIME = 100;
-	// private AlgorithmInterface algorithm;
 	private Algorithm algorithm;
 	private boolean stopped;
 
 	public Brains() {
 		particles = new ArrayList<Particle>();
-		// algorithm = new DummyBugAlgorithm(this);
 		// algorithm = Algorithm.getFastSlamRandom();
 		algorithm = Algorithm.getFastSlamBug(this);
 		reset();

@@ -10,26 +10,27 @@ import common.RobotState;
 
 public class MapStructure implements MapInterface {
 	private HashMap<Point, Double> cells;
-	private HashMap<Point, Double> logOdds;
+//	private HashMap<Point, Double> logOdds;
 	private RobotState position;
 	private ArrayList<Point> path;
 
 	public MapStructure() {
 		cells = new HashMap<Point, Double>();
-		logOdds = new HashMap<Point, Double>();
+//		logOdds = new HashMap<Point, Double>();
 		path = new ArrayList<Point>();
 		position = new RobotState(0, 0, 0);
 	}
 
 	@Override
 	public void put(Point point, double value) {
-		cells.put(point, value);
-		logOdds.put(point, Math.log(value / (1 - value)));
+		if (value != 0.5) 
+			cells.put(point, value);
+//		logOdds.put(point, Math.log(value / (1 - value)));
 	}
 
-	public void putLogOdds(Point point, double value) {
-		cells.put(point, 1 - (1 / (1 + Math.exp(value))));
-		logOdds.put(point, value);
+	public void putLogOdds(Point point, double logValue) {
+		put(point, 1 - (1 / (1 + Math.exp(logValue))));
+//		logOdds.put(point, value);
 	}
 
 	/**
@@ -77,7 +78,13 @@ public class MapStructure implements MapInterface {
 	}
 
 	public double getLogOdds(Point point) {
-		return logOdds.containsKey(point) ? logOdds.get(point) : 0;
+		if (cells.containsKey(point)) {
+			double value = cells.get(point);
+			return Math.log(value / (1 - value));
+		} else {
+			return 0;
+		}
+//		return logOdds.containsKey(point) ? logOdds.get(point) : 0;
 	}
 
 	@Override
@@ -90,19 +97,19 @@ public class MapStructure implements MapInterface {
 		this.cells = new HashMap<Point, Double>(cells);
 	}
 
-	public HashMap<Point, Double> getLogOdds() {
-		return logOdds;
-	}
-
-	public void setLogOdds(HashMap<Point, Double> logOdds) {
-		// Make deepcopy of the HashMap
-		this.logOdds = new HashMap<Point, Double>(logOdds);
-	}
+//	public HashMap<Point, Double> getLogOdds() {
+//		return logOdds;
+//	}
+//
+//	public void setLogOdds(HashMap<Point, Double> logOdds) {
+//		// Make deepcopy of the HashMap
+//		this.logOdds = new HashMap<Point, Double>(logOdds);
+//	}
 
 	public MapStructure clone() {
 		MapStructure newMap = new MapStructure();
 		newMap.setCells(getCells());
-		newMap.setLogOdds(getLogOdds());
+//		newMap.setLogOdds(getLogOdds());
 		newMap.setPosition(getPosition());
 		newMap.setPath(getPath());
 		return newMap;
@@ -110,7 +117,7 @@ public class MapStructure implements MapInterface {
 
 	public void useNewMap(MapStructure newMap) {
 		setCells(newMap.getCells());
-		setLogOdds(newMap.getLogOdds());
+//		setLogOdds(newMap.getLogOdds());
 		setPosition(newMap.getPosition());
 		setPath(newMap.getPath());
 	}

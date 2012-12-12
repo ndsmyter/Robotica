@@ -307,8 +307,22 @@ public class MapPanel extends JPanel {
 		Point middle = new Point(getWidth() / 2, getHeight() / 2);
 		int xDist = descale(middle.x - winPos.x);
 		int yDist = descale(middle.y - winPos.y);
-		scale = zoomIn ? scale + Emulator.ZOOM_FACTOR : Math.max(scale
-				- Emulator.ZOOM_FACTOR, Emulator.ZOOM_FACTOR);
+		if (zoomIn) {
+			// scale = scale + Emulator.ZOOM_FACTOR;
+			if (scale < Emulator.ZOOM_FACTOR)
+				scale += Emulator.ZOOM_FACTOR2;
+			else
+				scale += Emulator.ZOOM_FACTOR;
+		} else {
+			// scale = Math
+			// .max(scale - Emulator.ZOOM_FACTOR, Emulator.ZOOM_FACTOR);
+			if (scale - Emulator.ZOOM_FACTOR < Emulator.ZOOM_FACTOR) {
+				scale = Math.max(scale - Emulator.ZOOM_FACTOR2,
+						Emulator.ZOOM_FACTOR2);
+			} else {
+				scale -= Emulator.ZOOM_FACTOR;
+			}
+		}
 		xDist = scale(xDist);
 		yDist = scale(yDist);
 		winPos = new Point(middle.x - xDist, middle.y - yDist);

@@ -69,6 +69,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public final static int LINE_LENGTH = 100;
 	public final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
 	public final static double ZOOM_FACTOR = 0.05;
+	public final static double ZOOM_FACTOR2 = 0.005;
 	public final static double ORIGINAL_ZOOM = 0.2;
 	public final static int ARROW_MOVEMENT = 5;
 
@@ -197,8 +198,11 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 					Color c = new Color(pixels[w * j + i]);
 					if (c.getBlue() == 0 && c.getRed() == 0
 							&& c.getGreen() == 0) {
-						backgroundMap
-								.add(new Point(5 * (i - w2), -5 * (j - h2)));
+						Point p = new Point((int) (5 * (i - w2)),
+								(int) (-5 * (j - h2)));
+						Utils.pointToGrid(p);
+						if (!backgroundMap.contains(p))
+							backgroundMap.add(p);
 					}
 				}
 			}

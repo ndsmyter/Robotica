@@ -97,19 +97,19 @@ public class Utils {
 	}
 
 	public static Point pointToGrid(Point p) {
-		p.x = formula(p.x);
-		p.y = formula(p.y);
+		p.x = roundToGrid(p.x);
+		p.y = roundToGrid(p.y);
 		return p;
 	}
 
 	public static RobotState stateToGrid(RobotState p) {
-		p.x = formula(p.x);
-		p.y = formula(p.y);
+		p.x = roundToGrid(p.x);
+		p.y = roundToGrid(p.y);
 		return p;
 	}
 
 	// Named formula "Formula", because I don't know what it does (NDS)
-	private static int formula(int x) {
+	private static int roundToGrid(int x) {
 		x += Config.GRID_CELL_SIZE / 2;
 		return x - (x % Config.GRID_CELL_SIZE + Config.GRID_CELL_SIZE)
 				% Config.GRID_CELL_SIZE;

@@ -39,7 +39,7 @@ public class Algorithm {
 		MapStructure bestMap = b.getBestParticleMap();
 
 		int[] u = explorer.explore(bestMap);
-		b.moveEmulator(u);
+		b.move(u);
 
 		int[] z = b.getSensorData();
 		List<Particle> newParticles = slam.execute(particles, u, z);

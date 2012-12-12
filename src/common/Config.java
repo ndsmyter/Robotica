@@ -18,4 +18,7 @@ public class Config {
 	public static final double SIMULATED_SENSOR_NOISE_PCT = 0;
 	
 	public static final int SIMULATED_STEP_SIZE = 10;
+        
+        
+	public static final int NROFGOALS = 50;
 }

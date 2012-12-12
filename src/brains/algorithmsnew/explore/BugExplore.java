@@ -53,6 +53,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		internalState = -1;
 		goalIndex = 0;
 		goals = new ArrayList<Point>();
+		goals.add(new Point(1000, 0));
 		goals.add(new Point(1000, 1000));
 		goals.add(new Point(-300, 300));
 		goals.add(new Point(-300, -300));

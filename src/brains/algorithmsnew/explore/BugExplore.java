@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import roomba.RoombaConfig;
 import brains.MapStructure;
 import brains.algorithmsnew.Stopper;
@@ -32,7 +31,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private int internalState;
 	private boolean free = true;
 	private int totalTurn = 0;
-	
+
 	private Point goal;
 	private int dir;
 
@@ -43,11 +42,9 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	public int[] setGoal(RobotState robotState) {
 		followingObstacle = false;
 		obstaclePositions.clear();
-		straightDir = Utils.angle(new Point(robotState.x, robotState.y),
-				goal);
+		straightDir = Utils.angle(new Point(robotState.x, robotState.y), goal);
 		System.out.println("Dir: " + straightDir);
-		straightPath = Utils.getPath(robotState,
-				new RobotState(goal, 0));
+		straightPath = Utils.getPath(robotState, new RobotState(goal, 0));
 		return turn(straightDir - robotState.dir);
 	}
 
@@ -55,19 +52,19 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	public void reset() {
 		internalState = -1;
 		goalIndex = 0;
-//		goals = new ArrayList<Point>();
-//		goals.add(new Point(1000, 0));
-//		goals.add(new Point(1000, 1000));
-//		goals.add(new Point(-300, 300));
-//		goals.add(new Point(-300, -300));
-//		goals.add(new Point(-200, -200));
-//		goals.add(new Point(0, 0));
-		
-		//initialise spiral
+		// goals = new ArrayList<Point>();
+		// goals.add(new Point(1000, 0));
+		// goals.add(new Point(1000, 1000));
+		// goals.add(new Point(-300, 300));
+		// goals.add(new Point(-300, -300));
+		// goals.add(new Point(-200, -200));
+		// goals.add(new Point(0, 0));
+
+		// initialise spiral
 		dir = 0;
 		goal = new Point(0, 0);
 		goalIndex = 0;
-		
+
 		followingObstacle = false;
 		obstaclePositions = new ArrayList<Point>();
 	}
@@ -79,8 +76,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			straightDir = Utils.angle(new Point(robotState.x, robotState.y),
 					goal);
 			System.out.println("Dir: " + straightDir);
-			straightPath = Utils.getPath(robotState,
-					new RobotState(goal, 0));
+			straightPath = Utils.getPath(robotState, new RobotState(goal, 0));
 			System.out.println("Path: ");
 			for (Point p : straightPath) {
 				System.out.print("point(" + p.x + ", " + p.y + "), ");
@@ -122,10 +118,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 					obstaclePositions.add(currentOnGrid);
 					// Following an obstacle
 					if (straightPath.contains(currentOnGrid)
-							&& Utils.euclideanDistance(lastPosition,
-									goal) > Utils
-									.euclideanDistance(currentOnGrid,
-											goal)) {
+							&& Utils.euclideanDistance(lastPosition, goal) > Utils
+									.euclideanDistance(currentOnGrid, goal)) {
 						System.out.println("Found the path again! ^^");
 						return setGoal(robotState);
 					} else {
@@ -205,28 +199,28 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			freeTmp &= (map.get(path.get(i)) < 0.60);
 		return freeTmp;
 	}
-	
+
 	private Point getNextGoal() {
-		if ( dir == 0 ){
+		if (dir == 0) {
 			goal.y = goal.y + SPIRAL;
 			if (goal.y > goal.x)
 				dir = 1;
-		}else if ( dir == 1 ){
+		} else if (dir == 1) {
 			goal.x = goal.x + SPIRAL;
 			if (goal.x == goal.y)
 				dir = 2;
-		}else if ( dir == 2 ){
+		} else if (dir == 2) {
 			goal.y = goal.y - SPIRAL;
 			if (Math.abs(goal.y) == goal.x)
 				dir = 3;
-		}else if ( dir == 3 ){
+		} else if (dir == 3) {
 			goal.x = goal.x - SPIRAL;
-			if ( goal.y == goal.x)
+			if (goal.y == goal.x)
 				dir = 0;
 		}
-		
+
 		System.out.println("Next goal: " + goal.x + " : " + goal.y);
-		
+
 		return goal;
 	}
 }

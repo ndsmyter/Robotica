@@ -16,6 +16,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	// Step length in mm, turn in degrees
 	private static final int STEP = 10;
 	private static final int TURN = 5;
+	private static final int SPIRAL = 50;
 
 	private ArrayList<Point> goals;
 	private int goalIndex;
@@ -28,6 +29,9 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private int internalState;
 	private boolean free = true;
 	private int totalTurn = 0;
+	
+	private Point spiralPoint;
+	private int dir;
 
 	public BugExplore(Stopper stopper) {
 		this.stopper = stopper;
@@ -54,7 +58,11 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		goals.add(new Point(-300, -300));
 		goals.add(new Point(-200, -200));
 		goals.add(new Point(0, 0));
-
+		
+		//initialise spiral
+		dir = 0;
+		spiralPoint = new Point(0, -SPIRAL);
+		
 		followingObstacle = false;
 		obstaclePositions = new ArrayList<Point>();
 	}
@@ -189,5 +197,27 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		for (int i = 0; i < points && freeTmp; i++)
 			freeTmp &= (map.get(path.get(i)) < 0.60);
 		return freeTmp;
+	}
+	
+	private Point getNextSpiralPoint() {
+		if ( dir == 0 ){
+			spiralPoint.y = spiralPoint.y + SPIRAL;
+			if (spiralPoint.y > spiralPoint.x)
+				dir = 1;
+		}else if ( dir == 1 ){
+			spiralPoint.x = spiralPoint.x + SPIRAL;
+			if (spiralPoint.x == spiralPoint.y)
+				dir = 2;
+		}else if ( dir == 2 ){
+			spiralPoint.y = spiralPoint.y - SPIRAL;
+			if (Math.abs(spiralPoint.y) == spiralPoint.x)
+				dir = 3;
+		}else if ( dir == 3 ){
+			spiralPoint.x = spiralPoint.x - SPIRAL;
+			if ( spiralPoint.y == spiralPoint.x)
+				dir = 0;
+		}
+		
+		return spiralPoint;
 	}
 }

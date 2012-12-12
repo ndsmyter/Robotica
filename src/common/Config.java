@@ -10,5 +10,5 @@ public class Config {
 
 	public static final boolean SIMULATED_NOISE = true;
 	public static final double SIMULATED_NOISE_PCT = 0.1;
-
+	public static final int SIMULATED_STEP_SIZE = 10;
 }

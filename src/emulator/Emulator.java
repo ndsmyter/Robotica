@@ -243,11 +243,27 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			int x = (int) (Math.abs(Config.SIMULATED_NOISE_PCT * millimeters) + 0.5);
 			millimeters = millimeters + simRandom.nextInt(x * 2) - x;
 		}
-
-		simulatedRobotState = Utils.driveForward(simulatedRobotState,
-				millimeters);
-		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
-				driveMode));
+		
+		// driving with steps SIMULATED_STEP_SIZEs
+		while (millimeters > 0) {
+			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters : Config.SIMULATED_STEP_SIZE;
+			ArrayList<Point> path = Utils.getPath(simulatedRobotState, toDrive, RoombaConfig.ROOMBA_DIAMETER);
+			
+			int i = 0;
+			while (i < path.size() && !background.contains(path.get(i))) {
+				i++;
+			}
+			if (i == path.size()) {
+				millimeters -= toDrive;
+				simulatedRobotState = Utils.driveForward(simulatedRobotState, toDrive);
+			} else {
+				// PANIEK! Kate rijdt tegen een muur :/
+				log("PANIEK! Kate rijdt tegen een muur :/");
+				millimeters = 0;
+			}
+		}
+		
+		fireStateChanged(true, new Event(EventType.DRIVE, millimeters, driveMode));
 		roomba.drive(millimeters, driveMode);
 	}
 

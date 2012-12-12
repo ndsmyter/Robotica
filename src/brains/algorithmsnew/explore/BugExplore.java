@@ -14,7 +14,7 @@ import common.Utils;
 public class BugExplore extends ExploreAlgorithmInterface {
 
 	// Step length in mm, turn in degrees
-	private static final int STEP = 10;
+	private static final int STEP = 100;
 	private static final int TURN = 10;
 	private static final int SPIRAL = 50;
 

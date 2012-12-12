@@ -25,6 +25,9 @@ public class MapStructure implements MapInterface {
 	public void put(Point point, double value) {
 		if (value != 0.5) 
 			cells.put(point, value);
+		else if (cells.containsKey(point)) {
+			cells.remove(point);
+		}
 //		logOdds.put(point, Math.log(value / (1 - value)));
 	}
 

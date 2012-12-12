@@ -130,7 +130,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				}
 			} else {
 				// On the straight line
-				boolean free = isPathFree(robotState, STEP, map);
+				boolean free = Utils.isPathFree(robotState, STEP, map);
 
 				if (free) {
 					// Stay on the straight line
@@ -145,7 +145,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				}
 			}
 		} else if (internalState == 1) {
-			boolean free = isPathFree(robotState, STEP, map);
+			boolean free = Utils.isPathFree(robotState, STEP, map);
 
 			if (free && totalTurn <= 360) {
 				totalTurn += TURN;
@@ -162,7 +162,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				return drive(STEP);
 			}
 		} else if (internalState == 2) {
-			boolean free = isPathFree(robotState, STEP, map);
+			boolean free = Utils.isPathFree(robotState, STEP, map);
 
 			if (!free && totalTurn <= 360) {
 				totalTurn += TURN;
@@ -175,19 +175,6 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			System.err.println("BugMovement.java: NO SUCH INTERNAL STATE!");
 			return dontMove();
 		}
-	}
-	
-	private boolean isPathFree(RobotState robotState, int step, MapStructure map) {
-		ArrayList<Point> path = Utils.getPath(
-				robotState,
-				step + RoombaConfig.ROOMBA_DIAMETER / 2,
-				RoombaConfig.ROOMBA_DIAMETER
-			);
-		boolean freeTmp = true;
-		int points = path.size();
-		for (int i = 0; i < points && freeTmp; i++)
-			freeTmp &= (map.get(path.get(i)) < 0.60);
-		return freeTmp;
 	}
 
 	private Point getNextGoal() {

@@ -4,9 +4,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import roomba.RoombaConfig;
 import brains.MapStructure;
 import brains.algorithmsnew.Stopper;
+import common.Config;
 
 import common.RobotState;
 import common.Utils;
@@ -97,7 +99,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				System.out.println("Goal " + goalIndex + " reached! :D");
 				goalIndex++;
 				getNextGoal();
-				if (goalIndex >= NROFGOALS) {
+				if (goalIndex >= Config.NROFGOALS) {
 					stopper.execute();
 					return dontMove();
 				} else {
@@ -110,7 +112,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 							+ " is unreachable! D:");
 					goalIndex++;
 					getNextGoal();
-					if (goalIndex >= NROFGOALS) {
+					if (goalIndex >= Config.NROFGOALS) {
 						stopper.execute();
 						return dontMove();
 					} else {

@@ -12,7 +12,7 @@ import common.Utils;
 public class RandomExplore extends ExploreAlgorithmInterface {
 	private Random random = new Random();
 	private static final int STEP = 50;
-	private static final int TURN = 2;
+	private static final int TURN = 10;
 
 	// rotation := the direction of the rotation.
 	// should always be either -1 or 1.

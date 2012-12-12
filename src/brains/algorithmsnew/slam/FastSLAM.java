@@ -102,7 +102,8 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 				double y = inverseSensorModel(p, measurement, sensorState,
 						z[i], s);
 				y = 1 - (1 / (1 + Math.exp(y)));
-				sum += Math.abs(x + y);
+				//sum += Math.abs(x + y);
+				sum += 1 - Math.abs(x - y);
 			}
 		}
 		return sum;

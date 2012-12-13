@@ -4,9 +4,9 @@ public class Config {
 	/*************************
 	 * Algemene instellingen *
 	 *************************/
-	public static final int GRID_CELL_SIZE = 20;
-	public static final int GOAL_REACHED_TRESHOLD = 10;
-	public static final int NUMBER_OF_PARTICLES = 250;
+	public static final int GRID_CELL_SIZE = 100;
+	public static final int GOAL_REACHED_TRESHOLD = 100;
+	public static final int NUMBER_OF_PARTICLES = 1000;
 	
     /********************
 	 * Simulator config *
@@ -20,15 +20,15 @@ public class Config {
 	/*******************
 	 * FastSLAM config *
 	 *******************/
-	public static final int ITERATIONS_PER_RESAMPLE = 10;
-	public static final double ALPHA1 = 0.1;
-	public static final double ALPHA2 = 0.1;
+	public static final int ITERATIONS_PER_RESAMPLE = 5;
+	public static final double ALPHA1 = 0.3;
+	public static final double ALPHA2 = 0.3;
 	
 	/**************
 	 * Bug config *
 	 **************/
 	public static final int NROFGOALS = 50;
-	public static final int BUG_STEP = 20;
-	public static final int BUG_TURN = 10;
-	public static final int BUG_SPIRAL = 1000;
+	public static final int BUG_STEP = 200;
+	public static final int BUG_TURN = 15;
+	public static final int BUG_SPIRAL = 900;
 }

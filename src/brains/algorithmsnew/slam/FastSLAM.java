@@ -43,16 +43,20 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 			double weight = measurementModelMap(z, map);
 			updatedOccupancyGrid(z, map);
 
-			p.setWeight(weight);
+			p.setWeight(p.getWeight() + weight);
 		}
 		
 		List<Particle> resampledParticles;
 		if (iterations % Config.ITERATIONS_PER_RESAMPLE == 0) {
-			resampledParticles = roulette.nextRandomParticles(
-				particles, particles.size());
+			resampledParticles = roulette.nextRandomParticles(particles, particles.size());
+			for (Particle p : resampledParticles) {
+				p.setWeight(0);
+			}
 		} else {
 			resampledParticles = particles;
 		}
+		
+		for (int i = 0; i < 16; i++) System.gc();
 		
 		iterations++;
 

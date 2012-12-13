@@ -318,8 +318,8 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 	public int[] getSensorData() {
 		// Stub
-		int[] sensordata = new int[5];
-		for (int i = 0; i < 5; i++) {
+		int[] sensordata = new int[RoombaConfig.SENSORS.length];
+		for (int i = 0; i < sensordata.length; i++) {
 			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
 		}
 		return sensordata;

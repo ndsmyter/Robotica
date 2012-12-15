@@ -36,10 +36,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	private JButton startStopButton;
 
 	// Note, als je hier een compileerfout hebt, update naar Java 7
-	// If you don't want to update to Java 7 immediately, just remove the
-	// "<Object>" everywhere your compiler crashes. But don't commit this ! We
-	// want to support the latest version of Java of course :-)
-	private JComboBox<Object> mapBox;
+	private JComboBox mapBox;
+
 
 	private static final String CLEAR_MAP = "<Clear map>";
 
@@ -60,7 +58,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		emulator.addChangeListener(this);
 
 		// Maps
-		mapBox = new JComboBox<Object>(emulator.getBackgroundMaps().toArray());
+		mapBox = new JComboBox(emulator.getBackgroundMaps().toArray());
 		mapBox.addItem(CLEAR_MAP);
 		String map = emulator.getMap();
 		mapBox.setSelectedItem(map.isEmpty() ? CLEAR_MAP : map);

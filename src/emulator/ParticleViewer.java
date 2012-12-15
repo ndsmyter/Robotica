@@ -18,7 +18,7 @@ import brains.Particle;
 public class ParticleViewer extends JFrame implements ActionListener {
 
 	private ParticlePanel particlePanel;
-	private JComboBox<Particle> particleBox;
+	private JComboBox particleBox;
 	private final Emulator emulator;
 
 	public ParticleViewer(Emulator emulator) {
@@ -26,7 +26,7 @@ public class ParticleViewer extends JFrame implements ActionListener {
 		this.emulator = emulator;
 
 		particlePanel = new ParticlePanel(emulator);
-		particleBox = new JComboBox<Particle>();
+		particleBox = new JComboBox();
 		setParticles(emulator.getBrains().getParticles());
 
 		JPanel panel = new JPanel(new BorderLayout());

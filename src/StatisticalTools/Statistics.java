@@ -1,39 +1,25 @@
 package StatisticalTools;
 
-import java.io.IOException;
-
-import javax.comm.NoSuchPortException;
-import javax.comm.PortInUseException;
-
-import roomba.SerialIO;
+import roomba.Roomba;
 
 public class Statistics 
 {
 	double[] data;
 	double size;    
-	
+
 	public static void main(String[] args){
-		try {
-			SerialIO serial = new SerialIO("COM9");
-			int[] input = serial.getInputData(1000);
-			double[] data = new double[input.length];
-			
-			for(int i=0; i<input.length; i++){
-				data[i] = (input[i] * 5)/ 1024.0;  //Omzetten naar voltage
-			}
-			
-			System.out.println("Mean: " + new Statistics(data).getMean());
-			System.out.println("Var : " + new Statistics(data).getVariance());
-		} catch (NoSuchPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (PortInUseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		Roomba r = new Roomba(null);
+		double[] data = new double[10 * 3];
+		byte[] in = new byte[3];
+		long before = System.currentTimeMillis();
+		for(int i=0; i<data.length; i++){
+			data[i] = (r.getRawSensorData(new byte[]{0})[0]);
 		}
+		System.out.println(System.currentTimeMillis() - before);
+
+		System.out.println("Mean: " + new Statistics(data).getMean());
+		System.out.println("Var : " + new Statistics(data).getVariance());
 		
 	}
 

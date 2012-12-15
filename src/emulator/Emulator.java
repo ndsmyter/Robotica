@@ -267,6 +267,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			millimeters = (int) Utils.gaussSample(b, millimeters);
 		}
 
+		
 		// driving with steps SIMULATED_STEP_SIZEs
 		while (millimeters > 0) {
 			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
@@ -279,6 +280,9 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 				millimeters -= toDrive;
 				simulatedRobotState = Utils.driveForward(simulatedRobotState,
 						toDrive);
+				//FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het anders niet werkt :)
+				// Da stond onder de while lus.
+				roomba.drive(millimeters, driveMode);
 			} else {
 				// PANIEK! Kate rijdt tegen een muur :/
 				log("PANIEK! Kate rijdt tegen een muur :/");
@@ -288,7 +292,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
 				driveMode));
-		roomba.drive(millimeters, driveMode);
+		
 	}
 
 	@Override

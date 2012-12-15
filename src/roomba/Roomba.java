@@ -10,29 +10,31 @@ import roomba.interfaces.RoombaInterface;
 
 public class Roomba implements RoombaInterface {
 
-	private boolean DEBUG = false;
+	private boolean DEBUG = RoombaConfig.ROOMBA_DEBUG;
 
 	private final Emulator emulator;
 	private SerialIO serial = null;
 
 	public static void main(String[] args) {
 		Roomba r = new Roomba(null);
-		r.setDebug(true);
 		//r.getBumberSensors();
 		//r.waitFor(1000);
 
 		//r.setSongs();
 		//r.waitFor(1000);
 		//r.singSong(1);
-		do{
-			r.getSensorData(new byte[]{0,1,2,3,4});
+		for(int i=0; i<7; i++){
+			r.getSensorData(new byte[]{0});
+			//r.turn(10, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+			r.drive(100, RoombaConfig.DRIVE_MODE_SLOW);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} while (true);
+			
+		}
 
 		/*
 		 * for(int i=0; i<5; i++){ r.turnAtSpot(180, RoombaConfig.TURN_RIGHT);
@@ -44,14 +46,11 @@ public class Roomba implements RoombaInterface {
 		 */
 	}
 
-	public void setDebug(boolean debug) {
-		this.DEBUG = debug;
-	}
-
 	public Roomba(Emulator emulator) {
 		this.emulator = emulator;
 		try {
 			this.serial = new SerialIO(RoombaConfig.IO_PORT);
+			if(DEBUG)System.out.println("Roomba startup");
 		} catch (NoSuchPortException e) {
 			System.out.println("Port not found");
 		} catch (PortInUseException e) {
@@ -93,10 +92,12 @@ public class Roomba implements RoombaInterface {
 				System.err.println("Unknow drive mode");
 		}
 
-		delay = (millimeters * 1000 / velocity);
+		delay = (long) (millimeters * 1000.0 / velocity);
 
 		if (DEBUG)
-			System.out.println("[DRIVE] Dist: " + radius);
+			System.out.println("[DRIVE] Dist: " + millimeters);
+		if (DEBUG)
+			System.out.println("[DRIVE] Radius: " + radius);
 		if (DEBUG)
 			System.out.println("[DRIVE] Velo: " + velocity);
 		if (DEBUG)
@@ -225,17 +226,18 @@ public class Roomba implements RoombaInterface {
 		} catch (NullPointerException e) {
 			// Serial doesn't exist
 		}
+		waitFor(1000);
 	}
 
 	@Override
 	public void stop() {
 		try {
-			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {
-					0, 0, 0, 0 });
+			serial.sendCommand(RoombaConfig.ROOMBA_COMMAND_DRIVE, new byte[] {0, 0, 0, 0 });
 		} catch (IOException e) {
 		} catch (NullPointerException e) {
 			// Serial doesn't exist
 		}
+		waitFor(1000);
 	}
 
 	@Override
@@ -258,6 +260,7 @@ public class Roomba implements RoombaInterface {
 				// Serial doesn't exist
 			}
 		}
+		waitFor(1000);
 	}
 
 	private void waitFor(long milliseconds) {
@@ -303,11 +306,12 @@ public class Roomba implements RoombaInterface {
 		}
 	}
 
-	public void getSensorData(byte[] ids){
+	@Override
+	public int[] getSensorData(byte[] ids){
 		byte[] get = new byte[ids.length + 1];
-		get[0] = (byte) ids.length;
+		get[0] = (byte) (ids.length);
 		for(int i=0; i<ids.length; i++){
-			get[i+1] = ids[i];
+			get[i + 1] = ids[i];
 		}
 		try {
 			serial.sendCommand((byte)120, get);
@@ -316,10 +320,68 @@ public class Roomba implements RoombaInterface {
 			e.printStackTrace();
 		}
 		
-		byte[] input = serial.getResponds();
-		System.out.println("length: " + input.length);
-		for(byte b: input){
-			System.out.println(b);
+		byte[] inputBytes = serial.getResponds();
+		short[] input = new short[inputBytes.length / 2];
+		for(int i=0; i<input.length; i++){
+			input[i] = (short) ((inputBytes[2*i] << 8) + (inputBytes[2*i + 1] & 0xFF));
+			if(DEBUG)System.out.println(inputBytes[2*i] + "|" + inputBytes[2*i+1] + " -> " + input[i]);
 		}
+		int[] output = new int[input.length];
+		for(int i=0; i<input.length; i++){
+			System.out.println(input[i] + " -> " + convertSensorOutputToDistance(input[i]));
+			output[i] = convertSensorOutputToDistance(input[i]);
+		}
+		waitFor(1000);
+		return output;
+	}
+	
+	public short[] getRawSensorData(byte[] ids){
+		byte[] get = new byte[ids.length + 1];
+		get[0] = (byte) (ids.length);
+		for(int i=0; i<ids.length; i++){
+			get[i + 1] = ids[i];
+		}
+		try {
+			serial.sendCommand((byte)120, get);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		byte[] inputBytes = serial.getResponds();
+		short[] input = new short[inputBytes.length / 2];
+		for(int i=0; i<input.length; i++){
+			input[i] = (short) ((inputBytes[2*i] << 8) + (inputBytes[2*i + 1] & 0xFF));
+			if(DEBUG)System.out.println(inputBytes[2*i] + "|" + inputBytes[2*i+1] + " -> " + input[i]);
+		}
+		
+		return input;
+	}
+	
+	int[] grenzen = new int[]{433,249,175,137,113,97,88,80,70};
+	private int convertSensorOutputToDistance(short in){
+		double b = in & 0xFF;
+		if(b <= grenzen[0] && b > grenzen[1])
+			return linearize(b, 100, 200, grenzen[0], grenzen[1]);
+		if(b <= grenzen[1] && b > grenzen[2])
+			return linearize(b, 200, 300, grenzen[1], grenzen[2]);
+		if(b <= grenzen[2] && b > grenzen[3])
+			return linearize(b, 300, 400, grenzen[2], grenzen[3]);
+		if(b <= grenzen[3] && b > grenzen[4])
+			return linearize(b, 400, 500, grenzen[3], grenzen[4]);
+		if(b <= grenzen[4] && b > grenzen[5])
+			return linearize(b, 500, 600, grenzen[4], grenzen[5]);
+		if(b <= grenzen[5] && b > grenzen[6])
+			return linearize(b, 600, 700, grenzen[5], grenzen[6]);
+		if(b <= grenzen[6] && b > grenzen[7])
+			return linearize(b, 700, 800, grenzen[6], grenzen[7]);
+		if(b <= grenzen[7] && b > grenzen[8])
+			return linearize(b, 700, 800, grenzen[7], grenzen[8]);
+		return -1;
+
+	}
+
+	private int linearize(double b, double Dub, double Dlb, double Ub, double Lb) {
+		return (int)Math.round(Dlb - (((double)b - Lb)*(Dlb - Dub)/(Ub - Lb)));
 	}
 }

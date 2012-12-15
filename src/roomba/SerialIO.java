@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import javax.comm.CommPortIdentifier;
 import javax.comm.NoSuchPortException;
@@ -14,6 +15,8 @@ import javax.comm.SerialPort;
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 public class SerialIO {
+	private static final boolean DEBUG = RoombaConfig.SERIALIO_DEBUG;
+
 	private InputStream inputStream = null;
 	private OutputStream outputStream = null;
 	private Luisteraar l = null;
@@ -27,24 +30,29 @@ public class SerialIO {
 	}
 
 	protected void sendCommand(byte opcode, byte[] data) throws IOException{
-		System.out.println("[SERIAL] send " + printUnsignedByte(toByteArray(opcode, data)));
+		if(DEBUG)System.out.println("[SERIAL] send " + printUnsignedByte(toByteArray(opcode, data)));
 		outputStream.write(new byte[]{(byte)(data.length + 1)}); 	// aantal
 		outputStream.write(toByteArray(opcode, data));				// header + data 
 		//outputStream.write(new byte[]{10});
 		outputStream.flush();
 		//TODO wachten op ACK van roomba voor terug te keren.
 	}
-	
+
 	protected byte[] getResponds(){
-		while(!l.isReturnReady()){
+		int timeout = 1000;
+		while(!l.isReturnReady() && timeout > 0){
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			timeout--;
 		}
-		return l.getReturnFromArduino();
+		if(timeout > 0)
+			return l.getReturnFromArduino();
+		System.err.println("Request was timed out");
+		return new byte[0];
 	}
 
 	private short getUnsignedByte(byte opcode) {
@@ -105,49 +113,62 @@ public class SerialIO {
 }
 
 class Luisteraar extends Thread {
+	private static final boolean DEBUG = RoombaConfig.LUISTERAAR_DEBUG;
+
 	private InputStream inputStream = null;
 	private BufferedReader br = null;
 	private byte[] returnFromArduino = null;
 	private boolean returnReady = false;
+	private boolean ack = false;
 
 	public Luisteraar(InputStream inputStream) {
 		this.inputStream = inputStream;
 		br = new BufferedReader(new InputStreamReader(inputStream));
 	}
-	
+
 	public byte[] getReturnFromArduino(){
 		returnReady = false;
 		return returnFromArduino;
 	}
-	
+
 	public boolean isReturnReady(){
 		return returnReady;
 	}
 
+	public boolean isAck(){
+		return ack;
+	}
+
+	private byte[] input = new byte[255];
+	
+	
 	public void run() {
 		int in;
 		while(true){
 			try {
-				byte[] input;
 				while(inputStream.available() > 0){
 					switch((in = inputStream.read())){
 					case 0:
-						System.out.println("Protocol Arduino: " + in);
+						//System.out.println("Protocol Arduino: " + in);
 						in = inputStream.read(); //Length of inputstring
-						input = new byte[in];
-						while(inputStream.available() < in){try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}};
-						inputStream.read(input);
-						System.out.println("[Arduino] " + new String(input));
+						int teller = 0;
+						while(inputStream.available() > 0){
+							teller += inputStream.read(input, teller, inputStream.available());
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						};
+						if(DEBUG)System.out.println("[Arduino] " + new String(input).substring(0, teller));
 						break;
 					case 1:
-						System.out.println("Protocol Roomba: " + in);
-						System.out.println("Header Roomba package: " + inputStream.read());
+						if(DEBUG)System.out.println("Protocol Roomba: " + in);
+						if(DEBUG)System.out.println("Header Roomba package: " + inputStream.read());
+						else inputStream.read();
 						in = inputStream.read(); //Length of inputstring
+						if(DEBUG)System.out.println("Length of package: " + in);
 						input = new byte[in];
 						while(inputStream.available() < in){try {
 							Thread.sleep(10);
@@ -156,7 +177,9 @@ class Luisteraar extends Thread {
 							e.printStackTrace();
 						}};
 						inputStream.read(input);
-						System.out.println("[ROOMBA] " + new String(input));
+						if(inputStream.available() > 0)
+							System.err.println("[ROOMBA] roomba outputbuffer not empty yet");
+						if(DEBUG)System.out.println("[ROOMBA] " + new String(input));
 						returnFromArduino = new byte[input.length];
 						for(int i=0; i<input.length; i++){
 							returnFromArduino[i] = input[i];

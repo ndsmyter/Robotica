@@ -69,6 +69,6 @@ public interface RoombaInterface {
 	 * Get sensor data from range sensors
 	 * @param ids - byte[] with id's
 	 */
-	public void getSensorData(byte[] ids);
+	public int[] getSensorData(byte[] ids);
 
 }

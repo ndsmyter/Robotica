@@ -3,9 +3,9 @@ package roomba;
 import common.Sensor;
 
 public final class RoombaConfig {
-	public static final int DRIVE_DISTANCE_SLOW = 100;
-	public static final int DRIVE_DISTANCE_MED = 300;
-	public static final int DRIVE_DISTANCE_FAST = 500;
+	public static final int DRIVE_DISTANCE_SLOW = 50;
+	public static final int DRIVE_DISTANCE_MED = 100;
+	public static final int DRIVE_DISTANCE_FAST = 250;
 
 	public static final int DRIVE_MODE_SLOW = 0;
 	public static final int DRIVE_MODE_MED = 1;
@@ -39,8 +39,12 @@ public final class RoombaConfig {
 	public static final int ROOMBA_WHEEL_DISTANCE = 240;
 
 	// Sensor placement
-	public static final Sensor[] SENSORS = { new Sensor(100, -100, -45, 1000, 0),
+	public static final Sensor[] SENSORS = { new Sensor(120, 0, 0, 1000, 0) /*new Sensor(100, -100, -45, 1000, 0),
 			new Sensor(120, -50, 0, 1000, 1), new Sensor(120, 0, 0, 1000, 2),
-			new Sensor(120, 50, 0, 1000, 3), new Sensor(100, 100, 45, 1000, 4) };
+			new Sensor(120, 50, 0, 1000, 3), new Sensor(100, 100, 45, 1000, 4) */};
+	
+	public static boolean ROOMBA_DEBUG = true;
+	public static boolean SERIALIO_DEBUG = true;
+	public static boolean LUISTERAAR_DEBUG = true; 
 
 }

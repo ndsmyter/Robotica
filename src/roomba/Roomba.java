@@ -361,6 +361,8 @@ public class Roomba implements RoombaInterface {
 	int[] grenzen = new int[]{433,249,175,137,113,97,88,80,70};
 	private int convertSensorOutputToDistance(short in){
 		double b = in & 0xFF;
+		if(b > grenzen[0])
+			return Integer.MAX_VALUE;
 		if(b <= grenzen[0] && b > grenzen[1])
 			return linearize(b, 100, 200, grenzen[0], grenzen[1]);
 		if(b <= grenzen[1] && b > grenzen[2])
@@ -377,6 +379,8 @@ public class Roomba implements RoombaInterface {
 			return linearize(b, 700, 800, grenzen[6], grenzen[7]);
 		if(b <= grenzen[7] && b > grenzen[8])
 			return linearize(b, 700, 800, grenzen[7], grenzen[8]);
+		if(b <= grenzen[8])
+			return -1;
 		return -1;
 
 	}

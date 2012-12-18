@@ -11,8 +11,8 @@ public class Config {
     /********************
 	 * Simulator config *
 	 ********************/
-	public static final double SIMULATED_MOVEMENT_NOISE_PCT = 0.1;
-	public static final double SIMULATED_ROTATION_NOISE_PCT = 0.1;
+	public static final double SIMULATED_MOVEMENT_NOISE_PCT = 0;
+	public static final double SIMULATED_ROTATION_NOISE_PCT = 0;
 	public static final double SIMULATED_SENSOR_NOISE_PCT = 0;
 	
 	public static final int SIMULATED_STEP_SIZE = 10;
@@ -31,7 +31,7 @@ public class Config {
 	 * Bug config *
 	 **************/
 	public static final int NROFGOALS = 50;
-	public static final int BUG_STEP = 200;
+	public static final int BUG_STEP = 100;
 	public static final int BUG_TURN = 15;
 	public static final int BUG_SPIRAL = 900;
 }

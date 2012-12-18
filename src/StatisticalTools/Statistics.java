@@ -10,8 +10,7 @@ public class Statistics
 	public static void main(String[] args){
 
 		Roomba r = new Roomba(null);
-		double[] data = new double[10 * 3];
-		byte[] in = new byte[3];
+		double[] data = new double[100];
 		long before = System.currentTimeMillis();
 		for(int i=0; i<data.length; i++){
 			data[i] = (r.getRawSensorData(new byte[]{0})[0]);

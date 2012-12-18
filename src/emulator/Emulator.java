@@ -255,6 +255,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void drive(int millimeters, int driveMode) {
 		iteration++;
 		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
+		
+		//FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het anders niet werkt :)
+		// Da stond onder de while lus.
+		roomba.drive(millimeters, driveMode);
 
 		// // Simulate noise start
 		// int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT *
@@ -266,7 +270,6 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			double b = Config.SIMULATED_ROTATION_NOISE_PCT * millimeters;
 			millimeters = (int) Utils.gaussSample(b, millimeters);
 		}
-
 		
 		// driving with steps SIMULATED_STEP_SIZEs
 		while (millimeters > 0) {
@@ -280,9 +283,6 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 				millimeters -= toDrive;
 				simulatedRobotState = Utils.driveForward(simulatedRobotState,
 						toDrive);
-				//FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het anders niet werkt :)
-				// Da stond onder de while lus.
-				roomba.drive(millimeters, driveMode);
 			} else {
 				// PANIEK! Kate rijdt tegen een muur :/
 				log("PANIEK! Kate rijdt tegen een muur :/");
@@ -324,8 +324,10 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		// Stub
 		int[] sensordata = new int[RoombaConfig.SENSORS.length];
 		for (int i = 0; i < sensordata.length; i++) {
-			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
+		//	sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
+			sensordata = roomba.getSensorData(new byte[]{(byte)RoombaConfig.SENSORS[i].id});
 		}
+		
 		return sensordata;
 	}
 

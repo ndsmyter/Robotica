@@ -155,6 +155,25 @@ public class MapPanel extends JPanel {
 
 		// Draw the scale
 		drawScale(g2);
+
+		// Draw the goal
+		drawGoalStuff(g2);
+	}
+
+	private void drawGoalStuff(Graphics g) {
+		g.setColor(Emulator.GOAL_COLOR);
+
+		Brains b = emulator.getBrains();
+		Point goal = b.getGoal();
+		if (goal != null) {
+			g.fillOval(scale(goal.x) - 5, -scale(goal.y) - 5, 10, 10);
+		}
+
+		ArrayList<Point> goalPath = b.getGoalPath();
+		if (goalPath != null) {
+			for (Point point : goalPath)
+				g.fillOval(scale(point.x) - 2, -scale(point.y) - 2, 4, 4);
+		}
 	}
 
 	/**

@@ -21,7 +21,6 @@ import javax.imageio.ImageIO;
 import roomba.Roomba;
 import roomba.RoombaConfig;
 import brains.Brains;
-import brains.MapStructure;
 
 import common.Config;
 import common.RobotState;
@@ -66,6 +65,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public final static Color MAP_COLOR = Color.YELLOW;
 	public final static Color BACKGROUND_COLOR = Color.GRAY;
 	public final static Color CURRENT_STATE_COLOR = Color.RED;
+	public final static Color GOAL_COLOR = Color.BLUE;
 
 	// Scaling parameters
 	public final static int LINE_LENGTH = 100;
@@ -255,8 +255,9 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 	public void drive(int millimeters, int driveMode) {
 		iteration++;
 		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
-		
-		//FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het anders niet werkt :)
+
+		// FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het
+		// anders niet werkt :)
 		// Da stond onder de while lus.
 		roomba.drive(millimeters, driveMode);
 
@@ -270,7 +271,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 			double b = Config.SIMULATED_ROTATION_NOISE_PCT * millimeters;
 			millimeters = (int) Utils.gaussSample(b, millimeters);
 		}
-		
+
 		// driving with steps SIMULATED_STEP_SIZEs
 		while (millimeters > 0) {
 			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
@@ -292,7 +293,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
 		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
 				driveMode));
-		
+
 	}
 
 	@Override
@@ -324,10 +325,11 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		// Stub
 		int[] sensordata = new int[RoombaConfig.SENSORS.length];
 		for (int i = 0; i < sensordata.length; i++) {
-		//	sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
-			sensordata = roomba.getSensorData(new byte[]{(byte)RoombaConfig.SENSORS[i].id});
+			 sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
+//			sensordata = roomba
+//					.getSensorData(new byte[] { (byte) RoombaConfig.SENSORS[i].id });
 		}
-		
+
 		return sensordata;
 	}
 

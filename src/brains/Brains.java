@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-
 import roomba.RoombaConfig;
 import brains.algorithmsnew.Algorithm;
 import brains.algorithmsnew.explore.BugExplore;
@@ -60,6 +58,14 @@ public class Brains implements ListenerInterface {
 		ExploreAlgorithmInterface explorer = algorithm.getExplorer();
 		if (explorer instanceof BugExplore)
 			return ((BugExplore) explorer).getGoal();
+		else
+			return null;
+	}
+
+	public ArrayList<Point> getGoalPath() {
+		ExploreAlgorithmInterface explorer = algorithm.getExplorer();
+		if (explorer instanceof BugExplore)
+			return ((BugExplore) explorer).getGoalPath();
 		else
 			return null;
 	}

@@ -3,7 +3,6 @@ package brains.algorithmsnew.slam;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import roomba.RoombaConfig;
 import brains.MapStructure;

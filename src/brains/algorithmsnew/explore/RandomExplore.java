@@ -1,10 +1,7 @@
 package brains.algorithmsnew.explore;
 
-import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Random;
 
-import roomba.RoombaConfig;
 import brains.MapStructure;
 
 import common.Utils;

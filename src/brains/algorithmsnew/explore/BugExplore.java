@@ -79,7 +79,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 					robotState.y));
 			System.out.println("Current : " + robotState + " (=> "
 					+ currentOnGrid + ")");
-			if (Utils.goalReached(currentOnGrid, Utils.pointToGrid(new Point(goal.x, goal.y)))) {
+			if (Utils.goalReached(currentOnGrid,
+					Utils.pointToGrid(new Point(goal.x, goal.y)))) {
 				System.out.println("Goal " + goalIndex + " reached! :D");
 				goalIndex++;
 				getNextGoal();
@@ -121,7 +122,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				}
 			} else {
 				// On the straight line
-				boolean free = Utils.isPathFree(robotState, Config.BUG_STEP, map);
+				boolean free = Utils.isPathFree(robotState, Config.BUG_STEP,
+						map);
 
 				if (free) {
 					// Stay on the straight line
@@ -167,56 +169,60 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			return dontMove();
 		}
 	}
- 
-    private Point getNextGoalTMP() {
-        if (dir == 0) { // UP
-            goal.y = goal.y + Config.BUG_SPIRAL;
-            if (goal.y > Math.abs(goal.x)) {
-                dir = 1;
-            }
-        } else if (dir == 1) { // RIGHT
-            goal.x = goal.x + Config.BUG_SPIRAL;
-            if (goal.x == goal.y) {
-                dir = 2;
-            }
-        } else if (dir == 2) { // DOWN
-            goal.y = goal.y - Config.BUG_SPIRAL;
-            if (Math.abs(goal.y) == goal.x) {
-                dir = 3;
-            }
-        } else if (dir == 3) { // LEFT
-            goal.x = goal.x - Config.BUG_SPIRAL;
-            if (goal.y == goal.x) {
-                dir = 0;
-            }
-        }
 
-        System.out.println("Next goal: " + goal.x + " : " + goal.y);
+	private Point getNextGoalTMP() {
+		if (dir == 0) { // UP
+			goal.y = goal.y + Config.BUG_SPIRAL;
+			if (goal.y > Math.abs(goal.x)) {
+				dir = 1;
+			}
+		} else if (dir == 1) { // RIGHT
+			goal.x = goal.x + Config.BUG_SPIRAL;
+			if (goal.x == goal.y) {
+				dir = 2;
+			}
+		} else if (dir == 2) { // DOWN
+			goal.y = goal.y - Config.BUG_SPIRAL;
+			if (Math.abs(goal.y) == goal.x) {
+				dir = 3;
+			}
+		} else if (dir == 3) { // LEFT
+			goal.x = goal.x - Config.BUG_SPIRAL;
+			if (goal.y == goal.x) {
+				dir = 0;
+			}
+		}
 
-        return goal;
-    }
+		System.out.println("Next goal: " + goal.x + " : " + goal.y);
 
-    private Point getNextGoal() {
-        if (dir == 0) { // UP
-            goal.y = Math.abs(goal.x) + Config.BUG_SPIRAL;
-            dir = 1;
-        } else if (dir == 1) { // RIGHT
-            goal.x = goal.y;
-            dir = 2;
-        } else if (dir == 2) { // DOWN
-            goal.y = -goal.x;
-            dir = 3;
-        } else if (dir == 3) { // LEFT
-            goal.x = goal.y;
-            dir = 0;
-        }
+		return goal;
+	}
 
-        System.out.println("Next goal: " + goal.x + " : " + goal.y);
+	private Point getNextGoal() {
+		if (dir == 0) { // UP
+			goal.y = Math.abs(goal.x) + Config.BUG_SPIRAL;
+			dir = 1;
+		} else if (dir == 1) { // RIGHT
+			goal.x = goal.y;
+			dir = 2;
+		} else if (dir == 2) { // DOWN
+			goal.y = -goal.x;
+			dir = 3;
+		} else if (dir == 3) { // LEFT
+			goal.x = goal.y;
+			dir = 0;
+		}
 
-        return goal;
-    }
-    
-    public Point getGoal(){
-    	return goal;
-    }
+		System.out.println("Next goal: " + goal.x + " : " + goal.y);
+
+		return goal;
+	}
+
+	public Point getGoal() {
+		return goal;
+	}
+
+	public ArrayList<Point> getGoalPath() {
+		return straightPath;
+	}
 }

@@ -128,11 +128,11 @@ public class FastSLAM implements SLAMAlgorithmInterface {
 		if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
 			result = 0;
 		} else if (z < s.zMax && p.equals(measurement)) {
-			result = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
+			result = Config.LOGODD_OCCUPIED_CORRECT;
 		} else if (r < z) {
-			result = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
+			result = Config.LOGODD_OCCUPIED_WRONG; 
 		} else {
-			result = 0;
+			result = Config.LOGODD_START;
 		}
 		return result;
 	}

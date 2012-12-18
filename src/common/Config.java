@@ -1,9 +1,9 @@
 package common;
 
 public class Config {
-	/*************************
-	 * Algemene instellingen *
-	 *************************/
+	/******************
+	 * General config *
+	 ******************/
 	public static final int GRID_CELL_SIZE = 100;
 	public static final int GOAL_REACHED_TRESHOLD = 100;
 	public static final int NUMBER_OF_PARTICLES = 1000;
@@ -23,7 +23,10 @@ public class Config {
 	public static final int ITERATIONS_PER_RESAMPLE = 5;
 	public static final double ALPHA1 = 0.3;
 	public static final double ALPHA2 = 0.3;
-	
+	public static final double LOGODD_OCCUPIED_CORRECT = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
+        public static final double LOGODD_OCCUPIED_WRONG = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
+        public static final double LOGODD_START = 0;
+        
 	/**************
 	 * Bug config *
 	 **************/

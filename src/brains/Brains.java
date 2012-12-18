@@ -207,6 +207,7 @@ public class Brains implements ListenerInterface {
 			xs.add(state.x);
 			ys.add(state.y);
 			dirs.add(state.dir);
+                        dirs.add(state.dir+360);
 		}
 		Collections.sort(xs);
 		Integer medianx = xs.get(xs.size() / 2);

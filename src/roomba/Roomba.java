@@ -23,12 +23,12 @@ public class Roomba implements RoombaInterface {
 		//r.setSongs();
 		//r.waitFor(1000);
 		//r.singSong(1);
-		for(int i=0; i<24; i++)
-			r.turn(15, false, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+		for(int i=0; i<6; i++)
+			r.turn(-15, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
 		
-	/*	for(int i=0; i<0; i++){
-			r.getSensorData(new byte[]{0});
-			r.turn(10, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+		/*for(int i=0; i<100; i++){
+			r.getSensorData(new byte[]{0, 1, 2});
+			//r.turn(10, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
 			//r.drive(100, RoombaConfig.DRIVE_MODE_SLOW);
 			try {
 				Thread.sleep(1000);
@@ -312,6 +312,7 @@ public class Roomba implements RoombaInterface {
 
 	@Override
 	public int[] getSensorData(byte[] ids){
+		long before = System.currentTimeMillis();
 		byte[] get = new byte[ids.length + 1];
 		get[0] = (byte) (ids.length);
 		for(int i=0; i<ids.length; i++){
@@ -325,17 +326,20 @@ public class Roomba implements RoombaInterface {
 		}
 		
 		byte[] inputBytes = serial.getResponds();
+		
 		short[] input = new short[inputBytes.length / 2];
 		for(int i=0; i<input.length; i++){
 			input[i] = (short) ((inputBytes[2*i] << 8) + (inputBytes[2*i + 1] & 0xFF));
 			if(DEBUG)System.out.println(inputBytes[2*i] + "|" + inputBytes[2*i+1] + " -> " + input[i]);
 		}
+		
 		int[] output = new int[input.length];
 		for(int i=0; i<input.length; i++){
-			System.out.println(input[i] + " -> " + convertSensorOutputToDistance(input[i]));
+			for(int j=0; j<i; j++)System.out.print("\t\t");
+			System.out.println(ids[i] + ": " + input[i] + " -> " + convertSensorOutputToDistance(input[i]));
 			output[i] = convertSensorOutputToDistance(input[i]);
 		}
-		waitFor(1000);
+		System.out.println("Time taken: " + (System.currentTimeMillis() - before));
 		return output;
 	}
 	
@@ -364,7 +368,7 @@ public class Roomba implements RoombaInterface {
 	
 	int[] grenzen = new int[]{433,249,175,137,113,97,88,80,70};
 	private int convertSensorOutputToDistance(short in){
-		double b = in & 0xFF;
+		double b = in;
 		if(b > grenzen[0])
 			return -1;
 		if(b <= grenzen[0] && b > grenzen[1])

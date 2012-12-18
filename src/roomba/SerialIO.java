@@ -49,6 +49,7 @@ public class SerialIO {
 			}
 			timeout--;
 		}
+
 		if(timeout > 0)
 			return l.getReturnFromArduino();
 		System.err.println("Request was timed out");

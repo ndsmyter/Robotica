@@ -14,6 +14,7 @@ public class Statistics
 		long before = System.currentTimeMillis();
 		for(int i=0; i<data.length; i++){
 			data[i] = (r.getRawSensorData(new byte[]{0})[0]);
+			System.out.println(i);
 		}
 		System.out.println(System.currentTimeMillis() - before);
 

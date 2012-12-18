@@ -318,18 +318,18 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
 		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
 				turnRight, driveMode));
-		roomba.turn(degrees, turnRight, turnMode, driveMode);
+		roomba.turn(Math.abs(degrees), turnRight, turnMode, driveMode);
 	}
 
 	public int[] getSensorData() {
 		// Stub
 		int[] sensordata = new int[RoombaConfig.SENSORS.length];
+		byte[] ids = new byte[RoombaConfig.SENSORS.length];
 		for (int i = 0; i < sensordata.length; i++) {
-			 sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
-//			sensordata = roomba
-//					.getSensorData(new byte[] { (byte) RoombaConfig.SENSORS[i].id });
+//TODO			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
+			ids[i] = (byte)RoombaConfig.SENSORS[i].id;
 		}
-
+		sensordata = roomba.getSensorData(ids);
 		return sensordata;
 	}
 

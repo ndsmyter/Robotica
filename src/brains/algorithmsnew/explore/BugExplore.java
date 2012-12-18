@@ -215,4 +215,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 
         return goal;
     }
+    
+    public Point getGoal(){
+    	return goal;
+    }
 }

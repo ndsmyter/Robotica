@@ -1,11 +1,16 @@
 package brains;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
+
 import roomba.RoombaConfig;
 import brains.algorithmsnew.Algorithm;
+import brains.algorithmsnew.explore.BugExplore;
+import brains.algorithmsnew.explore.ExploreAlgorithmInterface;
 
 import common.Config;
 import common.RobotState;
@@ -35,7 +40,7 @@ public class Brains implements ListenerInterface {
 
 	public Brains() {
 		particles = new ArrayList<Particle>();
-//		 algorithm = Algorithm.getFastSlamRandom();
+		// algorithm = Algorithm.getFastSlamRandom();
 		algorithm = Algorithm.getFastSlamBug(this);
 		reset();
 		emulator = new Emulator(this);
@@ -49,6 +54,14 @@ public class Brains implements ListenerInterface {
 
 	public void log(String message) {
 		emulator.log(message);
+	}
+
+	public Point getGoal() {
+		ExploreAlgorithmInterface explorer = algorithm.getExplorer();
+		if (explorer instanceof BugExplore)
+			return ((BugExplore) explorer).getGoal();
+		else
+			return null;
 	}
 
 	public List<Particle> getParticles() {
@@ -207,7 +220,7 @@ public class Brains implements ListenerInterface {
 			xs.add(state.x);
 			ys.add(state.y);
 			dirs.add(state.dir);
-                        dirs.add(state.dir+360);
+			dirs.add(state.dir + 360);
 		}
 		Collections.sort(xs);
 		Integer medianx = xs.get(xs.size() / 2);

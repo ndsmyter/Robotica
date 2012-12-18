@@ -33,6 +33,10 @@ public class Algorithm {
 		}
 	}
 
+	public ExploreAlgorithmInterface getExplorer() {
+		return explorer;
+	}
+
 	public void doStep(Brains b) {
 		List<Particle> particles = b.getParticles();
 

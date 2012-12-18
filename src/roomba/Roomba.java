@@ -23,10 +23,13 @@ public class Roomba implements RoombaInterface {
 		//r.setSongs();
 		//r.waitFor(1000);
 		//r.singSong(1);
-		for(int i=0; i<7; i++){
+		for(int i=0; i<24; i++)
+			r.turn(15, false, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+		
+	/*	for(int i=0; i<0; i++){
 			r.getSensorData(new byte[]{0});
-			//r.turn(10, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
-			r.drive(100, RoombaConfig.DRIVE_MODE_SLOW);
+			r.turn(10, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+			//r.drive(100, RoombaConfig.DRIVE_MODE_SLOW);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -34,7 +37,7 @@ public class Roomba implements RoombaInterface {
 				e.printStackTrace();
 			}
 			
-		}
+		}*/
 
 		/*
 		 * for(int i=0; i<5; i++){ r.turnAtSpot(180, RoombaConfig.TURN_RIGHT);
@@ -179,6 +182,7 @@ public class Roomba implements RoombaInterface {
 		double distance = Math.PI * radius * (degrees / 180.0); // [mm]
 
 		delay = Math.abs((long) ((distance * 1000) / velocity)); // [ms]
+		delay *= RoombaConfig.TURN_ERROR_CORRECTION;
 
 		if (turn_mode == RoombaConfig.TURN_MODE_SPOT)
 			radius = 1;
@@ -362,7 +366,7 @@ public class Roomba implements RoombaInterface {
 	private int convertSensorOutputToDistance(short in){
 		double b = in & 0xFF;
 		if(b > grenzen[0])
-			return Integer.MAX_VALUE;
+			return -1;
 		if(b <= grenzen[0] && b > grenzen[1])
 			return linearize(b, 100, 200, grenzen[0], grenzen[1]);
 		if(b <= grenzen[1] && b > grenzen[2])
@@ -380,7 +384,7 @@ public class Roomba implements RoombaInterface {
 		if(b <= grenzen[7] && b > grenzen[8])
 			return linearize(b, 700, 800, grenzen[7], grenzen[8]);
 		if(b <= grenzen[8])
-			return -1;
+			return Integer.MAX_VALUE;
 		return -1;
 
 	}

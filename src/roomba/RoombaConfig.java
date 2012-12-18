@@ -15,6 +15,7 @@ public final class RoombaConfig {
 	public static final int TURN_RADIUS_SHARP = 500;
 	public static final int TURN_RADIUS_WIDE = 1000;
 	public static final int TURN_RADIUS_VERYWIDE = 2000;
+	public static final double TURN_ERROR_CORRECTION = 0.87;
 
 	public static final int TURN_MODE_SPOT = 0;
 	public static final int TURN_MODE_SHARP = 1;

@@ -35,6 +35,10 @@ public class FastSLAM implements SLAMAlgorithmInterface {
      */
     @Override
     public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
+    	System.out.print("[SLAM]");
+    	for(int i: z){
+    		System.out.print(i +", ");
+    	}System.out.println();
         for (Particle p : particles) {
             MapStructure map = p.getMap();
 

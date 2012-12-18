@@ -21,10 +21,10 @@ public class Config {
 	 * FastSLAM config *
 	 *******************/
 	public static final int ITERATIONS_PER_RESAMPLE = 5;
-	public static final double ALPHA1 = 0.3;
-	public static final double ALPHA2 = 0.3;
-	public static final double LOGODD_OCCUPIED_CORRECT = 0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
-        public static final double LOGODD_OCCUPIED_WRONG = -0.6; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
+	public static final double ALPHA1 = 0;
+	public static final double ALPHA2 = 0;
+	public static final double LOGODD_OCCUPIED_CORRECT = 1.28; // p = 0.95 //0.6; // p(occupied | z) = 0.8 => log 0.8/0.2 = log 4 = 0.6
+        public static final double LOGODD_OCCUPIED_WRONG = -1.28; // p(occupied | z) = 0.2 => 0.2/0.8 = log 0.25 = -0.6
         public static final double LOGODD_START = 0;
         
 	/**************
@@ -33,5 +33,5 @@ public class Config {
 	public static final int NROFGOALS = 50;
 	public static final int BUG_STEP = 100;
 	public static final int BUG_TURN = 15;
-	public static final int BUG_SPIRAL = 900;
+	public static final int BUG_SPIRAL = 200;
 }

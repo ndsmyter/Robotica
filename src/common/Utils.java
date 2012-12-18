@@ -61,9 +61,11 @@ public class Utils {
 
 	public static ArrayList<Point> getPath(RobotState currentState,
 			RobotState nextState, int width) {
-		int distance = euclideanDistance(new Point(currentState.x,
-				currentState.y), new Point(nextState.x, nextState.y));
-		return getPath(currentState, distance, width);
+		Point currentPoint = new Point(currentState.x,	currentState.y);
+		Point nextPoint = new Point(nextState.x, nextState.y);
+		int distance = euclideanDistance(currentPoint, nextPoint);
+		RobotState r = new RobotState(currentPoint, Utils.angle(currentPoint, nextPoint));
+		return getPath(r, distance, width);
 	}
 
 	public static ArrayList<Point> getPath(RobotState currentState, int distance) {

@@ -79,8 +79,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 					robotState.y));
 			System.out.println("Current : " + robotState + " (=> "
 					+ currentOnGrid + ")");
-
-			if (Utils.goalReached(currentOnGrid, Utils.pointToGrid(goal))) {
+			if (Utils.goalReached(currentOnGrid, Utils.pointToGrid(new Point(goal.x, goal.y)))) {
 				System.out.println("Goal " + goalIndex + " reached! :D");
 				goalIndex++;
 				getNextGoal();

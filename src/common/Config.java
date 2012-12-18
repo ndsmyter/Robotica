@@ -34,4 +34,8 @@ public class Config {
 	public static final int BUG_STEP = 100;
 	public static final int BUG_TURN = 15;
 	public static final int BUG_SPIRAL = 200;
+	
+	public static final boolean BUG_EXPLORE_OBSTACLES_MORE = true;
+	public static final int BUG_OBST_EXPLORE_TURN = 90;
+	public static final int BUG_OBST_EXPLORE_ITERATIONS = 5;
 }

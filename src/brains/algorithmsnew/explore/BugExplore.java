@@ -20,6 +20,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 	private Stopper stopper;
 	private int internalState;
 	private int totalTurn = 0;
+	private int exploreCounter;
 
 	private Point goal;
 	private int dir;
@@ -53,6 +54,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		dir = 0;
 		goal = new Point(0, 0);
 		goalIndex = 0;
+		exploreCounter = 0;
 
 		followingObstacle = false;
 		obstaclePositions = new ArrayList<Point>();
@@ -146,8 +148,17 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			} else if (!free) {
 				// Then turn left again until she can move forward
 				internalState = 2;
-				totalTurn = Config.BUG_TURN;
-				return turn(Config.BUG_TURN);
+				exploreCounter++;
+//				totalTurn = Config.BUG_TURN;
+//				return turn(Config.BUG_TURN);
+				
+				if(Config.BUG_EXPLORE_OBSTACLES_MORE && exploreCounter % Config.BUG_OBST_EXPLORE_ITERATIONS == 0) {
+					totalTurn = -Config.BUG_OBST_EXPLORE_TURN;
+					return turn(-Config.BUG_OBST_EXPLORE_TURN);
+				} else {
+					totalTurn = Config.BUG_TURN;
+					return turn(Config.BUG_TURN);
+				}
 			} else {
 				// where did the obstacle go?
 				internalState = 0;

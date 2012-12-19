@@ -2,6 +2,7 @@ package emulator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
@@ -9,6 +10,9 @@ import java.awt.Point;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -139,6 +143,27 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				emulator.getBrains().setGoal(new Point(0, 0));
 			}
 		};
+		Action setGoalAction = new AbstractAction("Set Goal") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MouseListener mListener = new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent me) {
+						int x = me.getX();
+						int y = me.getY();
+						Point winPos = mapPanel.getCenterPosition();
+						x = mapPanel.descale(x - winPos.x);
+						y = -mapPanel.descale(y - winPos.y);
+						System.out
+								.println("Ok, I will have a look at that position");
+						System.out.println("New Goal: (" + x + "," + y + ")");
+						emulator.getBrains().setGoal(new Point(x, y));
+						mapPanel.removeMouseListener(this);
+					}
+				};
+				mapPanel.addMouseListener(mListener);
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -162,6 +187,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				"Open a new Particle Viewer");
 		goHomeAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Make Kate drive home");
+		setGoalAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Set new Goal for Kate");
 		buttonPanel.add(mapBox);
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
@@ -171,6 +198,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		buttonPanel.add(new JButton(stepAction));
 		buttonPanel.add(new JButton(addParticleViewerAction));
 		buttonPanel.add(new JButton(goHomeAction));
+		buttonPanel.add(new JButton(setGoalAction));
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
 		mapShowingButton.setSelected(emulator.isMapShowing());
 		buttonPanel.add(mapShowingButton);

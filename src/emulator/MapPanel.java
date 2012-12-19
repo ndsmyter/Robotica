@@ -222,7 +222,7 @@ public class MapPanel extends JPanel {
 		}
 	}
 
-	private int scale(double value) {
+	public int scale(double value) {
 		return (int) (scale2(value) + 0.5);
 	}
 
@@ -230,12 +230,16 @@ public class MapPanel extends JPanel {
 		return scale * value;
 	}
 
-	private int descale(double value) {
+	public int descale(double value) {
 		return (int) (descale2(value) + 0.5);
 	}
 
 	private double descale2(double value) {
 		return value / scale;
+	}
+
+	public Point getCenterPosition() {
+		return winPos;
 	}
 
 	/**

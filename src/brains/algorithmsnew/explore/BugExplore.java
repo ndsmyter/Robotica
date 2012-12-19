@@ -156,7 +156,11 @@ public class BugExplore extends ExploreAlgorithmInterface {
 
 				if (free) {
 					// Stay on the straight line
-					return drive(Config.BUG_STEP);
+					int distance = Utils.crossesPath(goal, robotState);
+					if (distance != 0)
+						return drive(distance);
+					else
+						return drive(Config.BUG_STEP);
 				} else {
 					// Reached an obstacle
 					System.out.println("Encountered an obstacle! :(");
@@ -191,7 +195,14 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				// where did the obstacle go?
 				internalState = 0;
 				totalTurn = 0;
-				return drive(Config.BUG_STEP);
+				Point currentOnGrid = Utils.pointToGrid(new Point(robotState.x,
+						robotState.y));
+				int distance = Utils.crossesPath(straightPath, robotState);
+				if (distance != 0 && Utils.euclideanDistance(lastPosition, goal) > Utils
+						.euclideanDistance(currentOnGrid, goal))
+					return drive(distance);
+				else
+					return drive(Config.BUG_STEP);
 			}
 		} else if (internalState == 2) {
 			boolean free = Utils.isPathFree(robotState, Config.BUG_STEP, map);
@@ -201,7 +212,14 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				return turn(Config.BUG_TURN);
 			} else {
 				internalState = 0;
-				return drive(Config.BUG_STEP);
+				Point currentOnGrid = Utils.pointToGrid(new Point(robotState.x,
+						robotState.y));
+				int distance = Utils.crossesPath(straightPath, robotState);
+				if (distance != 0 && Utils.euclideanDistance(lastPosition, goal) > Utils
+						.euclideanDistance(currentOnGrid, goal))
+					return drive(distance);
+				else
+					return drive(Config.BUG_STEP);
 			}
 		} else {
 			System.err.println("BugMovement.java: NO SUCH INTERNAL STATE!");

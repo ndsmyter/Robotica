@@ -13,7 +13,10 @@ public abstract class ExploreAlgorithmInterface {
 	}
 
 	public int[] turn(int x) {
-		return new int[] { 0, x };
+		int y = (x + 360) % 360;
+		if (y > 180)
+			y -= 360;
+		return new int[] { 0, y };
 	}
 
 	public int[] dontMove() {

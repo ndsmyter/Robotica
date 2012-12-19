@@ -24,8 +24,11 @@ public class Roomba implements RoombaInterface {
 		//r.waitFor(1000);
 		//r.singSong(1);
 		for(int i=0; i<6; i++)
-			r.turn(-15, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
+			r.turn(15, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
 		
+		/*for(int i=0; i<5; i++)
+			r.drive(100, RoombaConfig.DRIVE_MODE_SLOW);
+			*/
 		/*for(int i=0; i<100; i++){
 			r.getSensorData(new byte[]{0, 1, 2});
 			//r.turn(10, true, RoombaConfig.TURN_MODE_SPOT, RoombaConfig.DRIVE_MODE_SLOW);
@@ -95,7 +98,7 @@ public class Roomba implements RoombaInterface {
 				System.err.println("Unknow drive mode");
 		}
 
-		delay = (long) (millimeters * 1000.0 / velocity);
+		delay = (long) ((millimeters * 1000.0 / velocity) * RoombaConfig.DRIVE_ERROR_CORRECTION);
 
 		if (DEBUG)
 			System.out.println("[DRIVE] Dist: " + millimeters);
@@ -312,7 +315,6 @@ public class Roomba implements RoombaInterface {
 
 	@Override
 	public int[] getSensorData(byte[] ids){
-		long before = System.currentTimeMillis();
 		byte[] get = new byte[ids.length + 1];
 		get[0] = (byte) (ids.length);
 		for(int i=0; i<ids.length; i++){
@@ -339,7 +341,6 @@ public class Roomba implements RoombaInterface {
 			System.out.println(ids[i] + ": " + input[i] + " -> " + convertSensorOutputToDistance(input[i]));
 			output[i] = convertSensorOutputToDistance(input[i]);
 		}
-		System.out.println("Time taken: " + (System.currentTimeMillis() - before));
 		return output;
 	}
 	

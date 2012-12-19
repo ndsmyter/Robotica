@@ -32,391 +32,391 @@ import emulator.interfaces.ModelInterface;
 
 /**
  * This class will be used as an interface for the brains and the Roomba robot
- * 
+ *
  * @author Nicolas
- * 
+ *
  */
 public class Emulator extends ModelInterface implements EmulatorInterface {
 
-	private Roomba roomba;
-	private Brains brains;
+    private Roomba roomba;
+    private Brains brains;
+    private RobotState simulatedRobotState;
+    // private Random simRandom = new Random();
+    private String currentMap = ""; // No map by default
+    private ArrayList<Point> background = new ArrayList<Point>();
+    private ArrayList<String> backgroundFiles = new ArrayList<String>();
+    private static final String MAPS_DIRECTORY = "maps";
+    private static final String DEFAULT_MAP_FILE = "default.txt";
+    private List<ParticleViewer> particleViewers = new ArrayList<ParticleViewer>();
+    private boolean mapShowing = true;
+    private boolean roombaShowing = true;
+    private boolean currentStateShowing = false;
+    // The colors which you can change to the color you like
+    public final static Color ZERO_COLOR = Color.BLACK;
+    public final static Color ROBOT_COLOR = new Color(210, 250, 255);
+    public final static Color SENSOR_COLOR = new Color(5, 80, 90);
+    public final static Color TEXT_COLOR = Color.BLACK;
+    public final static Color GRID_COLOR = Color.DARK_GRAY;
+    public final static Color PATH_COLOR = Color.ORANGE;
+    public final static Color MAP_COLOR = Color.YELLOW;
+    public final static Color BACKGROUND_COLOR = Color.GRAY;
+    public final static Color CURRENT_STATE_COLOR = Color.RED;
+    public final static Color GOAL_COLOR = Color.BLUE;
+    // Scaling parameters
+    public final static int LINE_LENGTH = 100;
+    public final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
+    public final static double ZOOM_FACTOR = 0.05;
+    public final static double ZOOM_FACTOR2 = 0.005;
+    public final static double ORIGINAL_ZOOM = 0.2;
+    public final static int ARROW_MOVEMENT = 5;
+    public final static int CELLS_IN_GRID = 10;
+    private int iteration = 0;
+    // Logs
+    private ArrayList<String> logs = new ArrayList<String>();
+    private static final String LOG_FILENAME = "log.txt";
 
-	private RobotState simulatedRobotState;
-	// private Random simRandom = new Random();
+    public Emulator(Brains brains) {
+        simulatedRobotState = new RobotState(0, 0, 0);
+        this.brains = brains;
+        roomba = new Roomba(this);
+        loadBackgroundFiles();
+        new EmulatorWindow(this);
+    }
 
-	private String currentMap = ""; // No map by default
-	private ArrayList<Point> background = new ArrayList<Point>();
-	private ArrayList<String> backgroundFiles = new ArrayList<String>();
-	private static final String MAPS_DIRECTORY = "maps";
-	private static final String DEFAULT_MAP_FILE = "default.txt";
+    public RobotState getSimulatedRobotState() {
+        return simulatedRobotState;
+    }
 
-	private List<ParticleViewer> particleViewers = new ArrayList<ParticleViewer>();
-	private boolean mapShowing = true;
-	private boolean roombaShowing = true;
-	private boolean currentStateShowing = false;
+    public void addParticleViewer(ParticleViewer particleViewer) {
+        particleViewers.add(particleViewer);
+    }
 
-	// The colors which you can change to the color you like
-	public final static Color ZERO_COLOR = Color.BLACK;
-	public final static Color ROBOT_COLOR = new Color(210, 250, 255);
-	public final static Color SENSOR_COLOR = new Color(5, 80, 90);
-	public final static Color TEXT_COLOR = Color.BLACK;
-	public final static Color GRID_COLOR = Color.DARK_GRAY;
-	public final static Color PATH_COLOR = Color.ORANGE;
-	public final static Color MAP_COLOR = Color.YELLOW;
-	public final static Color BACKGROUND_COLOR = Color.GRAY;
-	public final static Color CURRENT_STATE_COLOR = Color.RED;
-	public final static Color GOAL_COLOR = Color.BLUE;
+    public void removeParticleViewer(ParticleViewer particleViewer) {
+        particleViewers.remove(particleViewer);
+    }
 
-	// Scaling parameters
-	public final static int LINE_LENGTH = 100;
-	public final static int ROBOT_SIZE = RoombaConfig.ROOMBA_DIAMETER;
-	public final static double ZOOM_FACTOR = 0.05;
-	public final static double ZOOM_FACTOR2 = 0.005;
-	public final static double ORIGINAL_ZOOM = 0.2;
-	public final static int ARROW_MOVEMENT = 5;
+    public void makeParticleViewer() {
+        new ParticleViewer(this);
+    }
 
-	public final static int CELLS_IN_GRID = 10;
+    private void loadBackgroundFiles() {
+        File dir = new File(MAPS_DIRECTORY);
+        if (dir.isDirectory()) {
+            for (File file : dir.listFiles()) {
+                if (file.getName().equals(DEFAULT_MAP_FILE)) {
+                    try {
+                        Scanner sc = new Scanner(file);
+                        if (sc.hasNextLine()) {
+                            setMap(sc.nextLine());
+                        }
+                        sc.close();
+                    } catch (FileNotFoundException e) {
+                    }
+                } else if (file.getName().endsWith(".bmp") && file.isFile()) {
+                    backgroundFiles.add(file.getName());
+                }
+            }
+        }
+    }
 
-	private int iteration = 0;
+    public ArrayList<String> getBackgroundMaps() {
+        return backgroundFiles;
+    }
 
-	// Logs
-	private ArrayList<String> logs = new ArrayList<String>();
+    public String getMap() {
+        return currentMap;
+    }
 
-	private static final String LOG_FILENAME = "log.txt";
+    public void setMapShowing(boolean showing) {
+        if (this.mapShowing != showing) {
+            this.mapShowing = showing;
+            updateViewOfParticleViewers();
+        }
+    }
 
-	public Emulator(Brains brains) {
-		simulatedRobotState = new RobotState(0, 0, 0);
-		this.brains = brains;
-		roomba = new Roomba(this);
-		loadBackgroundFiles();
-		new EmulatorWindow(this);
-	}
+    public boolean isCurrentStateShowing() {
+        return currentStateShowing;
+    }
 
-	public RobotState getSimulatedRobotState() {
-		return simulatedRobotState;
-	}
+    public void setCurrentStateShowing(boolean currentStateShowing) {
+        if (this.currentStateShowing != currentStateShowing) {
+            this.currentStateShowing = currentStateShowing;
+            updateViewOfParticleViewers();
+        }
+    }
 
-	public void addParticleViewer(ParticleViewer particleViewer) {
-		particleViewers.add(particleViewer);
-	}
+    public void updateParticlesOfViewers() {
+        for (ParticleViewer particleViewer : particleViewers) {
+            particleViewer.setParticles(brains.getParticles());
+        }
+    }
 
-	public void removeParticleViewer(ParticleViewer particleViewer) {
-		particleViewers.remove(particleViewer);
-	}
+    private void updateViewOfParticleViewers() {
+        for (ParticleViewer particleViewer : particleViewers) {
+            particleViewer.viewUpdated();
+        }
+    }
 
-	public void makeParticleViewer() {
-		new ParticleViewer(this);
-	}
+    public boolean isMapShowing() {
+        return this.mapShowing;
+    }
 
-	private void loadBackgroundFiles() {
-		File dir = new File(MAPS_DIRECTORY);
-		if (dir.isDirectory()) {
-			for (File file : dir.listFiles()) {
-				if (file.getName().equals(DEFAULT_MAP_FILE)) {
-					try {
-						Scanner sc = new Scanner(file);
-						if (sc.hasNextLine())
-							setMap(sc.nextLine());
-						sc.close();
-					} catch (FileNotFoundException e) {
-					}
-				} else if (file.getName().endsWith(".bmp") && file.isFile())
-					backgroundFiles.add(file.getName());
-			}
-		}
-	}
+    public void setRoombaShowing(boolean showing) {
+        if (this.roombaShowing != showing) {
+            this.roombaShowing = showing;
+            updateViewOfParticleViewers();
+        }
+    }
 
-	public ArrayList<String> getBackgroundMaps() {
-		return backgroundFiles;
-	}
+    public boolean isRoombaShowing() {
+        return this.roombaShowing;
+    }
 
-	public String getMap() {
-		return currentMap;
-	}
+    public void setMap(String map) {
+        if (!map.equals(currentMap)) {
+            currentMap = map;
+            if (map.isEmpty()) {
+                background.clear();
+            } else {
+                map = MAPS_DIRECTORY + "/" + map;
+                System.out.println("Loaded map: " + map);
+                loadBackgroundMap(new File(map));
+            }
+            try {
+                PrintWriter out = new PrintWriter(
+                        new BufferedWriter(new FileWriter(MAPS_DIRECTORY + "/"
+                        + DEFAULT_MAP_FILE)));
+                out.write(currentMap);
+                out.close();
+            } catch (IOException e) {
+            }
+        }
+    }
 
-	public void setMapShowing(boolean showing) {
-		if (this.mapShowing != showing) {
-			this.mapShowing = showing;
-			updateViewOfParticleViewers();
-		}
-	}
+    public void loadBackgroundMap(File file) {
+        if (!file.isFile()) {
+            return;
+        }
+        try {
+            ArrayList<Point> backgroundMap = new ArrayList<Point>();
+            BufferedImage img = ImageIO.read(file);
+            PixelGrabber grabber = new PixelGrabber(img, 0, 0, -1, -1, true);
+            grabber.grabPixels();
+            int[] pixels = (int[]) grabber.getPixels();
+            int w = img.getWidth(), h = img.getHeight();
+            int w2 = (int) (1.0 * w / 2 + 0.5), h2 = (int) (1.0 * h / 2 + 0.5);
+            for (int i = 0; i < w; i++) {
+                for (int j = 0; j < h; j++) {
+                    Color c = new Color(pixels[w * j + i]);
+                    if (c.getBlue() == 0 && c.getRed() == 0
+                            && c.getGreen() == 0) {
+                        Point p = new Point((int) (5 * (i - w2)),
+                                (int) (-5 * (j - h2)));
+                        Utils.pointToGrid(p);
+                        if (!backgroundMap.contains(p)) {
+                            backgroundMap.add(p);
+                        }
+                    }
+                }
+            }
+            setBackground(backgroundMap);
+        } catch (IOException e) {
+        } catch (InterruptedException e) {
+        }
+    }
 
-	public boolean isCurrentStateShowing() {
-		return currentStateShowing;
-	}
+    public void reset() {
+        iteration = 0;
+        simulatedRobotState = new RobotState(0, 0, 0);
+        brains.reset();
+    }
 
-	public void setCurrentStateShowing(boolean currentStateShowing) {
-		if (this.currentStateShowing != currentStateShowing) {
-			this.currentStateShowing = currentStateShowing;
-			updateViewOfParticleViewers();
-		}
-	}
+    public void restart() {
+        brains.restart();
+    }
 
-	public void updateParticlesOfViewers() {
-		for (ParticleViewer particleViewer : particleViewers)
-			particleViewer.setParticles(brains.getParticles());
-	}
+    public void stop() {
+        brains.stop(true);
+    }
 
-	private void updateViewOfParticleViewers() {
-		for (ParticleViewer particleViewer : particleViewers) {
-			particleViewer.viewUpdated();
-		}
-	}
+    public void doStep() {
+        brains.doStep();
+    }
 
-	public boolean isMapShowing() {
-		return this.mapShowing;
-	}
+    public Brains getBrains() {
+        return brains;
+    }
 
-	public void setRoombaShowing(boolean showing) {
-		if (this.roombaShowing != showing) {
-			this.roombaShowing = showing;
-			updateViewOfParticleViewers();
-		}
-	}
+    @Override
+    public void drive(int millimeters, int driveMode) {
+        iteration++;
+        log("E(" + iteration + "): DRIVE (" + millimeters + ")");
 
-	public boolean isRoombaShowing() {
-		return this.roombaShowing;
-	}
+        // FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het
+        // anders niet werkt :)
+        // Da stond onder de while lus.
+        roomba.drive(millimeters, driveMode);
 
-	public void setMap(String map) {
-		if (!map.equals(currentMap)) {
-			currentMap = map;
-			if (map.isEmpty()) {
-				background.clear();
-			} else {
-				map = MAPS_DIRECTORY + "/" + map;
-				System.out.println("Loaded map: " + map);
-				loadBackgroundMap(new File(map));
-			}
-			try {
-				PrintWriter out = new PrintWriter(
-						new BufferedWriter(new FileWriter(MAPS_DIRECTORY + "/"
-								+ DEFAULT_MAP_FILE)));
-				out.write(currentMap);
-				out.close();
-			} catch (IOException e) {
-			}
-		}
-	}
+        // // Simulate noise start
+        // int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT *
+        // millimeters) + 0.5);
+        // if(x > 0)
+        // millimeters = millimeters + simRandom.nextInt(x * 2) - x;
 
-	public void loadBackgroundMap(File file) {
-		if (!file.isFile())
-			return;
-		try {
-			ArrayList<Point> backgroundMap = new ArrayList<Point>();
-			BufferedImage img = ImageIO.read(file);
-			PixelGrabber grabber = new PixelGrabber(img, 0, 0, -1, -1, true);
-			grabber.grabPixels();
-			int[] pixels = (int[]) grabber.getPixels();
-			int w = img.getWidth(), h = img.getHeight();
-			int w2 = (int) (1.0 * w / 2 + 0.5), h2 = (int) (1.0 * h / 2 + 0.5);
-			for (int i = 0; i < w; i++) {
-				for (int j = 0; j < h; j++) {
-					Color c = new Color(pixels[w * j + i]);
-					if (c.getBlue() == 0 && c.getRed() == 0
-							&& c.getGreen() == 0) {
-						Point p = new Point((int) (5 * (i - w2)),
-								(int) (-5 * (j - h2)));
-						Utils.pointToGrid(p);
-						if (!backgroundMap.contains(p))
-							backgroundMap.add(p);
-					}
-				}
-			}
-			setBackground(backgroundMap);
-		} catch (IOException e) {
-		} catch (InterruptedException e) {
-		}
-	}
+        if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
+            double b = Config.SIMULATED_ROTATION_NOISE_PCT * millimeters;
+            millimeters = (int) Utils.gaussSample(b, millimeters);
+        }
 
-	public void reset() {
-		iteration = 0;
-		simulatedRobotState = new RobotState(0, 0, 0);
-		brains.reset();
-	}
+        // driving with steps SIMULATED_STEP_SIZEs
+        while (millimeters > 0) {
+            int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
+                    : Config.SIMULATED_STEP_SIZE;
 
-	public void restart() {
-		brains.restart();
-	}
+            boolean isFree = isPathFree(simulatedRobotState, toDrive,
+                    background);
 
-	public void stop() {
-		brains.stop(true);
-	}
+            if (isFree) {
+                millimeters -= toDrive;
+                simulatedRobotState = Utils.driveForward(simulatedRobotState,
+                        toDrive);
+            } else {
+                // PANIEK! Kate rijdt tegen een muur :/
+                log("PANIEK! Kate rijdt tegen een muur :/");
+                millimeters = 0;
+            }
+        }
 
-	public void doStep() {
-		brains.doStep();
-	}
+        fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
+                driveMode));
 
-	public Brains getBrains() {
-		return brains;
-	}
+    }
 
-	@Override
-	public void drive(int millimeters, int driveMode) {
-		iteration++;
-		log("E(" + iteration + "): DRIVE (" + millimeters + ")");
+    @Override
+    public void turn(int degrees, int turnMode, int driveMode) {
+        iteration++;
+        boolean turnRight = degrees < 0;
+        log("E(" + iteration + "): " + (turnRight ? "RIGHT" : "LEFT") + " ("
+                + degrees + ")");
 
-		// FIXME [SANDER] Ik heb dat hierin gezet, gezien het feit dat het
-		// anders niet werkt :)
-		// Da stond onder de while lus.
-		roomba.drive(millimeters, driveMode);
+        // Simulate noise
+        // int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT *
+        // degrees) + 0.5);
+        // if(x > 0)
+        // degrees = degrees + simRandom.nextInt(x * 2) - x;
 
-		// // Simulate noise start
-		// int x = (int) (Math.abs(Config.SIMULATED_MOVEMENT_NOISE_PCT *
-		// millimeters) + 0.5);
-		// if(x > 0)
-		// millimeters = millimeters + simRandom.nextInt(x * 2) - x;
+        if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
+            degrees = (degrees + 360) % 360;
+            double b = Config.SIMULATED_ROTATION_NOISE_PCT * degrees;
+            degrees = (int) Utils.gaussSample(b, degrees);
+        }
 
-		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
-			double b = Config.SIMULATED_ROTATION_NOISE_PCT * millimeters;
-			millimeters = (int) Utils.gaussSample(b, millimeters);
-		}
+        simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
+        fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
+                turnRight, driveMode));
+        roomba.turn(Math.abs(degrees), turnRight, turnMode, driveMode);
+    }
 
-		// driving with steps SIMULATED_STEP_SIZEs
-		while (millimeters > 0) {
-			int toDrive = millimeters < Config.SIMULATED_STEP_SIZE ? millimeters
-					: Config.SIMULATED_STEP_SIZE;
+    public int[] getSensorData() {
+        // Stub
+        int[] sensordata = new int[RoombaConfig.SENSORS.length];
+        byte[] ids = new byte[RoombaConfig.SENSORS.length];
+        for (int i = 0; i < sensordata.length; i++) {
+            if(!Config.USE_ROOMBA)
+                sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
+            else
+                ids[i] = (byte) RoombaConfig.SENSORS[i].id;
+        }
+        if(Config.USE_ROOMBA)
+            sensordata = roomba.getSensorData(ids);
+        return sensordata;
+    }
 
-			boolean isFree = isPathFree(simulatedRobotState, toDrive,
-					background);
+    public int emulateSensor(Sensor sensor) {
+        RobotState sensorState = Utils.getSensorState(simulatedRobotState,
+                sensor);
+        ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
+        boolean stop = false;
+        int dist = sensor.zMax;
+        // Loop over all sensor points
+        for (int i = 0; i < points.size() && !stop; i++) {
+            Point sensorP = Utils.pointToGrid(points.get(i));
+            if (background.contains(sensorP)) {
+                int dist2 = Utils.euclideanDistance(sensorP, new Point(
+                        sensorState.x, sensorState.y));
 
-			if (isFree) {
-				millimeters -= toDrive;
-				simulatedRobotState = Utils.driveForward(simulatedRobotState,
-						toDrive);
-			} else {
-				// PANIEK! Kate rijdt tegen een muur :/
-				log("PANIEK! Kate rijdt tegen een muur :/");
-				millimeters = 0;
-			}
-		}
+                // Ruis simuleren
+                // int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT *
+                // dist2) + 0.5);
+                // if(x > 0)
+                // dist2 = dist2 + simRandom.nextInt(x * 2) - x;
 
-		fireStateChanged(true, new Event(EventType.DRIVE, millimeters,
-				driveMode));
+                if (Config.SIMULATED_SENSOR_NOISE_PCT > 0) {
+                    double b = Config.SIMULATED_SENSOR_NOISE_PCT * dist2;
+                    dist2 = (int) Utils.gaussSample(b, dist2);
+                }
 
-	}
+                if (dist2 < dist) {
+                    dist = dist2;
+                    stop = true;
+                }
+            }
+        }
+        return dist;
+    }
 
-	@Override
-	public void turn(int degrees, int turnMode, int driveMode) {
-		iteration++;
-		boolean turnRight = degrees < 0;
-		log("E(" + iteration + "): " + (turnRight ? "RIGHT" : "LEFT") + " ("
-				+ degrees + ")");
+    private boolean isPathFree(RobotState robotState, int step,
+            ArrayList<Point> background) {
+        ArrayList<Point> path = Utils.getPath(robotState, step
+                + RoombaConfig.ROOMBA_DIAMETER / 2,
+                RoombaConfig.ROOMBA_DIAMETER);
+        boolean freeTmp = true;
+        int points = path.size();
+        for (int i = 0; i < points && freeTmp; i++) {
+            freeTmp &= !background.contains(path.get(i));
+        }
+        return freeTmp;
+    }
 
-		// Simulate noise
-		// int x = (int) (Math.abs(Config.SIMULATED_ROTATION_NOISE_PCT *
-		// degrees) + 0.5);
-		// if(x > 0)
-		// degrees = degrees + simRandom.nextInt(x * 2) - x;
+    @Override
+    public void log(String message) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+        logs.add(sdf.format(Calendar.getInstance().getTime()) + "  " + message
+                + "\n");
+        if (iteration % 20 == 0) {
+            saveLogToFile();
+            logs.clear();
+        }
+        fireStateChanged(true, new Event(EventType.LOG, message));
+    }
 
-		if (Config.SIMULATED_ROTATION_NOISE_PCT > 0) {
-			degrees = (degrees + 360) % 360;
-			double b = Config.SIMULATED_ROTATION_NOISE_PCT * degrees;
-			degrees = (int) Utils.gaussSample(b, degrees);
-		}
+    public void saveLogToFile() {
+        try {
+            // Create file
+            FileWriter fstream = new FileWriter(LOG_FILENAME, true);
+            BufferedWriter out = new BufferedWriter(fstream);
+            for (String log : logs) {
+                out.append(log);
+            }
+            // Close the output stream
+            out.close();
+        } catch (Exception e) {
+        }
+    }
 
-		simulatedRobotState.dir = (simulatedRobotState.dir + degrees + 360) % 360;
-		fireStateChanged(true, new Event(EventType.TURN, -1, degrees,
-				turnRight, driveMode));
-		roomba.turn(Math.abs(degrees), turnRight, turnMode, driveMode);
-	}
+    public void setBackground(ArrayList<Point> background) {
+        this.background = new ArrayList<Point>(background);
+    }
 
-	public int[] getSensorData() {
-		// Stub
-		int[] sensordata = new int[RoombaConfig.SENSORS.length];
-		byte[] ids = new byte[RoombaConfig.SENSORS.length];
-		for (int i = 0; i < sensordata.length; i++) {
-//TODO			sensordata[i] = emulateSensor(RoombaConfig.SENSORS[i]);
-			ids[i] = (byte)RoombaConfig.SENSORS[i].id;
-		}
-		sensordata = roomba.getSensorData(ids);
-		return sensordata;
-	}
+    public ArrayList<Point> getBackground() {
+        return background;
+    }
 
-	public int emulateSensor(Sensor sensor) {
-		RobotState sensorState = Utils.getSensorState(simulatedRobotState,
-				sensor);
-		ArrayList<Point> points = Utils.getPath(sensorState, sensor.zMax);
-		boolean stop = false;
-		int dist = sensor.zMax;
-		// Loop over all sensor points
-		for (int i = 0; i < points.size() && !stop; i++) {
-			Point sensorP = Utils.pointToGrid(points.get(i));
-			if (background.contains(sensorP)) {
-				int dist2 = Utils.euclideanDistance(sensorP, new Point(
-						sensorState.x, sensorState.y));
+    public void setSongs() {
+        roomba.setSongs();
+    }
 
-				// Ruis simuleren
-				// int x = (int) (Math.abs(Config.SIMULATED_SENSOR_NOISE_PCT *
-				// dist2) + 0.5);
-				// if(x > 0)
-				// dist2 = dist2 + simRandom.nextInt(x * 2) - x;
-
-				if (Config.SIMULATED_SENSOR_NOISE_PCT > 0) {
-					double b = Config.SIMULATED_SENSOR_NOISE_PCT * dist2;
-					dist2 = (int) Utils.gaussSample(b, dist2);
-				}
-
-				if (dist2 < dist) {
-					dist = dist2;
-					stop = true;
-				}
-			}
-		}
-		return dist;
-	}
-
-	private boolean isPathFree(RobotState robotState, int step,
-			ArrayList<Point> background) {
-		ArrayList<Point> path = Utils.getPath(robotState, step
-				+ RoombaConfig.ROOMBA_DIAMETER / 2,
-				RoombaConfig.ROOMBA_DIAMETER);
-		boolean freeTmp = true;
-		int points = path.size();
-		for (int i = 0; i < points && freeTmp; i++)
-			freeTmp &= !background.contains(path.get(i));
-		return freeTmp;
-	}
-
-	@Override
-	public void log(String message) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-		logs.add(sdf.format(Calendar.getInstance().getTime()) + "  " + message
-				+ "\n");
-		if (iteration % 20 == 0) {
-			saveLogToFile();
-			logs.clear();
-		}
-		fireStateChanged(true, new Event(EventType.LOG, message));
-	}
-
-	public void saveLogToFile() {
-		try {
-			// Create file
-			FileWriter fstream = new FileWriter(LOG_FILENAME, true);
-			BufferedWriter out = new BufferedWriter(fstream);
-			for (String log : logs) {
-				out.append(log);
-			}
-			// Close the output stream
-			out.close();
-		} catch (Exception e) {
-		}
-	}
-
-	public void setBackground(ArrayList<Point> background) {
-		this.background = new ArrayList<Point>(background);
-	}
-
-	public ArrayList<Point> getBackground() {
-		return background;
-	}
-
-	public void setSongs() {
-		roomba.setSongs();
-	}
-
-	public void singSong(int song) {
-		roomba.singSong(song);
-	}
+    public void singSong(int song) {
+        roomba.singSong(song);
+    }
 }

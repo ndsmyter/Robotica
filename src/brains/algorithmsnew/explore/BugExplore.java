@@ -59,7 +59,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		// goals.add(new Point(0, 0));
 
 		// initialise spiral
-		dir = 0;
+		dir = 1;
 		goal = new Point(0, 0);
 		goalIndex = 0;
 		exploreCounter = 0;
@@ -206,10 +206,10 @@ public class BugExplore extends ExploreAlgorithmInterface {
 
 	private Point getNextGoal() {
 		if (dir == 0) { // UP
-			goal.y = Math.abs(goal.x) + Config.BUG_SPIRAL;
+			goal.y = Math.abs(goal.x);
 			dir = 1;
 		} else if (dir == 1) { // RIGHT
-			goal.x = goal.y;
+			goal.x = Math.abs(goal.y) + Config.BUG_SPIRAL;
 			dir = 2;
 		} else if (dir == 2) { // DOWN
 			goal.y = -goal.x;

@@ -114,16 +114,14 @@ public class FastSLAM implements SLAMAlgorithmInterface {
           		map.put(p2grid, ism);
           	}
           }
-          
+          double max = 0;
           for (Point p : map.keySet()) {
             double x = m.get(p);
             double y = map.get(p);
-
-            //sum += Math.abs(x + y);
-            //sum += 1 - Math.abs(x - y);
-            sum += x * y;
+            double tmp = x * y;
+            if(tmp > max) max = tmp;
           }
-//          System.out.println();
+          sum += max;
         }
         return sum;
     }
@@ -142,30 +140,6 @@ public class FastSLAM implements SLAMAlgorithmInterface {
             	double logOdds = m.getLogOdds(p) + ism;
             	m.putLogOdds(p, logOdds);
             }
-            
-            
-//            ArrayList<Point> path = Utils.getDetailedPath(sensorState, s.zMax, 1);
-            
-//            HashMap<Point, Double> map = new HashMap<Point, Double> (); 
-//            System.out.print("ism: ");
-//            for (Point p : path) {
-//            	double ism = inverseSensorModel_new(p, measurement, sensorState, z[i], s);
-//            	Point p2grid = Utils.pointToGrid(p);
-//            	if (map.containsKey(p2grid)) {
-//            		map.put(p2grid, map.get(p2grid) + ism);
-//            	} else {
-//            		map.put(p2grid, ism);
-//            	}
-//            	
-////                double logOdds = m.getLogOdds(p) + ism;
-////                m.putLogOdds(Utils.pointToGrid(p), logOdds);
-//            }
-//            
-//            for (Point p : map.keySet()) {
-//            	double logOdds = m.getLogOdds(p) + Math.log(map.get(p) / (1 - map.get(p)));
-//            	m.putLogOdds(p, logOdds);
-//            }
-//            System.out.println();
         }
     }
 
@@ -197,20 +171,7 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         	result = 0;
         } else {
         	result = Utils.gaussian(r, z, s.sigma);
-//        	System.out.print("(" + r + "," + z + "=>" + result + "), ");
         }
-//        if (z == -1) {
-//            result = Config.LOGODD_START;
-//        } else if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
-//            result = Config.LOGODD_START;
-//        } else if (z < s.zMax && p.equals(measurement)) {
-//            result = Config.LOGODD_OCCUPIED_CORRECT;
-//        } else if (r < z) {
-//            result = Config.LOGODD_OCCUPIED_WRONG;
-//        } else {
-//            result = Config.LOGODD_START;
-//        }
-        
         return result;
     }
 }

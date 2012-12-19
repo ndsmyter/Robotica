@@ -180,20 +180,20 @@ public class Brains implements ListenerInterface {
 
 	public void moveEmulator(int[] u) {
 		// if (u[0] != 0)
-		// emulator.drive(u[0], RoombaConfig.DRIVE_MODE_MED);
+		// emulator.drive(u[0], RoombaConfig.DRIVE_MODE_SLOW);
 		// if (u[1] != 0)
 		// emulator.turn(u[1], false, RoombaConfig.TURN_RADIUS_SPOT,
-		// RoombaConfig.DRIVE_MODE_MED);
+		// RoombaConfig.DRIVE_MODE_SLOW);
 		move(u);
 	}
 
 	public void turn(int degrees) {
 		emulator.turn(degrees, RoombaConfig.TURN_RADIUS_SPOT,
-				RoombaConfig.DRIVE_MODE_MED);
+				RoombaConfig.DRIVE_MODE_SLOW);
 	}
 
 	public void drive(int distance) {
-		emulator.drive(distance, RoombaConfig.DRIVE_MODE_MED);
+		emulator.drive(distance, RoombaConfig.DRIVE_MODE_SLOW);
 	}
 
 	public int[] getSensorData() {

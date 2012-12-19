@@ -244,4 +244,8 @@ public class Utils {
         else
         	return GaussianInverse(y, delta, mid, hi);
     }
+    
+    public static double probToLogOdd(double p){
+        return Math.log(p/(1-p));
+    }
 }

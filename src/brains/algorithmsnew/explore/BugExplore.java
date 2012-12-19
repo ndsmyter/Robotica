@@ -13,6 +13,7 @@ import common.Utils;
 public class BugExplore extends ExploreAlgorithmInterface {
 	private int goalIndex;
 	private ArrayList<Point> straightPath;
+	private ArrayList<Point> continuePath;
 	private int straightDir;
 	private Point lastPosition;
 	private ArrayList<Point> obstaclePositions;
@@ -35,6 +36,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		straightDir = Utils.angle(new Point(robotState.x, robotState.y), goal);
 		System.out.println("Dir: " + straightDir);
 		straightPath = Utils.getPath(robotState, new RobotState(goal, 0));
+		continuePath = Utils.getFullPath(robotState, new RobotState(goal, 0));
 		return turn(straightDir - robotState.dir);
 	}
 
@@ -113,7 +115,14 @@ public class BugExplore extends ExploreAlgorithmInterface {
 									.euclideanDistance(currentOnGrid, goal)) {
 						System.out.println("Found the path again! ^^");
 						return setGoal(robotState);
-					} else {
+					}
+					else if(continuePath.contains(currentOnGrid) && !straightPath.contains(currentOnGrid)
+							&& Utils.euclideanDistance(lastPosition, goal) > Utils
+							.euclideanDistance(currentOnGrid, goal)){
+						System.out.println("Found the continuation of the path");
+						return setGoal(robotState);
+					}
+					else {
 						// Turn right until she finds the obstacle, to follow
 						// the obstacle
 						internalState = 1;
@@ -181,7 +190,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		}
 	}
 
-	private Point getNextGoalTMP() {
+	/*private Point getNextGoalTMP() {
 		if (dir == 0) { // UP
 			goal.y = goal.y + Config.BUG_SPIRAL;
 			if (goal.y > Math.abs(goal.x)) {
@@ -207,7 +216,7 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		System.out.println("Next goal: " + goal.x + " : " + goal.y +  " " + dir);
 
 		return goal;
-	}
+	}*/
 
 	private Point getNextGoal() {
 		if (dir == 0) { // UP

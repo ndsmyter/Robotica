@@ -58,6 +58,16 @@ public class Utils {
 			RobotState nextState) {
 		return getPath(currentState, nextState, 0);
 	}
+	
+	public static ArrayList<Point> getFullPath(RobotState currentState,
+			RobotState nextState){
+		Point currentPoint = new Point(currentState.x,	currentState.y);
+		Point nextPoint = new Point(nextState.x, nextState.y);
+		int distance = euclideanDistance(currentPoint, nextPoint);
+		RobotState r = new RobotState(currentPoint, Utils.angle(currentPoint, nextPoint));
+		//TODO: 20 in config file plaatsen
+		return getPath(r, 20 * distance, 0);
+	}
 
 	public static ArrayList<Point> getPath(RobotState currentState,
 			RobotState nextState, int width) {

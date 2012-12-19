@@ -244,4 +244,32 @@ public class Utils {
         else
         	return GaussianInverse(y, delta, mid, hi);
     }
+    
+    public static int crossesPath(ArrayList<Point> path, RobotState robotState){
+    	RobotState nextState = driveForward(robotState, Config.BUG_STEP);
+    	ArrayList<Point> nextPath = getPath(robotState, nextState);
+    	int returnValue = 0;
+    	for (int i = 0 ; i < nextPath.size() ; i++){
+    		if (path.contains(nextPath.get(i))){
+    			Point currentPoint = new Point(robotState.x, robotState.y);
+    			Point nextPoint = new Point(nextPath.get(i).x, nextPath.get(i).y);
+    			returnValue = euclideanDistance(currentPoint, nextPoint);
+    			System.out.println("custom drive distance: " + returnValue);
+    		}
+    	}
+    	return returnValue;
+    }
+    
+    public static int crossesPath(Point point, RobotState robotState){
+    	RobotState nextState = driveForward(robotState, Config.BUG_STEP);
+    	ArrayList<Point> nextPath = getPath(robotState, nextState);
+    	int returnValue = 0;
+    	
+    	if (nextPath.contains(point)){
+    		Point currentPoint = new Point(robotState.x, robotState.y);
+    		returnValue = euclideanDistance(currentPoint, point);
+    		System.out.println("custom drive distance: " + returnValue);
+    	}
+    	return returnValue;
+    }
 }

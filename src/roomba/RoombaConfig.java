@@ -6,6 +6,7 @@ public final class RoombaConfig {
 	public static final int DRIVE_DISTANCE_SLOW = 50;
 	public static final int DRIVE_DISTANCE_MED = 100;
 	public static final int DRIVE_DISTANCE_FAST = 250;
+	public static final double DRIVE_ERROR_CORRECTION = 0.9025;
 
 	public static final int DRIVE_MODE_SLOW = 0;
 	public static final int DRIVE_MODE_MED = 1;
@@ -37,13 +38,14 @@ public final class RoombaConfig {
 	// Roomba 5200: height=8cm, diameter=33cm, afstand tussen de wielen = 24cm
 	public static final int ROOMBA_HEIGHT = 80;
 	public static final int ROOMBA_DIAMETER = 330;
+	public static final double ROOMBA_DIAMETER_SAFETY = 1.50;
 	public static final int ROOMBA_WHEEL_DISTANCE = 240;
 
 	// Sensor placement
-	public static final Sensor[] SENSORS = { 
-		new Sensor(120, 0, 0, 1000, 100, 0), 
-		new Sensor(100, -100, -45, 1000, 100, 1),
-		new Sensor(100, 100, 45, 1000, 100, 2) 
+	public static final Sensor[] SENSORS = {
+		new Sensor(120, 0, 0, 1000, 20, 0), 
+		new Sensor(100, -100, -45, 1000, 20, 2),
+		new Sensor(100, 100, 45, 1000, 20, 1)
 			/*new Sensor(100, -100, -45, 1000, 0),
 			new Sensor(120, -50, 0, 1000, 1), new Sensor(120, 0, 0, 1000, 2),
 			new Sensor(120, 50, 0, 1000, 3), new Sensor(100, 100, 45, 1000, 4) */};

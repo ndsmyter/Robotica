@@ -2,7 +2,6 @@ package emulator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
@@ -41,6 +40,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 	private JButton startStopButton;
 
 	// Note, als je hier een compileerfout hebt, update naar Java 7
+	@SuppressWarnings("rawtypes")
 	private JComboBox mapBox;
 
 	private static final String CLEAR_MAP = "<Clear map>";
@@ -49,6 +49,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 
 	private static final String SCREENSHOTS = "screenshots";
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public EmulatorWindow(final Emulator emulator) {
 		super("Emulator");
 		this.emulator = emulator;

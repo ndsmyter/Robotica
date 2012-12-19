@@ -35,10 +35,6 @@ public class FastSLAM implements SLAMAlgorithmInterface {
      */
     @Override
     public List<Particle> execute(List<Particle> particles, int[] u, int[] z) {
-    	System.out.print("[SLAM]");
-    	for(int i: z){
-    		System.out.print(i +", ");
-    	}System.out.println();
         for (Particle p : particles) {
             MapStructure map = p.getMap();
 
@@ -55,7 +51,7 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         if (iterations % Config.ITERATIONS_PER_RESAMPLE == 0) {
             resampledParticles = roulette.nextRandomParticles(particles, particles.size());
             for (Particle p : resampledParticles) {
-                p.setWeight(0);
+                p.setWeight(p.getWeight() * 0.8);
             }
         } else {
             resampledParticles = particles;

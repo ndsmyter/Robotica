@@ -18,9 +18,11 @@ import brains.Particle;
 public class ParticleViewer extends JFrame implements ActionListener {
 
 	private ParticlePanel particlePanel;
+	@SuppressWarnings("rawtypes")
 	private JComboBox particleBox;
 	private final Emulator emulator;
 
+	@SuppressWarnings("rawtypes")
 	public ParticleViewer(Emulator emulator) {
 		super("Particle Viewer");
 		this.emulator = emulator;

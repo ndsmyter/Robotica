@@ -19,4 +19,9 @@ public abstract class ExploreAlgorithmInterface {
 	public int[] dontMove() {
 		return new int[] { 0, 0 };
 	}
+
+	public int[] home() {
+		System.out.println("Finally, home again :-D");
+		return new int[] { 0, 0 };
+	}
 }

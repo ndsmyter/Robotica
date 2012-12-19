@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +38,6 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 
 	// Note, als je hier een compileerfout hebt, update naar Java 7
 	private JComboBox mapBox;
-
 
 	private static final String CLEAR_MAP = "<Clear map>";
 
@@ -132,6 +132,13 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				emulator.makeParticleViewer();
 			}
 		};
+		Action goHomeAction = new AbstractAction("Go Home!") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("I've had enough, I'm going home");
+				emulator.getBrains().setGoal(new Point(0, 0));
+			}
+		};
 		startStopButton.setAction(startStopAction);
 		startStopAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Start/Stop execution (Space)");
@@ -153,6 +160,8 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 				"Show Current State or not");
 		addParticleViewerAction.putValue(AbstractAction.SHORT_DESCRIPTION,
 				"Open a new Particle Viewer");
+		goHomeAction.putValue(AbstractAction.SHORT_DESCRIPTION,
+				"Make Kate drive home");
 		buttonPanel.add(mapBox);
 		buttonPanel.add(new JButton(saveAction));
 		buttonPanel.add(new JButton(zoomInAction));
@@ -161,6 +170,7 @@ public class EmulatorWindow extends JFrame implements ViewListenerInterface,
 		buttonPanel.add(startStopButton);
 		buttonPanel.add(new JButton(stepAction));
 		buttonPanel.add(new JButton(addParticleViewerAction));
+		buttonPanel.add(new JButton(goHomeAction));
 		JToggleButton mapShowingButton = new JToggleButton(showMapAction);
 		mapShowingButton.setSelected(emulator.isMapShowing());
 		buttonPanel.add(mapShowingButton);

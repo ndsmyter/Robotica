@@ -62,6 +62,12 @@ public class Brains implements ListenerInterface {
 			return null;
 	}
 
+	public void setGoal(Point p) {
+		ExploreAlgorithmInterface explorer = algorithm.getExplorer();
+		if (explorer instanceof BugExplore)
+			((BugExplore) explorer).setGoal(p);
+	}
+
 	public ArrayList<Point> getGoalPath() {
 		ExploreAlgorithmInterface explorer = algorithm.getExplorer();
 		if (explorer instanceof BugExplore)

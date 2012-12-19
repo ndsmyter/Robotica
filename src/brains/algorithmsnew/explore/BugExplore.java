@@ -12,7 +12,7 @@ import common.Utils;
 
 public class BugExplore extends ExploreAlgorithmInterface {
 	private int goalIndex;
-	private ArrayList<Point> straightPath;
+	private ArrayList<Point> straightPath = null;
 	private int straightDir;
 	private Point lastPosition;
 	private ArrayList<Point> obstaclePositions;
@@ -24,6 +24,8 @@ public class BugExplore extends ExploreAlgorithmInterface {
 
 	private Point goal;
 	private int dir;
+	private boolean goalChanged = false;
+	private boolean stopWhenGoalReached = false;
 
 	public BugExplore(Stopper stopper) {
 		this.stopper = stopper;
@@ -36,6 +38,12 @@ public class BugExplore extends ExploreAlgorithmInterface {
 		System.out.println("Dir: " + straightDir);
 		straightPath = Utils.getPath(robotState, new RobotState(goal, 0));
 		return turn(straightDir - robotState.dir);
+	}
+
+	public void setGoal(Point p) {
+		this.goal = p;
+		goalChanged = true;
+		stopWhenGoalReached = true;
 	}
 
 	@Override
@@ -58,11 +66,19 @@ public class BugExplore extends ExploreAlgorithmInterface {
 
 		followingObstacle = false;
 		obstaclePositions = new ArrayList<Point>();
+		stopWhenGoalReached = false;
+		if (straightPath != null)
+			straightPath.clear();
 	}
 
 	@Override
 	public int[] explore(MapStructure map) {
 		RobotState robotState = map.getPosition();
+		if (goalChanged) {
+			// The goal has been changed in the mean while, use this new goal
+			goalChanged = false;
+			return setGoal(robotState);
+		}
 		if (internalState == -1) {
 			straightDir = Utils.angle(new Point(robotState.x, robotState.y),
 					goal);
@@ -86,7 +102,10 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				System.out.println("Goal " + goalIndex + " reached! :D");
 				goalIndex++;
 				getNextGoal();
-				if (goalIndex >= Config.NROFGOALS) {
+				if (stopWhenGoalReached) {
+					stopper.execute();
+					return home();
+				} else if (goalIndex >= Config.NROFGOALS) {
 					stopper.execute();
 					return dontMove();
 				} else {
@@ -99,7 +118,10 @@ public class BugExplore extends ExploreAlgorithmInterface {
 							+ " is unreachable! D:");
 					goalIndex++;
 					getNextGoal();
-					if (goalIndex >= Config.NROFGOALS) {
+					if (stopWhenGoalReached) {
+						stopper.execute();
+						return home();
+					} else if (goalIndex >= Config.NROFGOALS) {
 						stopper.execute();
 						return dontMove();
 					} else {
@@ -149,10 +171,11 @@ public class BugExplore extends ExploreAlgorithmInterface {
 				// Then turn left again until she can move forward
 				internalState = 2;
 				exploreCounter++;
-//				totalTurn = Config.BUG_TURN;
-//				return turn(Config.BUG_TURN);
-				
-				if(Config.BUG_EXPLORE_OBSTACLES_MORE && exploreCounter % Config.BUG_OBST_EXPLORE_ITERATIONS == 0) {
+				// totalTurn = Config.BUG_TURN;
+				// return turn(Config.BUG_TURN);
+
+				if (Config.BUG_EXPLORE_OBSTACLES_MORE
+						&& exploreCounter % Config.BUG_OBST_EXPLORE_ITERATIONS == 0) {
 					totalTurn = -Config.BUG_OBST_EXPLORE_TURN;
 					return turn(-Config.BUG_OBST_EXPLORE_TURN);
 				} else {
@@ -179,34 +202,6 @@ public class BugExplore extends ExploreAlgorithmInterface {
 			System.err.println("BugMovement.java: NO SUCH INTERNAL STATE!");
 			return dontMove();
 		}
-	}
-
-	private Point getNextGoalTMP() {
-		if (dir == 0) { // UP
-			goal.y = goal.y + Config.BUG_SPIRAL;
-			if (goal.y > Math.abs(goal.x)) {
-				dir = 1;
-			}
-		} else if (dir == 1) { // RIGHT
-			goal.x = goal.x + Config.BUG_SPIRAL;
-			if (goal.x == goal.y) {
-				dir = 2;
-			}
-		} else if (dir == 2) { // DOWN
-			goal.y = goal.y - Config.BUG_SPIRAL;
-			if (Math.abs(goal.y) == goal.x) {
-				dir = 3;
-			}
-		} else if (dir == 3) { // LEFT
-			goal.x = goal.x - Config.BUG_SPIRAL;
-			if (goal.y == goal.x) {
-				dir = 0;
-			}
-		}
-
-		System.out.println("Next goal: " + goal.x + " : " + goal.y);
-
-		return goal;
 	}
 
 	private Point getNextGoal() {

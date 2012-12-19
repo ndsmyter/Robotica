@@ -194,7 +194,7 @@ public class Utils {
 		ArrayList<Point> path = Utils.getPath(
 				robotState,
 				step + RoombaConfig.ROOMBA_DIAMETER,
-				RoombaConfig.ROOMBA_DIAMETER * 2
+				(int)(RoombaConfig.ROOMBA_DIAMETER * RoombaConfig.ROOMBA_DIAMETER_SAFETY)
 			);
 		boolean freeTmp = true;
 		int points = path.size();

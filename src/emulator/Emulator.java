@@ -227,6 +227,7 @@ public class Emulator extends ModelInterface implements EmulatorInterface {
 
     public void reset() {
         iteration = 0;
+        roomba = new Roomba(this);
         simulatedRobotState = new RobotState(0, 0, 0);
         brains.reset();
     }

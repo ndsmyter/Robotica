@@ -7,6 +7,7 @@ public class Config {
 	public static final int GRID_CELL_SIZE = 100;
 	public static final int GOAL_REACHED_TRESHOLD = 100;
 	public static final int NUMBER_OF_PARTICLES = 5;
+        public static final boolean USE_ROOMBA = false;
 
 	/********************
 	 * Simulator config *
@@ -21,7 +22,7 @@ public class Config {
 	 * FastSLAM config *
 	 *******************/
 	public static final int ITERATIONS_PER_RESAMPLE = 5;
-	public static final double ALPHA1 = 0.01;
+	public static final double ALPHA1 = 0.002;
 	public static final double ALPHA2 = 0.01;
 	// p(occupied | z) = 0.9 => log 0.9/0.1 = 0.95
 	public static final double LOGODD_OCCUPIED_CORRECT = 0.95;

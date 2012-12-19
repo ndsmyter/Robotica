@@ -29,6 +29,7 @@ public class Config {
 	// p(occupied | z) = 0.1 => log 0.1/0.9 = -0.95
 	public static final double LOGODD_OCCUPIED_WRONG = -0.95;
 	public static final double LOGODD_START = 0;
+        public static final double DECAY_FACTOR = 0.8;
 
 	/**************
 	 * Bug config *

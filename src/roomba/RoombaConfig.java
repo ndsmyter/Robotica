@@ -43,9 +43,9 @@ public final class RoombaConfig {
 
 	// Sensor placement
 	public static final Sensor[] SENSORS = {
-		new Sensor(120, 0, 0, 1000, 20, 0), 
-		new Sensor(100, -100, -45, 1000, 20, 2),
-		new Sensor(100, 100, 45, 1000, 20, 1)
+		new Sensor(120, 0, 0, 1000, 150, 0), 
+		new Sensor(100, -100, -45, 1000, 150, 2),
+		new Sensor(100, 100, 45, 1000, 150, 1)
 			/*new Sensor(100, -100, -45, 1000, 0),
 			new Sensor(120, -50, 0, 1000, 1), new Sensor(120, 0, 0, 1000, 2),
 			new Sensor(120, 50, 0, 1000, 3), new Sensor(100, 100, 45, 1000, 4) */};

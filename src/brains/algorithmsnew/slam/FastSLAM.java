@@ -51,7 +51,7 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         if (iterations % Config.ITERATIONS_PER_RESAMPLE == 0) {
             resampledParticles = roulette.nextRandomParticles(particles, particles.size());
             for (Particle p : resampledParticles) {
-                p.setWeight(p.getWeight() * 0.8);
+                p.setWeight(p.getWeight() * Config.DECAY_FACTOR);
             }
         } else {
             resampledParticles = particles;

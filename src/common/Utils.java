@@ -112,6 +112,44 @@ public class Utils {
 		}
 		return path;
 	}
+	
+	public static ArrayList<Point> getDetailedPath(RobotState currentState,
+			RobotState nextState, int stepSize) {
+		return getDetailedPath(currentState, nextState, 0, stepSize);
+	}
+
+	public static ArrayList<Point> getDetailedPath(RobotState currentState,
+			RobotState nextState, int width, int stepSize) {
+		Point currentPoint = new Point(currentState.x,	currentState.y);
+		Point nextPoint = new Point(nextState.x, nextState.y);
+		int distance = euclideanDistance(currentPoint, nextPoint);
+		RobotState r = new RobotState(currentPoint, Utils.angle(currentPoint, nextPoint));
+		return getDetailedPath(r, distance, width, stepSize);
+	}
+
+	public static ArrayList<Point> getDetailedPath(RobotState currentState, int distance, int stepSize) {
+		return getDetailedPath(currentState, distance, 0, stepSize);
+	}
+	
+	public static ArrayList<Point> getDetailedPath(RobotState currentState,
+			int distance, int width, int stepSize) {
+		ArrayList<Point> path = new ArrayList<Point>();
+		RobotState current = new RobotState(currentState.x, currentState.y,
+				currentState.dir - 90);
+		current = driveForward(current, width / 2);
+		current.dir = currentState.dir;
+		RobotState intermediate;
+		for (int w = 0; w <= width; w += stepSize) {
+			for (int d = 0; d < distance; d += stepSize) {
+				intermediate = driveForward(current, d);
+				path.add(new Point(intermediate.x, intermediate.y));
+			}
+			current.dir += 90;
+			current = driveForward(current, stepSize);
+			current.dir -= 90;
+		}
+		return path;
+	}
 
 	public static Point pointToGrid(Point p) {
 		p.x = roundToGrid(p.x);
@@ -164,4 +202,46 @@ public class Utils {
 			freeTmp &= (map.get(path.get(i)) <= 0.51);
 		return freeTmp;
 	}
+	
+    // return phi(x) = standard Gaussian pdf
+    public static double gaussian(double x) {
+        return Math.exp(-x*x / 2) / Math.sqrt(2 * Math.PI);
+    }
+
+    // return phi(x, mu, signma) = Gaussian pdf with mean mu and stddev sigma
+    public static double gaussian(double x, double mu, double sigma) {
+        return gaussian((x - mu) / sigma) / sigma;
+    }
+
+    // return Phi(z) = standard Gaussian cdf using Taylor approximation
+    public static double Gaussian(double z) {
+        if (z < -8.0) return 0.0;
+        if (z >  8.0) return 1.0;
+        double sum = 0.0, term = z;
+        for (int i = 3; sum + term != sum; i += 2) {
+            sum  = sum + term;
+            term = term * z * z / i;
+        }
+        return 0.5 + sum * gaussian(z);
+    }
+
+    // return Phi(z, mu, sigma) = Gaussian cdf with mean mu and stddev sigma
+    public static double Gaussian(double z, double mu, double sigma) {
+        return gaussian((z - mu) / sigma);
+    } 
+
+    // Compute z such that Phi(z) = y via bisection search
+    public static double GaussianInverse(double y) {
+        return GaussianInverse(y, .00000001, -8, 8);
+    } 
+
+    // bisection search
+    private static double GaussianInverse(double y, double delta, double lo, double hi) {
+        double mid = lo + (hi - lo) / 2;
+        if (hi - lo < delta) return mid;
+        if (Gaussian(mid) > y)
+        	return GaussianInverse(y, delta, lo, mid);
+        else
+        	return GaussianInverse(y, delta, mid, hi);
+    }
 }

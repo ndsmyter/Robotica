@@ -5,13 +5,15 @@ public class Sensor {
 	public int yOffset;
 	public int dir;
 	public int zMax;
+	public double sigma;
 	public int id;
 
-	public Sensor(int xOffset, int yOffset, int dir, int zMax, int id) {
+	public Sensor(int xOffset, int yOffset, int dir, int zMax, double sigma, int id) {
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
 		this.dir = dir;
 		this.zMax = zMax;
+		this.sigma = sigma;
 		this.id = id;
 	}
 

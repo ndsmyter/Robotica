@@ -26,6 +26,7 @@ import javax.swing.Timer;
 
 import roomba.RoombaConfig;
 import brains.Brains;
+import brains.MapStructure;
 
 import common.Config;
 import common.RobotState;
@@ -136,18 +137,20 @@ public class MapPanel extends JPanel {
 		if (emulator.isMapShowing())
 			drawMap(g);
 
+		MapStructure map = brains.getBestParticleMap();
+
 		// Draw the obstacles
-		drawObstacles(g);
+		drawObstacles(g, map);
 
 		// Draw grid
 		drawGrid(g);
 
 		// Draw previous points
-		drawPreviousPoints(g);
+		drawPreviousPoints(g, map);
 
 		// Draw robot
 		if (emulator.isRoombaShowing())
-			drawRobot(g2);
+			drawRobot(g2, map);
 
 		// Draw current state
 		if (emulator.isCurrentStateShowing())
@@ -241,11 +244,10 @@ public class MapPanel extends JPanel {
 	 * @param g
 	 *            The Graphics to be used for painting
 	 */
-	private void drawPreviousPoints(Graphics g) {
+	private void drawPreviousPoints(Graphics g, MapStructure map) {
 		try {
 			g.setColor(Emulator.PATH_COLOR);
-			ArrayList<Point> historyOfPoints = brains.getBestParticleMap()
-					.getPath();
+			ArrayList<Point> historyOfPoints = map.getPath();
 			for (int i = 0; i < historyOfPoints.size() - 1; i++) {
 				Point first = historyOfPoints.get(i);
 				g.drawRect(scale(first.x), scale(first.y), 1, 1);
@@ -284,8 +286,8 @@ public class MapPanel extends JPanel {
 	 * @param g
 	 *            The Graphics used to draw the robot on
 	 */
-	private void drawRobot(Graphics g) {
-		RobotState position = brains.getBestParticleMap().getPosition();
+	private void drawRobot(Graphics g, MapStructure map) {
+		RobotState position = map.getPosition();
 		// Draw a dot to represent the robot
 		g.setColor(Emulator.ROBOT_COLOR);
 		double scaledRobotSize = 0.5 * scale(Emulator.ROBOT_SIZE);
@@ -318,10 +320,9 @@ public class MapPanel extends JPanel {
 	 * @param g
 	 *            The Graphics used to draw the robot on
 	 */
-	private void drawObstacles(Graphics g) {
+	private void drawObstacles(Graphics g, MapStructure map) {
 		try {
-			Set<Entry<Point, Double>> points = brains.getBestParticleMap()
-					.getCells().entrySet();
+			Set<Entry<Point, Double>> points = map.getCells().entrySet();
 			int scaledGridSize = scale(Config.GRID_CELL_SIZE);
 			int halfScaledGridSize = (int) (0.5 * Config.GRID_CELL_SIZE);
 			for (Entry<Point, Double> entry : points) {

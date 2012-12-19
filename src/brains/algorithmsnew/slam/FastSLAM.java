@@ -2,6 +2,7 @@ package brains.algorithmsnew.slam;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import roomba.RoombaConfig;
@@ -93,16 +94,40 @@ public class FastSLAM implements SLAMAlgorithmInterface {
             RobotState sensorState = Utils.getSensorState(robotState, s);
             Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
                     robotState, z[i], s));
-            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
-            for (Point p : path) {
-                double x = m.get(p);
-                double logy = inverseSensorModel(p, measurement, sensorState, z[i], s);
-                double y = 1 - (1 / (1 + Math.exp(logy)));
+//            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
+//            for (Point p : path) {
+//                double x = m.get(p);
+//                double logy = inverseSensorModel_old(p, measurement, sensorState, z[i], s);
+//                double y = 1 - (1 / (1 + Math.exp(logy)));
+//
+//                //sum += Math.abs(x + y);
+//                sum += 1 - Math.abs(x - y);
+//                // sum += x * y;
+//            }
+            
+          ArrayList<Point> path = Utils.getDetailedPath(sensorState, s.zMax, 1);
+            
+          HashMap<Point, Double> map = new HashMap<Point, Double> (); 
+//          System.out.print("ism: ");
+          for (Point p : path) {
+          	double ism = inverseSensorModel_new(p, measurement, sensorState, z[i], s);
+          	Point p2grid = Utils.pointToGrid(p);
+          	if (map.containsKey(p2grid)) {
+          		map.put(p2grid, map.get(p2grid) + ism);
+          	} else {
+          		map.put(p2grid, ism);
+          	}
+          }
+          
+          for (Point p : map.keySet()) {
+            double x = m.get(p);
+            double y = map.get(p);
 
-                //sum += Math.abs(x + y);
-                sum += 1 - Math.abs(x - y);
-                // sum += x * y;
-            }
+            //sum += Math.abs(x + y);
+            //sum += 1 - Math.abs(x - y);
+            sum += x * y;
+          }
+//          System.out.println();
         }
         return sum;
     }
@@ -114,17 +139,41 @@ public class FastSLAM implements SLAMAlgorithmInterface {
             RobotState sensorState = Utils.getSensorState(robotState, s);
             Point measurement = Utils.pointToGrid(Utils.sensorDataToPoint(
                     robotState, z[i], s));
-            ArrayList<Point> path = Utils.getPath(sensorState, s.zMax);
+            List<Point> path = Utils.getPath(sensorState, s.zMax);
+            
             for (Point p : path) {
-                double logOdds = m.getLogOdds(p)
-                        + inverseSensorModel(p, measurement, sensorState, z[i],
-                        s);
-                m.putLogOdds(p, logOdds);
+            	double ism = inverseSensorModel_old(p, measurement, sensorState, z[i], s);
+            	double logOdds = m.getLogOdds(p) + ism;
+            	m.putLogOdds(p, logOdds);
             }
+            
+            
+//            ArrayList<Point> path = Utils.getDetailedPath(sensorState, s.zMax, 1);
+            
+//            HashMap<Point, Double> map = new HashMap<Point, Double> (); 
+//            System.out.print("ism: ");
+//            for (Point p : path) {
+//            	double ism = inverseSensorModel_new(p, measurement, sensorState, z[i], s);
+//            	Point p2grid = Utils.pointToGrid(p);
+//            	if (map.containsKey(p2grid)) {
+//            		map.put(p2grid, map.get(p2grid) + ism);
+//            	} else {
+//            		map.put(p2grid, ism);
+//            	}
+//            	
+////                double logOdds = m.getLogOdds(p) + ism;
+////                m.putLogOdds(Utils.pointToGrid(p), logOdds);
+//            }
+//            
+//            for (Point p : map.keySet()) {
+//            	double logOdds = m.getLogOdds(p) + Math.log(map.get(p) / (1 - map.get(p)));
+//            	m.putLogOdds(p, logOdds);
+//            }
+//            System.out.println();
         }
     }
 
-    public static double inverseSensorModel(Point p, Point measurement,
+    public static double inverseSensorModel_old(Point p, Point measurement,
             RobotState sensorState, int z, Sensor s) {
         double result;
         int r = Utils.euclideanDistance(
@@ -140,6 +189,32 @@ public class FastSLAM implements SLAMAlgorithmInterface {
         } else {
             result = Config.LOGODD_START;
         }
+        return result;
+    }
+    
+    public static double inverseSensorModel_new(Point p, Point measurement,
+            RobotState sensorState, int z, Sensor s) {
+        double result;
+        int r = Utils.euclideanDistance(new Point(sensorState.x, sensorState.y), p);
+        
+        if (z == -1) {
+        	result = 0;
+        } else {
+        	result = Utils.gaussian(r, z, s.sigma);
+//        	System.out.print("(" + r + "," + z + "=>" + result + "), ");
+        }
+//        if (z == -1) {
+//            result = Config.LOGODD_START;
+//        } else if (r > Math.min(s.zMax, z) + Config.GRID_CELL_SIZE) {
+//            result = Config.LOGODD_START;
+//        } else if (z < s.zMax && p.equals(measurement)) {
+//            result = Config.LOGODD_OCCUPIED_CORRECT;
+//        } else if (r < z) {
+//            result = Config.LOGODD_OCCUPIED_WRONG;
+//        } else {
+//            result = Config.LOGODD_START;
+//        }
+        
         return result;
     }
 }

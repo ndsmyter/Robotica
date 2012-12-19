@@ -7,6 +7,7 @@ public class Config {
 	public static final int GRID_CELL_SIZE = 100;
 	public static final int GOAL_REACHED_TRESHOLD = 100;
 	public static final int NUMBER_OF_PARTICLES = 5;
+        public static final boolean USE_ROOMBA = false;
 
 	/********************
 	 * Simulator config *
@@ -21,8 +22,8 @@ public class Config {
 	 * FastSLAM config *
 	 *******************/
 	public static final int ITERATIONS_PER_RESAMPLE = 5;
-	public static final double ALPHA1 = 0.01;
-	public static final double ALPHA2 = 0.01;
+	public static final double ALPHA1 = 0.002;
+	public static final double ALPHA2 = 0.0;
 	// p(occupied | z) = 0.9 => log 0.9/0.1 = 0.95
 	public static final double LOGODD_OCCUPIED_CORRECT = 0.95;
 	// p(occupied | z) = 0.1 => log 0.1/0.9 = -0.95
@@ -35,7 +36,7 @@ public class Config {
 	public static final int NROFGOALS = 50;
 	public static final int BUG_STEP = 100;
 	public static final int BUG_TURN = 15;
-	public static final int BUG_SPIRAL = 200;
+	public static final int BUG_SPIRAL = 2000;
 
 	public static final boolean BUG_EXPLORE_OBSTACLES_MORE = true;
 	public static final int BUG_OBST_EXPLORE_TURN = 90;

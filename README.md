@@ -1,7 +1,7 @@
 Robotica
 ========
 
-A project for "Robotica en Mechatronica" (dutch) where we control a Roomba robot, which we called Kate or K8 in short, to navigate through an unkwown room and map the environment.
+A project for "Robotica en Mechatronica" (dutch) where we control a Roomba robot, which we called Kate or K8 in short, to navigate through an unknown room and map the environment.
 
 Brains
 ------
